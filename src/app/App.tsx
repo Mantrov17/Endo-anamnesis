@@ -8,7 +8,7 @@ import { PatientFormPage } from "@/pages/PatientFormPage";
 
 export const App: React.FC = () => {
   return (
-    <BrowserRouter basename="/endo-anamnesis">
+    <BrowserRouter basename="/Endo-anamnesis">
       <Routes>
         <Route path="/" element={<PatientsListPage />} />
         <Route path="/patient/new" element={<PatientFormPage />} />{" "}
