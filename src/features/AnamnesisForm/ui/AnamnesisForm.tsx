@@ -61,7 +61,6 @@ const HintedField: React.FC<HintedFieldProps> = ({ hint, children }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
-  // Закрываем по клику вне и по Escape
   useEffect(() => {
     if (!open) return;
 
@@ -204,7 +203,9 @@ type DrugArrayPath =
   | "type1Diabetes.initialTherapy"
   | "therapy.currentDrugs"
   | "therapy.basalInsulin"
-  | "therapy.prandialInsulin";
+  | "therapy.prandialInsulin"
+  | "actualTherapy.basalInsulin"
+  | "actualTherapy.bolusInsulin";
 
 interface DrugListProps {
   control: Control<AnamnesisFormData>;
@@ -312,6 +313,11 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
           weightLoss: false,
           weightLossAmount: null,
           weightLossUnknown: false,
+          nausea: false,
+          vomiting: false,
+          abdominalPain: false,
+          visionBlur: false,
+          lossOfConsciousness: false,
         },
         furtherPlan: "",
         initialTherapy: [{ drugName: "", dose: "" }],
@@ -331,6 +337,8 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         cPeptide: { value: "", date: "" },
         hba1c: { value: null, date: "" },
         usualGlucose: null,
+        investigatedAfterDetection: null,
+        initiallyType2: null,
       });
     }
     if (isType2 && !type2Data) {
@@ -344,6 +352,29 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         weightDecreasedBy: null,
         firstGlucoseElevationYear: "",
         maxGlucoseValues: "",
+        ageAtDiagnosis: null,
+        yearOfDiagnosis: "",
+        howDiagnosed: "",
+        classicSymptoms: {
+          polyuria: false,
+          polydipsia: false,
+          weakness: false,
+          weightLoss: false,
+          weightLossAmount: null,
+          weightLossUnknown: false,
+          visionBlur: false,
+        },
+        investigatedAfterDetection: null,
+        initialTherapy: [{ drugName: "", dose: "", frequency: "" }],
+        stillTakingInitialTherapy: null,
+        ifNotTakingReason: "",
+        currentTherapy: [{ drugName: "", dose: "", frequency: "" }],
+        therapyRegularity: null,
+        missedDosesPerWeek: "",
+        missedReasons: "",
+        usualGlucoseOnTherapy: null,
+        hba1c: { value: null, date: "", unknown: false },
+        gestationalDiabetes: null,
       });
     }
   }, [isType1, isType2, type1Data, type2Data, setValue]);
@@ -366,6 +397,67 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               register={register}
               watch={watch}
             />
+
+            {/* ===== NEW — Антропометрия в начале формы ===== */}
+            <fieldset className={styles.fieldset}>
+              <legend>Антропометрия</legend>
+              <div className={styles.row}>
+                <Input
+                  label="Рост"
+                  type="number"
+                  suffix="см"
+                  {...register("primaryExam.height")}
+                />
+                <Input
+                  label="Вес"
+                  type="number"
+                  step="0.1"
+                  suffix="кг"
+                  {...register("primaryExam.weight")}
+                />
+                <Input
+                  label="ИМТ (авторасчёт)"
+                  type="number"
+                  step="0.1"
+                  suffix="кг/м²"
+                  {...register("primaryExam.bmi")}
+                  readOnly
+                />
+              </div>
+              <Input
+                label="Окружность талии"
+                type="number"
+                suffix="см"
+                {...register("primaryExam.waistCircumference")}
+              />
+              <YesNo
+                label="Изменился ли вес за последние 6 месяцев?"
+                name="primaryExam.weightChange6Months"
+                register={register}
+              />
+              {watch("primaryExam.weightChange6Months") === true && (
+                <div className={styles.row}>
+                  <Input
+                    label="Увеличился на"
+                    type="number"
+                    suffix="кг"
+                    {...register("primaryExam.weightIncreasedBy")}
+                  />
+                  <Input
+                    label="Уменьшился на"
+                    type="number"
+                    suffix="кг"
+                    {...register("primaryExam.weightDecreasedBy")}
+                  />
+                </div>
+              )}
+              <NoteField
+                noteKey="primaryExam.anthropometry"
+                register={register}
+                watch={watch}
+                label="Примечание по антропометрии"
+              />
+            </fieldset>
 
             <div className={styles.radioGroup}>
               <label>Подозрение / утверждение диагноза</label>
@@ -441,6 +533,14 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                       {...register("type1Diabetes.howDiagnosed")}
                     />{" "}
                     Диспансеризация
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="withComplaints"
+                      {...register("type1Diabetes.howDiagnosed")}
+                    />{" "}
+                    Приём с жалобами
                   </label>
                   <label>
                     <input
@@ -535,6 +635,46 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                       </label>
                     </>
                   )}
+                  {/* NEW — расширенные симптомы */}
+                  <label>
+                    <input
+                      type="checkbox"
+                      {...register("type1Diabetes.classicSymptoms.nausea")}
+                    />{" "}
+                    Тошнота
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      {...register("type1Diabetes.classicSymptoms.vomiting")}
+                    />{" "}
+                    Рвота
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      {...register(
+                        "type1Diabetes.classicSymptoms.abdominalPain",
+                      )}
+                    />{" "}
+                    Боли в животе
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      {...register("type1Diabetes.classicSymptoms.visionBlur")}
+                    />{" "}
+                    Помутнение зрения
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      {...register(
+                        "type1Diabetes.classicSymptoms.lossOfConsciousness",
+                      )}
+                    />{" "}
+                    Потеря сознания
+                  </label>
                   <NoteField
                     noteKey="type1Diabetes.classicSymptoms"
                     register={register}
@@ -553,6 +693,18 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                   noteKey="type1Diabetes.furtherPlan"
                   register={register}
                   watch={watch}
+                />
+
+                {/* NEW */}
+                <YesNo
+                  label="Вы обратились к эндокринологу после обнаружения повышенного результата?"
+                  name="type1Diabetes.investigatedAfterDetection"
+                  register={register}
+                />
+                <YesNo
+                  label="Первично поставлен СД 2 типа?"
+                  name="type1Diabetes.initiallyType2"
+                  register={register}
                 />
 
                 <fieldset className={styles.fieldset}>
@@ -794,6 +946,116 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                   {...register("type2Diabetes.firstGlucoseElevationYear")}
                 />
 
+                {/* NEW — дебют СД2 */}
+                <div className={styles.row}>
+                  <Input
+                    label="Возраст постановки диагноза"
+                    type="number"
+                    suffix="лет"
+                    {...register("type2Diabetes.ageAtDiagnosis")}
+                  />
+                  <Input
+                    label="Год постановки диагноза"
+                    {...register("type2Diabetes.yearOfDiagnosis")}
+                  />
+                </div>
+
+                <div className={styles.radioGroup}>
+                  <label>Как был поставлен диагноз?</label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="accidental"
+                      {...register("type2Diabetes.howDiagnosed")}
+                    />{" "}
+                    Случайная находка
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="dispanserization"
+                      {...register("type2Diabetes.howDiagnosed")}
+                    />{" "}
+                    Диспансеризация
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="withComplaints"
+                      {...register("type2Diabetes.howDiagnosed")}
+                    />{" "}
+                    Приём с жалобами
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="hospitalization"
+                      {...register("type2Diabetes.howDiagnosed")}
+                    />{" "}
+                    Госпитализация
+                  </label>
+                </div>
+
+                <fieldset className={styles.fieldset}>
+                  <legend>Симптомы при дебюте</legend>
+                  <label>
+                    <input
+                      type="checkbox"
+                      {...register("type2Diabetes.classicSymptoms.polyuria")}
+                    />{" "}
+                    Полиурия
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      {...register("type2Diabetes.classicSymptoms.polydipsia")}
+                    />{" "}
+                    Полидипсия
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      {...register("type2Diabetes.classicSymptoms.weakness")}
+                    />{" "}
+                    Слабость
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      {...register("type2Diabetes.classicSymptoms.weightLoss")}
+                    />{" "}
+                    Снижение веса
+                  </label>
+                  {watch("type2Diabetes.classicSymptoms.weightLoss") && (
+                    <>
+                      <Input
+                        label="Потеря веса"
+                        type="number"
+                        suffix="кг"
+                        {...register(
+                          "type2Diabetes.classicSymptoms.weightLossAmount",
+                        )}
+                      />
+                      <label>
+                        <input
+                          type="checkbox"
+                          {...register(
+                            "type2Diabetes.classicSymptoms.weightLossUnknown",
+                          )}
+                        />{" "}
+                        Затрудняюсь сказать
+                      </label>
+                    </>
+                  )}
+                  <label>
+                    <input
+                      type="checkbox"
+                      {...register("type2Diabetes.classicSymptoms.visionBlur")}
+                    />{" "}
+                    Нечёткость зрения
+                  </label>
+                </fieldset>
+
                 <Textarea
                   label="Максимально зафиксированные значения глюкозы"
                   {...register("type2Diabetes.maxGlucoseValues")}
@@ -804,6 +1066,85 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                   register={register}
                   watch={watch}
                 />
+
+                <YesNo
+                  label="Вы обратились к эндокринологу после обнаружения повышенного результата?"
+                  name="type2Diabetes.investigatedAfterDetection"
+                  register={register}
+                />
+
+                <fieldset className={styles.fieldset}>
+                  <legend>Терапия в дебюте</legend>
+                  <Textarea
+                    label="Название препарата, доза, кратность применения (для множественной терапии — перечислить все)"
+                    {...register("type2Diabetes.ifNotTakingReason")}
+                    rows={3}
+                  />
+                </fieldset>
+
+                <YesNo
+                  label="Данную терапию принимаете до сих пор?"
+                  name="type2Diabetes.stillTakingInitialTherapy"
+                  register={register}
+                />
+                {watch("type2Diabetes.stillTakingInitialTherapy") === false && (
+                  <Textarea
+                    label="Причина коррекции терапии"
+                    {...register("type2Diabetes.ifNotTakingReason")}
+                    rows={2}
+                  />
+                )}
+
+                <YesNo
+                  label="Регулярно ли принимаете терапию?"
+                  name="type2Diabetes.therapyRegularity"
+                  register={register}
+                />
+                <Input
+                  label="Сколько раз в неделю можете пропустить приём таблеток?"
+                  {...register("type2Diabetes.missedDosesPerWeek")}
+                />
+                <Textarea
+                  label="Что мешает принимать регулярно (побочные эффекты, стоимость, сложность схемы, забывчивость)"
+                  {...register("type2Diabetes.missedReasons")}
+                  rows={2}
+                />
+                <Input
+                  label="Привычные цифры глюкозы на терапии"
+                  type="number"
+                  step="0.1"
+                  suffix="ммоль/л"
+                  {...register("type2Diabetes.usualGlucoseOnTherapy")}
+                />
+
+                <fieldset className={styles.fieldset}>
+                  <legend>Гликированный гемоглобин</legend>
+                  <Input
+                    label="Значение"
+                    type="number"
+                    step="0.1"
+                    suffix="%"
+                    {...register("type2Diabetes.hba1c.value")}
+                  />
+                  <Input
+                    label="Дата"
+                    type="date"
+                    {...register("type2Diabetes.hba1c.date")}
+                  />
+                  <label>
+                    <input
+                      type="checkbox"
+                      {...register("type2Diabetes.hba1c.unknown")}
+                    />{" "}
+                    Затрудняюсь ответить
+                  </label>
+                </fieldset>
+
+                <YesNo
+                  label="Женщинам: гестационный сахарный диабет (во время беременности были повышены сахара)?"
+                  name="type2Diabetes.gestationalDiabetes"
+                  register={register}
+                />
               </div>
             )}
           </>
@@ -813,6 +1154,147 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         return (
           <div className={styles.section}>
             <h3>Терапия</h3>
+
+            {/* ===== NEW — Актуальная терапия ===== */}
+            <fieldset className={styles.fieldset}>
+              <legend>Актуальная терапия</legend>
+
+              <YesNo
+                label="Совпадает с терапией в дебюте?"
+                name="actualTherapy.sameAsInitial"
+                register={register}
+              />
+
+              {watch("actualTherapy.sameAsInitial") === false && (
+                <>
+                  <div className={styles.radioGroup}>
+                    <label>Способ введения инсулина:</label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="injections"
+                        {...register("actualTherapy.injectionMethod")}
+                      />{" "}
+                      Многократные инъекции
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="pump"
+                        {...register("actualTherapy.injectionMethod")}
+                      />{" "}
+                      Инсулиновая помпа
+                    </label>
+                  </div>
+
+                  {watch("actualTherapy.injectionMethod") === "injections" && (
+                    <div className={styles.radioGroup}>
+                      <label>Устройство:</label>
+                      <label>
+                        <input
+                          type="radio"
+                          value="syringe"
+                          {...register("actualTherapy.injectionsDevice")}
+                        />{" "}
+                        Шприц
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          value="pen"
+                          {...register("actualTherapy.injectionsDevice")}
+                        />{" "}
+                        Ручка
+                      </label>
+                    </div>
+                  )}
+
+                  {watch("actualTherapy.injectionMethod") === "pump" && (
+                    <Input
+                      label="Модель помпы"
+                      {...register("actualTherapy.pumpModel")}
+                    />
+                  )}
+
+                  <fieldset className={styles.fieldset}>
+                    <legend>Базальный инсулин</legend>
+                    <DrugList
+                      control={control}
+                      register={register}
+                      name="actualTherapy.basalInsulin"
+                      firstField="name"
+                    />
+                  </fieldset>
+
+                  <fieldset className={styles.fieldset}>
+                    <legend>Болюсный инсулин</legend>
+                    <DrugList
+                      control={control}
+                      register={register}
+                      name="actualTherapy.bolusInsulin"
+                      firstField="name"
+                    />
+                  </fieldset>
+
+                  <div className={styles.radioGroup}>
+                    <label>Коэффициент (по длительности СД):</label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="0.5"
+                        {...register("actualTherapy.insulinDoseCoefficient", {
+                          setValueAs: (v) => (v === "" ? null : Number(v)),
+                        })}
+                      />{" "}
+                      0.5 (&lt;5 лет)
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="0.7"
+                        {...register("actualTherapy.insulinDoseCoefficient", {
+                          setValueAs: (v) => (v === "" ? null : Number(v)),
+                        })}
+                      />{" "}
+                      0.7 (5–10 лет)
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="0.9"
+                        {...register("actualTherapy.insulinDoseCoefficient", {
+                          setValueAs: (v) => (v === "" ? null : Number(v)),
+                        })}
+                      />{" "}
+                      0.9 (&gt;10 лет)
+                    </label>
+                  </div>
+
+                  <Input
+                    label="Расчётная суточная доза инсулина (авторасчёт)"
+                    readOnly
+                    suffix="Ед"
+                    {...register("actualTherapy.calculatedDailyInsulinDose")}
+                  />
+
+                  <Textarea
+                    label="Другие сахаропонижающие препараты"
+                    {...register("actualTherapy.otherGlucoseLoweringDrugs")}
+                    rows={2}
+                  />
+                  <Textarea
+                    label="Места инъекций"
+                    {...register("actualTherapy.injectionSites")}
+                    rows={2}
+                  />
+                  <YesNo
+                    label="Наличие липогипертрофии"
+                    name="actualTherapy.lipohypertrophy"
+                    register={register}
+                  />
+                </>
+              )}
+            </fieldset>
 
             <fieldset className={styles.fieldset}>
               <legend>Сахаропонижающие препараты (кроме инсулина)</legend>
@@ -938,6 +1420,89 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               name="hypoglycemia.awarenessPreserved"
               register={register}
             />
+
+            {/* NEW — тяжесть */}
+            <div className={styles.radioGroup}>
+              <label>Тяжесть гипогликемий:</label>
+              <label>
+                <input
+                  type="radio"
+                  value="mild"
+                  {...register("hypoglycemia.severity")}
+                />{" "}
+                Лёгкие
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value="severe"
+                  {...register("hypoglycemia.severity")}
+                />{" "}
+                Тяжёлые (требовали помощи)
+              </label>
+            </div>
+
+            {/* NEW — симптомы */}
+            <fieldset className={styles.fieldset}>
+              <legend>Симптомы гипогликемии</legend>
+              <label>
+                <input
+                  type="checkbox"
+                  {...register("hypoglycemia.symptoms.hunger")}
+                />{" "}
+                Волчий голод
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  {...register("hypoglycemia.symptoms.tremor")}
+                />{" "}
+                Тремор
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  {...register("hypoglycemia.symptoms.sweating")}
+                />{" "}
+                Потливость (холодный пот)
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  {...register("hypoglycemia.symptoms.tachycardia")}
+                />{" "}
+                Тахикардия
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  {...register("hypoglycemia.symptoms.anxiety")}
+                />{" "}
+                Тревожность
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  {...register("hypoglycemia.symptoms.weakness")}
+                />{" "}
+                Слабость
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  {...register("hypoglycemia.symptoms.diplopia")}
+                />{" "}
+                Диплопия (двоение в глазах)
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  {...register("hypoglycemia.symptoms.headache")}
+                />{" "}
+                Головная боль
+              </label>
+            </fieldset>
+
             <fieldset className={styles.fieldset}>
               <legend>Типичные провоцирующие факторы</legend>
               <label>
@@ -1019,6 +1584,52 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               name="selfMonitoring.diary"
               register={register}
             />
+
+            {/* NEW — для СД 1 */}
+            <fieldset className={styles.fieldset}>
+              <legend>Для СД 1 типа</legend>
+              <Input
+                label="Как часто меняете иглу (например, после каждой инъекции)"
+                {...register("selfMonitoring.needleChangeFrequency")}
+              />
+              <Input
+                label="Как часто меняете место инъекции"
+                {...register("selfMonitoring.siteChangeFrequency")}
+              />
+              <Input
+                label="Сколько см отступаете (не менее 1–2 см)"
+                {...register("selfMonitoring.injectionSiteDistance")}
+              />
+            </fieldset>
+
+            {/* NEW — для СД 1 и 2 */}
+            <fieldset className={styles.fieldset}>
+              <legend>Для СД 1 и 2 типа</legend>
+              <YesNo
+                label="Имеется ли глюкометр?"
+                name="selfMonitoring.hasGlucometer"
+                register={register}
+              />
+              {watch("selfMonitoring.hasGlucometer") === true && (
+                <YesNo
+                  label="Производилась ли калибровка?"
+                  name="selfMonitoring.calibrationDone"
+                  register={register}
+                />
+              )}
+              <Input
+                label="Когда последний раз были у врача на диспансеризации?"
+                {...register("selfMonitoring.lastDoctorVisit")}
+              />
+              <label>
+                <input
+                  type="checkbox"
+                  {...register("selfMonitoring.lastDoctorVisitUnknown")}
+                />{" "}
+                Затрудняюсь ответить
+              </label>
+            </fieldset>
+
             <NoteField
               noteKey="selfMonitoring.general"
               register={register}
@@ -1062,6 +1673,60 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                 label="Дата последнего осмотра глазного дна"
                 type="date"
                 {...register("complications.eyes.lastFundusExamDate")}
+              />
+              <label>
+                <input
+                  type="checkbox"
+                  {...register("complications.eyes.lastFundusExamUnknown")}
+                />{" "}
+                Затрудняюсь ответить
+              </label>
+
+              {/* NEW — расширенный блок глаз */}
+              <YesNo
+                label="Никталопия («куриная слепота») — плохо видите ночью?"
+                name="complications.eyes.nyctalopia"
+                register={register}
+              />
+              <YesNo
+                label="Замедленная адаптация к темноте?"
+                name="complications.eyes.delayedDarkAdaptation"
+                register={register}
+              />
+              <YesNo
+                label="Появляются ли мушки/сетка перед глазами?"
+                name="complications.eyes.floaters"
+                register={register}
+              />
+              {watch("complications.eyes.floaters") === true && (
+                <div className={styles.radioGroup}>
+                  <label>При каких условиях?</label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="bp"
+                      {...register("complications.eyes.floatersWhen")}
+                    />{" "}
+                    Повышение АД
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="glucose"
+                      {...register("complications.eyes.floatersWhen")}
+                    />{" "}
+                    Повышение глюкозы
+                  </label>
+                </div>
+              )}
+              <YesNo
+                label="Выпадение боковых полей зрения (например, за рулём)?"
+                name="complications.eyes.visualFieldLoss"
+                register={register}
+              />
+              <Input
+                label="Как часто наблюдаетесь у офтальмолога?"
+                {...register("complications.eyes.ophthalmologistFrequency")}
               />
               <NoteField
                 noteKey="complications.eyes"
@@ -1132,6 +1797,27 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                 name="complications.gastrointestinal.abdominalPainAfterEating"
                 register={register}
               />
+              {/* NEW — провоцирующие факторы болей */}
+              <label>Провоцирующие факторы болей в животе:</label>
+              <label>
+                <input
+                  type="checkbox"
+                  {...register(
+                    "complications.gastrointestinal.painTriggerFatty",
+                  )}
+                />{" "}
+                Жирная пища
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  {...register(
+                    "complications.gastrointestinal.painTriggerAlcohol",
+                  )}
+                />{" "}
+                Алкоголь
+              </label>
+
               <Textarea
                 label="Частота стула"
                 {...register("complications.gastrointestinal.stoolFrequency")}
@@ -1768,6 +2454,256 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                 register={register}
                 watch={watch}
               />
+            </fieldset>
+
+            {/* ===== NEW — Хронические заболевания ===== */}
+            <fieldset className={styles.fieldset}>
+              <legend>Хронические заболевания</legend>
+              <Textarea
+                label="Заболевания глаз (кроме диабетических)"
+                {...register("lifestyle.chronicEyeDiseases")}
+                rows={2}
+              />
+              <YesNo
+                label="Бронхиальная астма"
+                name="lifestyle.asthma"
+                register={register}
+              />
+              {watch("lifestyle.asthma") === true && (
+                <>
+                  <Input
+                    label="Когда выявили?"
+                    {...register("lifestyle.asthmaDiagnosedWhen")}
+                  />
+                  <Input
+                    label="Аллерген"
+                    {...register("lifestyle.asthmaAllergen")}
+                  />
+                </>
+              )}
+              <YesNo label="ХОБЛ" name="lifestyle.copd" register={register} />
+              {watch("lifestyle.copd") === true && (
+                <Input
+                  label="Что принимаете при ХОБЛ"
+                  {...register("lifestyle.copdMeds")}
+                />
+              )}
+            </fieldset>
+
+            {/* ===== NEW — ССС блок ===== */}
+            <fieldset className={styles.fieldset}>
+              <legend>Сердечно-сосудистая система / АД</legend>
+
+              <div className={styles.radioGroup}>
+                <label>Известно ли о повышенном АД?</label>
+                <label>
+                  <input
+                    type="radio"
+                    value="yes"
+                    {...register("lifestyle.knownHypertension")}
+                  />{" "}
+                  Да
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    value="no"
+                    {...register("lifestyle.knownHypertension")}
+                  />{" "}
+                  Нет
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    value="notMeasured"
+                    {...register("lifestyle.knownHypertension")}
+                  />{" "}
+                  Не измерял
+                </label>
+              </div>
+
+              {watch("lifestyle.knownHypertension") === "yes" && (
+                <>
+                  <Input
+                    label="Когда впервые зафиксировано повышение АД (год или возраст)"
+                    {...register("lifestyle.hypertensionFirstDetected")}
+                  />
+                  <label>
+                    <input
+                      type="checkbox"
+                      {...register("lifestyle.hypertensionUnderAge35")}
+                    />{" "}
+                    Возраст &lt;35 лет (пометить)
+                  </label>
+
+                  <div className={styles.radioGroup}>
+                    <label>Как было выявлено?</label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="accidental"
+                        {...register("lifestyle.hypertensionDetectionMethod")}
+                      />{" "}
+                      Случайно дома
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="dispanserization"
+                        {...register("lifestyle.hypertensionDetectionMethod")}
+                      />{" "}
+                      Диспансеризация
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="withComplaints"
+                        {...register("lifestyle.hypertensionDetectionMethod")}
+                      />{" "}
+                      При наличии жалоб
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="hospitalization"
+                        {...register("lifestyle.hypertensionDetectionMethod")}
+                      />{" "}
+                      Во время госпитализации
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="ems"
+                        {...register("lifestyle.hypertensionDetectionMethod")}
+                      />{" "}
+                      СМП
+                    </label>
+                  </div>
+
+                  <YesNo
+                    label="Обращались ли к врачу после обнаружения?"
+                    name="lifestyle.visitedDoctorAfterDetection"
+                    register={register}
+                  />
+
+                  <Textarea
+                    label="Какую терапию назначил тогда врач (препарат, доза, кратность, время)"
+                    {...register("lifestyle.prescribedTherapyThen")}
+                    rows={3}
+                  />
+
+                  <YesNo
+                    label="Терапию принимаете регулярно?"
+                    name="lifestyle.therapyRegularity"
+                    register={register}
+                  />
+                  <Input
+                    label="Сколько раз в неделю можете пропустить приём таблеток?"
+                    {...register("lifestyle.missedDosesPerWeek")}
+                  />
+                  <Textarea
+                    label="Что мешает принимать регулярно (побочные, стоимость, сложность, забывчивость)"
+                    {...register("lifestyle.missedReasons")}
+                    rows={2}
+                  />
+                  <Input
+                    label="Какое давление на принимаемой терапии?"
+                    {...register("lifestyle.bpOnTherapy")}
+                  />
+
+                  <YesNo
+                    label="Сохраняется ли повышенное давление при приёме ≥3 препаратов (включая мочегонное)?"
+                    name="lifestyle.bpResistant3Drugs"
+                    register={register}
+                  />
+                  <YesNo
+                    label="Отменял ли самостоятельно?"
+                    name="lifestyle.selfDiscontinued"
+                    register={register}
+                  />
+                  <YesNo
+                    label="Изменял ли врач терапию?"
+                    name="lifestyle.doctorChangedTherapy"
+                    register={register}
+                  />
+                  {watch("lifestyle.doctorChangedTherapy") === true && (
+                    <Textarea
+                      label="Как изменена терапия (препарат, доза, кратность, время)"
+                      {...register("lifestyle.changedTherapyDetails")}
+                      rows={3}
+                    />
+                  )}
+
+                  <YesNo
+                    label="Измеряете ли давление дома?"
+                    name="lifestyle.measureAtHome"
+                    register={register}
+                  />
+                  {watch("lifestyle.measureAtHome") === true && (
+                    <>
+                      <Input
+                        label="Как часто измеряете?"
+                        {...register("lifestyle.measureFrequency")}
+                      />
+                      <YesNo
+                        label="Ведёте ли дневник?"
+                        name="lifestyle.keepDiary"
+                        register={register}
+                      />
+                    </>
+                  )}
+
+                  <Input
+                    label="Максимальные зафиксированные цифры АД"
+                    {...register("lifestyle.maxBPValues")}
+                  />
+                  <Textarea
+                    label="Субъективные жалобы при повышении АД (боли в сердце, нарушения ритма, жар, головные боли, головокружение, тошнота, шум в ушах, мушки)"
+                    {...register("lifestyle.subjectiveComplaints")}
+                    rows={3}
+                  />
+                  <Textarea
+                    label="При каком давлении и чем снижаете высокие подъёмы АД?"
+                    {...register("lifestyle.atWhatBPReduced")}
+                    rows={2}
+                  />
+
+                  <YesNo
+                    label="Были ли кризы, требующие вызова скорой?"
+                    name="lifestyle.hypertensiveCrisesAmbulance"
+                    register={register}
+                  />
+                  {watch("lifestyle.hypertensiveCrisesAmbulance") === true && (
+                    <>
+                      <Input
+                        label="Сколько раз?"
+                        {...register("lifestyle.crisesCount")}
+                      />
+                      <Textarea
+                        label="Сопровождались ли кризы симптомами? (головная боль, нарушение речи/зрения, слабость в конечностях, судороги, потеря сознания)"
+                        {...register("lifestyle.crisesSymptoms")}
+                        rows={3}
+                      />
+                    </>
+                  )}
+
+                  <YesNo
+                    label="Ритм сердца правильный?"
+                    name="lifestyle.heartRhythmRegular"
+                    register={register}
+                  />
+                  <YesNo
+                    label="Кардиостимуляторы?"
+                    name="lifestyle.pacemakers"
+                    register={register}
+                  />
+                  <YesNo
+                    label="Мерцательная аритмия?"
+                    name="lifestyle.atrialFibrillation"
+                    register={register}
+                  />
+                </>
+              )}
             </fieldset>
           </div>
         );

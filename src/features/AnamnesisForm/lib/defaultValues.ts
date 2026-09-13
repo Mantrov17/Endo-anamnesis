@@ -5,9 +5,37 @@ export const getDefaultValues = (): AnamnesisFormData => ({
   birthDate: "",
   gender: undefined,
   notes: {},
-  primaryExam: { reason: "", suspectedDiagnosis: undefined },
+
+  primaryExam: {
+    reason: "",
+    suspectedDiagnosis: undefined,
+    // NEW
+    height: null,
+    weight: null,
+    bmi: null,
+    waistCircumference: null,
+    weightChange6Months: null,
+    weightIncreasedBy: null,
+    weightDecreasedBy: null,
+  },
+
   type1Diabetes: null,
   type2Diabetes: null,
+
+  actualTherapy: {
+    sameAsInitial: null,
+    injectionMethod: "",
+    injectionsDevice: "",
+    pumpModel: "",
+    basalInsulin: [{ name: "", dose: "" }],
+    bolusInsulin: [{ name: "", dose: "" }],
+    insulinDoseCoefficient: null,
+    calculatedDailyInsulinDose: null,
+    otherGlucoseLoweringDrugs: "",
+    injectionSites: "",
+    lipohypertrophy: null,
+  },
+
   therapy: {
     currentDrugs: [{ name: "", dose: "" }],
     basalInsulin: [{ name: "", dose: "" }],
@@ -17,6 +45,7 @@ export const getDefaultValues = (): AnamnesisFormData => ({
     injectionSites: "",
     lipohypertrophy: null,
   },
+
   hypoglycemia: {
     frequencyPerWeek: null,
     severeEpisodes: null,
@@ -32,13 +61,35 @@ export const getDefaultValues = (): AnamnesisFormData => ({
     hasGlucagon: null,
     familyTrained: null,
     nocturnalHypoglycemia: null,
+    // NEW
+    severity: "",
+    symptoms: {
+      hunger: false,
+      tremor: false,
+      sweating: false,
+      tachycardia: false,
+      anxiety: false,
+      weakness: false,
+      diplopia: false,
+      headache: false,
+    },
   },
+
   selfMonitoring: {
     frequency: "",
     sameTime: null,
     ifNotSameTimeReason: "",
     diary: null,
+    // NEW
+    needleChangeFrequency: "",
+    siteChangeFrequency: "",
+    injectionSiteDistance: "",
+    hasGlucometer: null,
+    calibrationDone: null,
+    lastDoctorVisit: "",
+    lastDoctorVisitUnknown: false,
   },
+
   complications: {
     eyes: {
       visionLoss: null,
@@ -46,6 +97,14 @@ export const getDefaultValues = (): AnamnesisFormData => ({
       visionLossDuration: "",
       nightVisionGood: null,
       lastFundusExamDate: "",
+      // NEW
+      nyctalopia: null,
+      delayedDarkAdaptation: null,
+      floaters: null,
+      floatersWhen: "",
+      visualFieldLoss: null,
+      ophthalmologistFrequency: "",
+      lastFundusExamUnknown: false,
     },
     nose: { snoring: null },
     ears: {
@@ -60,6 +119,9 @@ export const getDefaultValues = (): AnamnesisFormData => ({
       abdominalPainAfterEating: null,
       stoolFrequency: "",
       stoolConsistency: 5,
+      // NEW
+      painTriggerFatty: false,
+      painTriggerAlcohol: false,
     },
     urinary: { kidneyStones: null },
     nephropathy: { albuminCreatinine: "", gfr: "" },
@@ -124,6 +186,7 @@ export const getDefaultValues = (): AnamnesisFormData => ({
       woundAppearance: "",
     },
   },
+
   examination: {
     cardiovascularEvents: "",
     bloodPressure: "",
@@ -140,6 +203,7 @@ export const getDefaultValues = (): AnamnesisFormData => ({
     births: null,
     menstrualCycle: "",
   },
+
   lifestyle: {
     alcoholFrequency: "",
     alcoholType: "",
@@ -154,7 +218,42 @@ export const getDefaultValues = (): AnamnesisFormData => ({
     occupation: "",
     sedentaryWork: null,
     stress: null,
+    // NEW — хронические заболевания
+    chronicEyeDiseases: "",
+    asthma: null,
+    asthmaDiagnosedWhen: "",
+    asthmaAllergen: "",
+    copd: null,
+    copdMeds: "",
+    // NEW — ССС
+    knownHypertension: "",
+    hypertensionFirstDetected: "",
+    hypertensionUnderAge35: false,
+    hypertensionDetectionMethod: "",
+    visitedDoctorAfterDetection: null,
+    prescribedTherapyThen: "",
+    therapyRegularity: null,
+    missedDosesPerWeek: "",
+    missedReasons: "",
+    bpOnTherapy: "",
+    bpResistant3Drugs: null,
+    selfDiscontinued: null,
+    doctorChangedTherapy: null,
+    changedTherapyDetails: "",
+    measureAtHome: null,
+    measureFrequency: "",
+    keepDiary: null,
+    maxBPValues: "",
+    subjectiveComplaints: "",
+    atWhatBPReduced: "",
+    hypertensiveCrisesAmbulance: null,
+    crisesCount: "",
+    crisesSymptoms: "",
+    heartRhythmRegular: null,
+    pacemakers: null,
+    atrialFibrillation: null,
   },
+
   measurements: {
     pulseOximetry: { leftHand: null, rightHand: null },
     pulsePalpation: {
@@ -190,6 +289,7 @@ export const getDefaultValues = (): AnamnesisFormData => ({
       rightDiastolic: null,
     },
   },
+
   secondaryHypertension: {
     nsaidsFrequency: "",
     decongestantsFrequency: "",
@@ -235,6 +335,7 @@ export const getDefaultValues = (): AnamnesisFormData => ({
     },
     pregnancyHypertension: null,
   },
+
   heartFailure: {
     urineColorChange: null,
     urineColor: "",
@@ -281,6 +382,7 @@ export const getDefaultValues = (): AnamnesisFormData => ({
     jugularVeins: { onInspirationAndExpiration: null, onlyOnInspiration: null },
     nyhaClass: "",
   },
+
   h2fpef: {
     obesityBMI30: false,
     hypertension2Drugs: false,
@@ -292,6 +394,7 @@ export const getDefaultValues = (): AnamnesisFormData => ({
     fillingPressureValue: null,
     totalScore: 0,
   },
+
   additionalHistory: {
     myocardialInfarction: "",
     coronaryAngiography: "",

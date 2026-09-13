@@ -29,7 +29,7 @@ export const useAnamnesisForm = ({
     defaultValues: initialData ?? getDefaultValues(),
   });
 
-  // ИМТ (СД 2)
+  // ИМТ (СД 2) — старое
   const height = watch("type2Diabetes.height");
   const weight = watch("type2Diabetes.weight");
   useEffect(() => {
@@ -39,7 +39,46 @@ export const useAnamnesisForm = ({
     }
   }, [height, weight, setValue]);
 
-  // Пульсовое давление
+  // NEW — ИМТ для блока антропометрии в начале формы
+  const pHeight = watch("primaryExam.height");
+  const pWeight = watch("primaryExam.weight");
+  useEffect(() => {
+    if (pHeight && pWeight && pHeight > 0) {
+      const bmi = +(pWeight / Math.pow(pHeight / 100, 2)).toFixed(1);
+      setValue("primaryExam.bmi", bmi);
+    }
+  }, [pHeight, pWeight, setValue]);
+
+  // NEW — авторасчёт суточной дозы инсулина
+  // Идеальная масса (кг) = (рост_см / 100)² × 19
+  // Суточная доза = идеальная масса × коэффициент (0.5 / 0.7 / 0.9)
+  const actualBase = watch("actualTherapy.basalInsulin");
+  const actualBolus = watch("actualTherapy.bolusInsulin");
+  const actualCoeff = watch("actualTherapy.insulinDoseCoefficient");
+  useEffect(() => {
+    const baseDose =
+      actualBase?.reduce((sum, d) => {
+        const n = parseFloat(String(d?.dose ?? "").replace(",", "."));
+        return sum + (isNaN(n) ? 0 : n);
+      }, 0) ?? 0;
+    const bolusDose =
+      actualBolus?.reduce((sum, d) => {
+        const n = parseFloat(String(d?.dose ?? "").replace(",", "."));
+        return sum + (isNaN(n) ? 0 : n);
+      }, 0) ?? 0;
+    const total = baseDose + bolusDose;
+    if (total > 0) {
+      setValue("actualTherapy.calculatedDailyInsulinDose", +total.toFixed(1));
+    } else if (pHeight && actualCoeff) {
+      const idealMass = Math.pow(pHeight / 100, 2) * 19;
+      setValue(
+        "actualTherapy.calculatedDailyInsulinDose",
+        +(idealMass * actualCoeff).toFixed(1),
+      );
+    }
+  }, [actualBase, actualBolus, actualCoeff, pHeight, setValue]);
+
+  // Пульсовое давление — старое
   const leftSys = watch("measurements.bpArms.leftSystolic");
   const leftDia = watch("measurements.bpArms.leftDiastolic");
   useEffect(() => {
@@ -48,7 +87,7 @@ export const useAnamnesisForm = ({
     }
   }, [leftSys, leftDia, setValue]);
 
-  // ЛПИ
+  // ЛПИ — старое
   const legLeft = watch("measurements.bpLegs.leftSystolic");
   const legRight = watch("measurements.bpLegs.rightSystolic");
   const armLeft = watch("measurements.bpArms.leftSystolic");
@@ -63,7 +102,7 @@ export const useAnamnesisForm = ({
       );
   }, [legLeft, legRight, armLeft, armRight, setValue]);
 
-  // H2FPEF
+  // H2FPEF — старое
   const h2 = watch("h2fpef");
   useEffect(() => {
     if (!h2) return;
