@@ -1,0 +1,14 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "component": "PatientsListPage",
+      "title": "Список пациентов"
+    },
+    {
+      "path": "/anamnesis/:id?",
+      "component": "AnamnesisPage",
+      "title": "Анамнез пациента"
+    }
+  ]
+}

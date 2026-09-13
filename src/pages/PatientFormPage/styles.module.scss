@@ -1,0 +1,22 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}

@@ -1,0 +1,363 @@
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tabsWrapper {
+  display: flex;
+  gap: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.tabsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+  border-right: 1px solid #eee;
+  padding-right: 20px;
+  max-height: 80vh;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+  }
+}
+
+.tabButton {
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: left;
+  color: #555;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: #f0f4f8;
+  }
+
+  &.active {
+    background-color: #3498db;
+    color: #fff;
+  }
+}
+
+.tabContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.radioGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-bottom: 12px;
+
+  label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: normal;
+    cursor: pointer;
+  }
+
+  .error {
+    width: 100%;
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+}
+
+.fieldset {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin: 8px 0;
+
+  legend {
+    font-weight: 600;
+    padding: 0 8px;
+    color: #2c3e50;
+  }
+
+  > label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-right: 16px;
+    font-weight: normal;
+    cursor: pointer;
+  }
+}
+
+.drugGroup,
+.row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+
+  > div,
+  > input {
+    flex: 1;
+    min-width: 140px;
+  }
+}
+
+.section {
+  h3 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 8px;
+  }
+}
+
+.hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: #3498db;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 11px;
+  cursor: help;
+  margin-left: 4px;
+}
+
+.slider {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.totalScore {
+  margin-top: 16px;
+  padding: 16px;
+  background: #e7f3ff;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 16px;
+
+  strong {
+    font-size: 22px;
+    color: #2980b9;
+  }
+
+  > div {
+    margin-top: 8px;
+    color: #555;
+  }
+}
+
+.warning {
+  margin-top: 8px;
+  padding: 10px;
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 1fr 100px 100px;
+  gap: 8px;
+  align-items: center;
+
+  span:first-child {
+    text-transform: capitalize;
+  }
+
+  input {
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.error {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.drugList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drugRow {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+
+  > div {
+    flex: 1;
+    margin-bottom: 0;
+  }
+}
+
+.addDrugButton {
+  align-self: flex-start;
+  padding: 8px 14px;
+  background: none;
+  border: 1px dashed #3498db;
+  color: #3498db;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 4px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #eaf4fc;
+  }
+}
+
+.removeDrugButton {
+  flex: 0 0 auto;
+  margin-bottom: 4px;
+  padding: 8px 12px;
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #c0392b;
+  }
+}
+
+.hintedField {
+  position: relative;
+
+  .fieldHint {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #e8eef6;
+    color: #2b4a6f;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    border: none;
+    padding: 0;
+    z-index: 2;
+
+    &:active {
+      background: #d6e2f1;
+    }
+  }
+
+  .hintPopover {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 10;
+    max-width: min(280px, 80vw);
+    padding: 10px 12px;
+    background: #1f2d3d;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.4;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    word-break: break-word;
+    white-space: normal;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: -6px;
+      right: 12px;
+      width: 10px;
+      height: 10px;
+      background: #1f2d3d;
+      transform: rotate(45deg);
+    }
+  }
+}
+
+.noteField {
+  margin: 4px 0 8px;
+}
+
+.noteToggle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid #b8c4d0;
+  background: #fff;
+  color: #5a6b7b;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+
+  &:hover {
+    background: #eef3f8;
+  }
+}

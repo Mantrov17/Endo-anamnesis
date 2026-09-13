@@ -1,0 +1,1 @@
+export { AnamnesisPage } from "./AnamnesisPage";

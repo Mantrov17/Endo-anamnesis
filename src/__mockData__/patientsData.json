@@ -1,0 +1,1808 @@
+[
+  {
+    "id": "p-001",
+    "fullName": "Иванов Иван Иванович",
+    "birthDate": "1985-03-15",
+    "gender": "male",
+    "anamneses": [
+      {
+        "id": "a-001-1",
+        "savedAt": "2024-11-15T10:00:00.000Z",
+        "fullName": "Иванов Иван Иванович",
+        "birthDate": "1985-03-15",
+        "gender": "male",
+        "primaryExam": {
+          "reason": "Жалобы на жажду, частое мочеиспускание, снижение веса за 2 месяца на 6 кг.",
+          "suspectedDiagnosis": "type1"
+        },
+        "type1Diabetes": {
+          "ageAtDiagnosis": 30,
+          "diagnosisDate": "2015-04-10",
+          "yearOfDiagnosis": "2015",
+          "howDiagnosed": "emergency",
+          "howDiagnosedDetails": "Госпитализирован в эндокринологическое отделение с гипергликемией 22 ммоль/л.",
+          "circumstances": "Перенёс ОРВИ за месяц до дебюта.",
+          "glycemiaAtOnset": 22,
+          "classicSymptoms": {
+            "polyuria": true,
+            "polydipsia": true,
+            "weakness": true,
+            "weightLoss": true,
+            "weightLossAmount": 6,
+            "weightLossUnknown": false
+          },
+          "furtherPlan": "Направлен к эндокринологу, начат подбор инсулинотерапии.",
+          "initialTherapy": [
+            { "drugName": "Лантус", "dose": "10 ЕД вечером" },
+            { "drugName": "Новорапид", "dose": "по 4 ЕД перед едой" }
+          ],
+          "stillTakingInitialTherapy": false,
+          "ifNotTakingReason": "Схема скорректирована врачом, добавлен Туджео.",
+          "autoantibodies": {
+            "GAD": true,
+            "IA2": false,
+            "ZnT8": false,
+            "IAA": false,
+            "results": "GAD повышен — 12 Ед/мл"
+          },
+          "cPeptide": { "value": "0.2 нг/мл", "date": "2015-04-12" },
+          "hba1c": { "value": 9.5, "date": "2015-04-10" },
+          "usualGlucose": 7.2
+        },
+        "type2Diabetes": null,
+        "therapy": {
+          "currentDrugs": [],
+          "basalInsulin": [{ "name": "Туджео СолоСтар", "dose": "16 ЕД вечером" }],
+          "prandialInsulin": [{ "name": "Новорапид", "dose": "5-6-5 ЕД" }],
+          "carbCounting": true,
+          "carbRatio": "1 ХЕ = 1.5 ЕД",
+          "injectionSites": "Живот, бедра",
+          "lipohypertrophy": false
+        },
+        "hypoglycemia": {
+          "frequencyPerWeek": 1,
+          "severeEpisodes": false,
+          "severeEpisodesCount": null,
+          "severeEpisodesWhen": "",
+          "severeEpisodesClinic": "",
+          "awarenessPreserved": true,
+          "provokingFactors": {
+            "physicalActivity": true,
+            "missedMeal": false,
+            "alcohol": false
+          },
+          "hasGlucagon": true,
+          "familyTrained": true,
+          "nocturnalHypoglycemia": false
+        },
+        "selfMonitoring": {
+          "frequency": "4-5 раз в день",
+          "sameTime": true,
+          "ifNotSameTimeReason": "",
+          "diary": true
+        },
+        "complications": {
+          "eyes": {
+            "visionLoss": false,
+            "visionLossStart": "",
+            "visionLossDuration": "",
+            "nightVisionGood": true,
+            "lastFundusExamDate": "2024-08-10"
+          },
+          "nose": { "snoring": false },
+          "ears": {
+            "hearingLoss": false,
+            "hearingLossStart": "",
+            "hearingLossDuration": "",
+            "lastEntExamDate": "2024-08-10"
+          },
+          "gastrointestinal": {
+            "gastritis": false,
+            "ulcers": false,
+            "abdominalPainAfterEating": false,
+            "stoolFrequency": "1 раз в день",
+            "stoolConsistency": 5
+          },
+          "urinary": { "kidneyStones": false },
+          "nephropathy": { "albuminCreatinine": "", "gfr": "" },
+          "neuropathy": {
+            "symptoms": { "numbness": false, "pain": false, "paresthesia": false },
+            "numbnessTime": "",
+            "paresthesiaType": {
+              "crawling": false,
+              "shots": false,
+              "allodynia": false,
+              "hyperalgesia": false,
+              "nightCramps": false,
+              "numbness": false,
+              "burning": false
+            },
+            "coldFeet": false,
+            "howWarmFeet": "",
+            "feetToRadiator": false,
+            "amputations": false,
+            "amputationLevel": "",
+            "amputationDate": "",
+            "footSkin": "normal",
+            "hyperkeratosisDegree": "",
+            "footTemperature": "warm",
+            "footColor": "normal",
+            "nails": "normal",
+            "footDeformity": "none",
+            "lowerLegs": "normal",
+            "halluxValgus": false,
+            "hammerToe": false,
+            "clawToe": false,
+            "digitusSuperductus": false,
+            "sensitivity": {
+              "vibration": { "right": 0, "left": 0 },
+              "temperature": { "right": 0, "left": 0 },
+              "pain": { "right": 0, "left": 0 },
+              "tactile": { "right": 0, "left": 0 },
+              "jointMuscle": { "right": 0, "left": 0 },
+              "achillesReflex": { "right": 0, "left": 0 },
+              "kneeReflex": { "right": 0, "left": 0 }
+            },
+            "veins": {
+              "norm": { "right": true, "left": true },
+              "telangiectasia": { "right": false, "left": false },
+              "varicoseVeins": { "right": false, "left": false },
+              "edema": { "right": false, "left": false },
+              "lipodermatosclerosis": { "right": false, "left": false },
+              "healingUlcer": { "right": false, "left": false },
+              "activeUlcer": { "right": false, "left": false }
+            },
+            "lymphedema": false,
+            "lymphedemaStage": {
+              "stageI": { "right": false, "left": false },
+              "stageII": { "right": false, "left": false },
+              "stageIII": { "right": false, "left": false },
+              "stageIV": { "right": false, "left": false }
+            },
+            "lasegueSymptom": "negative",
+            "lasegueSide": "",
+            "lasegueDetails": "",
+            "footExamNotes": "",
+            "woundAppearance": ""
+          }
+        },
+        "examination": {
+          "cardiovascularEvents": "",
+          "bloodPressure": "120/78",
+          "otherChronicDiseases": "",
+          "currentMedications": "Туджео, Новорапид",
+          "allergies": "Пенициллин",
+          "hospitalizations": "2015 — дебют СД 1",
+          "vaccinations": "COVID-19, грипп ежегодно",
+          "thyroidDisease": false,
+          "celiacDisease": false,
+          "otherAutoimmune": "",
+          "familyHistory": "",
+          "pregnancies": null,
+          "births": null,
+          "menstrualCycle": ""
+        },
+        "lifestyle": {
+          "alcoholFrequency": "Редко, по праздникам",
+          "alcoholType": "Вино",
+          "smoking": false,
+          "smokingStartAge": null,
+          "cigarettesPerDay": null,
+          "saltFood": false,
+          "processedFood": false,
+          "coffeeCupsPerDay": 2,
+          "strongCoffee": false,
+          "energyDrinks": false,
+          "occupation": "Инженер-программист",
+          "sedentaryWork": true,
+          "stress": true
+        },
+        "measurements": {
+          "pulseOximetry": { "leftHand": 98, "rightHand": 98 },
+          "pulsePalpation": {
+            "radialArtery": { "rhythm": "regular", "symmetry": "symmetric" },
+            "posteriorTibialArtery": { "left": true, "right": true },
+            "dorsalisPedisArtery": { "left": true, "right": true }
+          },
+          "conditionsMet": true,
+          "bpArms": {
+            "leftSystolic": 122,
+            "leftDiastolic": 78,
+            "rightSystolic": 124,
+            "rightDiastolic": 80
+          },
+          "pulsePressure": 44,
+          "bpLegs": {
+            "leftSystolic": 130,
+            "leftDiastolic": 80,
+            "rightSystolic": 132,
+            "rightDiastolic": 82
+          },
+          "abiIndex": { "left": 1.07, "right": 1.06 },
+          "legPainWalking": false,
+          "painStopsAfterRest": false,
+          "walkingDistance": "Без ограничений",
+          "limbColor": "Обычный",
+          "limbTemperature": "Тёплые",
+          "limbSkin": "Норма",
+          "bpRepeat": {
+            "leftSystolic": 120,
+            "leftDiastolic": 78,
+            "rightSystolic": 122,
+            "rightDiastolic": 80
+          }
+        },
+        "secondaryHypertension": {
+          "nsaidsFrequency": "",
+          "decongestantsFrequency": "",
+          "otherDrugs": "",
+          "hyperaldosteronism": {
+            "polydipsiaPolyuria": false,
+            "muscleWeakness": false,
+            "limbCramps": false,
+            "constipation": false
+          },
+          "frequentHeadaches": false,
+          "stroke": false,
+          "tia": false,
+          "tiaDetails": "",
+          "pheochromocytoma": {
+            "stableOrCrisis": "",
+            "profuseSweating": false,
+            "coldExtremities": false,
+            "arrhythmias": false
+          },
+          "hypercortisolism": {
+            "centralObesity": false,
+            "moonFace": false,
+            "cheekFlush": false,
+            "buffaloHump": false,
+            "bruises": false,
+            "proximalWeakness": false,
+            "striae": false,
+            "newDiabetes": false,
+            "amenorrhea": false
+          },
+          "osas": {
+            "nightSnoring": false,
+            "nightAwakenings": false,
+            "nocturia": false,
+            "daytimeSleepiness": false,
+            "obesity": false
+          },
+          "familyHistory": {
+            "hypertension": false,
+            "earlyHeartAttackStroke": false,
+            "pheochromocytoma": false
+          },
+          "pregnancyHypertension": false
+        },
+        "heartFailure": {
+          "urineColorChange": false,
+          "urineColor": "",
+          "chestPain": false,
+          "chestPainTrigger": "",
+          "radiatesToLeftArm": false,
+          "relievesWithNitroglycerin": false,
+          "frequentAttacks3Months": false,
+          "dyspneaOnExertion": false,
+          "dyspneaFunctionalClass": "",
+          "takesTicagrelor": false,
+          "smallCircle": {
+            "pillowsForSleep": false,
+            "forcedPosition": false,
+            "nightDyspnea": false,
+            "acrocyanosis": {
+              "nasolabialTriangle": false,
+              "hands": false,
+              "feet": false
+            },
+            "saturation": 98
+          },
+          "bigCircle": {
+            "legEdema": false,
+            "tightShoes": false,
+            "edemaOnset": "",
+            "symmetric": false,
+            "localization": "",
+            "timeOfDay": "",
+            "edemaImprovesNight": false,
+            "edemaImprovesElevation": false,
+            "edemaTemperature": "",
+            "edemaColor": "",
+            "edemaDensity": "",
+            "pittingEdema": false,
+            "edemaResolves": "",
+            "painful": false,
+            "takesNifedipineAmlodipineNsaids": false
+          },
+          "hepatomegaly": {
+            "rightHypochondriumPain": false,
+            "liverSize": "notPalpable",
+            "liverEdge": "notDefined",
+            "liverPainful": false,
+            "hepaticPulsation": false,
+            "hepatojugularReflux": false
+          },
+          "jugularVeins": {
+            "onInspirationAndExpiration": false,
+            "onlyOnInspiration": false
+          },
+          "nyhaClass": ""
+        },
+        "h2fpef": {
+          "obesityBMI30": false,
+          "hypertension2Drugs": false,
+          "atrialFibrillation": false,
+          "pulmonaryHypertension": false,
+          "pulmonaryHypertensionValue": null,
+          "elderly60": false,
+          "fillingPressure": false,
+          "fillingPressureValue": null,
+          "totalScore": 0
+        },
+        "additionalHistory": {
+          "myocardialInfarction": "",
+          "coronaryAngiography": "",
+          "stenting": "",
+          "surgeries": "",
+          "appendicitis": "",
+          "cholecystitis": "",
+          "tuberculosis": "",
+          "hiv": "",
+          "hepatitis": "",
+          "syphilis": "",
+          "covidYear": "2021",
+          "allergies": {
+            "what": "Пенициллин",
+            "how": "Крапивница",
+            "angioedema": false
+          },
+          "travelOutsideRF": false,
+          "contactWithPatients": false,
+          "insectAnimalBites": false,
+          "weight": 78,
+          "height": 182,
+          "abdominalCircumference": 88
+        }
+      }
+    ]
+  },
+
+  {
+    "id": "p-002",
+    "fullName": "Петрова Анна Сергеевна",
+    "birthDate": "1972-08-22",
+    "gender": "female",
+    "anamneses": [
+      {
+        "id": "a-002-1",
+        "savedAt": "2024-11-20T14:30:00.000Z",
+        "fullName": "Петрова Анна Сергеевна",
+        "birthDate": "1972-08-22",
+        "gender": "female",
+        "primaryExam": {
+          "reason": "Повышение глюкозы до 9.8 ммоль/л натощак, выявлено на диспансеризации.",
+          "suspectedDiagnosis": "type2"
+        },
+        "type1Diabetes": null,
+        "type2Diabetes": {
+          "height": 164,
+          "weight": 88,
+          "bmi": 32.7,
+          "waistCircumference": 98,
+          "weightChange6Months": true,
+          "weightIncreasedBy": 3,
+          "weightDecreasedBy": null,
+          "firstGlucoseElevationYear": "2018",
+          "maxGlucoseValues": "Натощак до 9.8, постпрандиально до 12.5"
+        },
+        "therapy": {
+          "currentDrugs": [{ "name": "Метформин", "dose": "1000 мг 2 раза в день" }],
+          "basalInsulin": [],
+          "prandialInsulin": [],
+          "carbCounting": false,
+          "carbRatio": "",
+          "injectionSites": "",
+          "lipohypertrophy": false
+        },
+        "hypoglycemia": {
+          "frequencyPerWeek": 0,
+          "severeEpisodes": false,
+          "severeEpisodesCount": null,
+          "severeEpisodesWhen": "",
+          "severeEpisodesClinic": "",
+          "awarenessPreserved": true,
+          "provokingFactors": {
+            "physicalActivity": false,
+            "missedMeal": false,
+            "alcohol": false
+          },
+          "hasGlucagon": false,
+          "familyTrained": false,
+          "nocturnalHypoglycemia": false
+        },
+        "selfMonitoring": {
+          "frequency": "1 раз в день утром",
+          "sameTime": true,
+          "ifNotSameTimeReason": "",
+          "diary": false
+        },
+        "complications": {
+          "eyes": {
+            "visionLoss": false,
+            "visionLossStart": "",
+            "visionLossDuration": "",
+            "nightVisionGood": true,
+            "lastFundusExamDate": "2024-06-01"
+          },
+          "nose": { "snoring": true },
+          "ears": {
+            "hearingLoss": false,
+            "hearingLossStart": "",
+            "hearingLossDuration": "",
+            "lastEntExamDate": "2023-01-10"
+          },
+          "gastrointestinal": {
+            "gastritis": true,
+            "ulcers": false,
+            "abdominalPainAfterEating": false,
+            "stoolFrequency": "1 раз в день",
+            "stoolConsistency": 5
+          },
+          "urinary": { "kidneyStones": false },
+          "nephropathy": { "albuminCreatinine": "", "gfr": "92" },
+          "neuropathy": {
+            "symptoms": { "numbness": false, "pain": false, "paresthesia": false },
+            "numbnessTime": "",
+            "paresthesiaType": {
+              "crawling": false,
+              "shots": false,
+              "allodynia": false,
+              "hyperalgesia": false,
+              "nightCramps": false,
+              "numbness": false,
+              "burning": false
+            },
+            "coldFeet": false,
+            "howWarmFeet": "",
+            "feetToRadiator": false,
+            "amputations": false,
+            "amputationLevel": "",
+            "amputationDate": "",
+            "footSkin": "normal",
+            "hyperkeratosisDegree": "",
+            "footTemperature": "warm",
+            "footColor": "normal",
+            "nails": "normal",
+            "footDeformity": "none",
+            "lowerLegs": "normal",
+            "halluxValgus": false,
+            "hammerToe": false,
+            "clawToe": false,
+            "digitusSuperductus": false,
+            "sensitivity": {
+              "vibration": { "right": 0, "left": 0 },
+              "temperature": { "right": 0, "left": 0 },
+              "pain": { "right": 0, "left": 0 },
+              "tactile": { "right": 0, "left": 0 },
+              "jointMuscle": { "right": 0, "left": 0 },
+              "achillesReflex": { "right": 0, "left": 0 },
+              "kneeReflex": { "right": 0, "left": 0 }
+            },
+            "veins": {
+              "norm": { "right": true, "left": true },
+              "telangiectasia": { "right": false, "left": false },
+              "varicoseVeins": { "right": false, "left": false },
+              "edema": { "right": false, "left": false },
+              "lipodermatosclerosis": { "right": false, "left": false },
+              "healingUlcer": { "right": false, "left": false },
+              "activeUlcer": { "right": false, "left": false }
+            },
+            "lymphedema": false,
+            "lymphedemaStage": {
+              "stageI": { "right": false, "left": false },
+              "stageII": { "right": false, "left": false },
+              "stageIII": { "right": false, "left": false },
+              "stageIV": { "right": false, "left": false }
+            },
+            "lasegueSymptom": "negative",
+            "lasegueSide": "",
+            "lasegueDetails": "",
+            "footExamNotes": "",
+            "woundAppearance": ""
+          }
+        },
+        "examination": {
+          "cardiovascularEvents": "АГ с 2018 г.",
+          "bloodPressure": "142/88",
+          "otherChronicDiseases": "Хронический гастрит",
+          "currentMedications": "Метформин, периндоприл",
+          "allergies": "",
+          "hospitalizations": "Холецистэктомия 2010",
+          "vaccinations": "COVID-19, грипп",
+          "thyroidDisease": false,
+          "celiacDisease": false,
+          "otherAutoimmune": "",
+          "familyHistory": "У матери СД 2 типа",
+          "pregnancies": 2,
+          "births": 2,
+          "menstrualCycle": "Менопауза с 2015 г."
+        },
+        "lifestyle": {
+          "alcoholFrequency": "Не употребляет",
+          "alcoholType": "",
+          "smoking": false,
+          "smokingStartAge": null,
+          "cigarettesPerDay": null,
+          "saltFood": true,
+          "processedFood": true,
+          "coffeeCupsPerDay": 1,
+          "strongCoffee": false,
+          "energyDrinks": false,
+          "occupation": "Бухгалтер",
+          "sedentaryWork": true,
+          "stress": true
+        },
+        "measurements": {
+          "pulseOximetry": { "leftHand": 97, "rightHand": 97 },
+          "pulsePalpation": {
+            "radialArtery": { "rhythm": "regular", "symmetry": "symmetric" },
+            "posteriorTibialArtery": { "left": true, "right": true },
+            "dorsalisPedisArtery": { "left": true, "right": true }
+          },
+          "conditionsMet": true,
+          "bpArms": {
+            "leftSystolic": 142,
+            "leftDiastolic": 88,
+            "rightSystolic": 144,
+            "rightDiastolic": 90
+          },
+          "pulsePressure": 54,
+          "bpLegs": {
+            "leftSystolic": 150,
+            "leftDiastolic": 92,
+            "rightSystolic": 152,
+            "rightDiastolic": 92
+          },
+          "abiIndex": { "left": 1.06, "right": 1.06 },
+          "legPainWalking": false,
+          "painStopsAfterRest": false,
+          "walkingDistance": "Без ограничений",
+          "limbColor": "Обычный",
+          "limbTemperature": "Тёплые",
+          "limbSkin": "Норма",
+          "bpRepeat": {
+            "leftSystolic": 140,
+            "leftDiastolic": 86,
+            "rightSystolic": 142,
+            "rightDiastolic": 88
+          }
+        },
+        "secondaryHypertension": {
+          "nsaidsFrequency": "Редко",
+          "decongestantsFrequency": "Не принимает",
+          "otherDrugs": "",
+          "hyperaldosteronism": {
+            "polydipsiaPolyuria": false,
+            "muscleWeakness": false,
+            "limbCramps": false,
+            "constipation": false
+          },
+          "frequentHeadaches": true,
+          "stroke": false,
+          "tia": false,
+          "tiaDetails": "",
+          "pheochromocytoma": {
+            "stableOrCrisis": "stable",
+            "profuseSweating": false,
+            "coldExtremities": false,
+            "arrhythmias": false
+          },
+          "hypercortisolism": {
+            "centralObesity": true,
+            "moonFace": false,
+            "cheekFlush": false,
+            "buffaloHump": false,
+            "bruises": false,
+            "proximalWeakness": false,
+            "striae": false,
+            "newDiabetes": false,
+            "amenorrhea": false
+          },
+          "osas": {
+            "nightSnoring": true,
+            "nightAwakenings": true,
+            "nocturia": true,
+            "daytimeSleepiness": true,
+            "obesity": true
+          },
+          "familyHistory": {
+            "hypertension": true,
+            "earlyHeartAttackStroke": false,
+            "pheochromocytoma": false
+          },
+          "pregnancyHypertension": false
+        },
+        "heartFailure": {
+          "urineColorChange": false,
+          "urineColor": "",
+          "chestPain": false,
+          "chestPainTrigger": "",
+          "radiatesToLeftArm": false,
+          "relievesWithNitroglycerin": false,
+          "frequentAttacks3Months": false,
+          "dyspneaOnExertion": true,
+          "dyspneaFunctionalClass": "II",
+          "takesTicagrelor": false,
+          "smallCircle": {
+            "pillowsForSleep": false,
+            "forcedPosition": false,
+            "nightDyspnea": false,
+            "acrocyanosis": {
+              "nasolabialTriangle": false,
+              "hands": false,
+              "feet": false
+            },
+            "saturation": 97
+          },
+          "bigCircle": {
+            "legEdema": false,
+            "tightShoes": false,
+            "edemaOnset": "",
+            "symmetric": false,
+            "localization": "",
+            "timeOfDay": "",
+            "edemaImprovesNight": false,
+            "edemaImprovesElevation": false,
+            "edemaTemperature": "",
+            "edemaColor": "",
+            "edemaDensity": "",
+            "pittingEdema": false,
+            "edemaResolves": "",
+            "painful": false,
+            "takesNifedipineAmlodipineNsaids": false
+          },
+          "hepatomegaly": {
+            "rightHypochondriumPain": false,
+            "liverSize": "notPalpable",
+            "liverEdge": "notDefined",
+            "liverPainful": false,
+            "hepaticPulsation": false,
+            "hepatojugularReflux": false
+          },
+          "jugularVeins": {
+            "onInspirationAndExpiration": false,
+            "onlyOnInspiration": false
+          },
+          "nyhaClass": ""
+        },
+        "h2fpef": {
+          "obesityBMI30": true,
+          "hypertension2Drugs": false,
+          "atrialFibrillation": false,
+          "pulmonaryHypertension": false,
+          "pulmonaryHypertensionValue": null,
+          "elderly60": false,
+          "fillingPressure": false,
+          "fillingPressureValue": null,
+          "totalScore": 2
+        },
+        "additionalHistory": {
+          "myocardialInfarction": "",
+          "coronaryAngiography": "",
+          "stenting": "",
+          "surgeries": "Холецистэктомия 2010",
+          "appendicitis": "",
+          "cholecystitis": "2010",
+          "tuberculosis": "",
+          "hiv": "",
+          "hepatitis": "",
+          "syphilis": "",
+          "covidYear": "2020",
+          "allergies": {
+            "what": "",
+            "how": "",
+            "angioedema": false
+          },
+          "travelOutsideRF": false,
+          "contactWithPatients": false,
+          "insectAnimalBites": false,
+          "weight": 88,
+          "height": 164,
+          "abdominalCircumference": 98
+        }
+      }
+    ]
+  },
+
+  {
+    "id": "p-003",
+    "fullName": "Сидоров Пётр Алексеевич",
+    "birthDate": "1990-11-05",
+    "gender": "male",
+    "anamneses": [
+      {
+        "id": "a-003-1",
+        "savedAt": "2024-11-22T09:15:00.000Z",
+        "fullName": "Сидоров Пётр Алексеевич",
+        "birthDate": "1990-11-05",
+        "gender": "male",
+        "primaryExam": {
+          "reason": "Плановое наблюдение по поводу СД 1 типа, стаж 12 лет.",
+          "suspectedDiagnosis": "type1"
+        },
+        "type1Diabetes": {
+          "ageAtDiagnosis": 22,
+          "diagnosisDate": "2012-06-18",
+          "yearOfDiagnosis": "2012",
+          "howDiagnosed": "accidental",
+          "howDiagnosedDetails": "Случайно выявлена гипергликемия при медосмотре.",
+          "circumstances": "Стресс перед сессией в университете.",
+          "glycemiaAtOnset": 14.5,
+          "classicSymptoms": {
+            "polyuria": true,
+            "polydipsia": true,
+            "weakness": true,
+            "weightLoss": false,
+            "weightLossAmount": null,
+            "weightLossUnknown": false
+          },
+          "furtherPlan": "Наблюдается у эндокринолога.",
+          "initialTherapy": [{ "drugName": "Протафан", "dose": "8 ЕД утром" }],
+          "stillTakingInitialTherapy": false,
+          "ifNotTakingReason": "Переведён на аналоги инсулина.",
+          "autoantibodies": {
+            "GAD": true,
+            "IA2": true,
+            "ZnT8": false,
+            "IAA": false,
+            "results": "GAD+, IA-2+"
+          },
+          "cPeptide": { "value": "0.15 нг/мл", "date": "2012-06-20" },
+          "hba1c": { "value": 6.8, "date": "2024-11-01" },
+          "usualGlucose": 6.5
+        },
+        "type2Diabetes": null,
+        "therapy": {
+          "currentDrugs": [],
+          "basalInsulin": [{ "name": "Лантус", "dose": "14 ЕД утром" }],
+          "prandialInsulin": [{ "name": "Хумалог", "dose": "6-8-6 ЕД" }],
+          "carbCounting": true,
+          "carbRatio": "1 ХЕ = 1.2 ЕД",
+          "injectionSites": "Живот",
+          "lipohypertrophy": false
+        },
+        "hypoglycemia": {
+          "frequencyPerWeek": 0,
+          "severeEpisodes": false,
+          "severeEpisodesCount": null,
+          "severeEpisodesWhen": "",
+          "severeEpisodesClinic": "",
+          "awarenessPreserved": true,
+          "provokingFactors": {
+            "physicalActivity": false,
+            "missedMeal": false,
+            "alcohol": false
+          },
+          "hasGlucagon": true,
+          "familyTrained": true,
+          "nocturnalHypoglycemia": false
+        },
+        "selfMonitoring": {
+          "frequency": "6 раз в день",
+          "sameTime": true,
+          "ifNotSameTimeReason": "",
+          "diary": true
+        },
+        "complications": {
+          "eyes": {
+            "visionLoss": false,
+            "visionLossStart": "",
+            "visionLossDuration": "",
+            "nightVisionGood": true,
+            "lastFundusExamDate": "2024-09-15"
+          },
+          "nose": { "snoring": false },
+          "ears": {
+            "hearingLoss": false,
+            "hearingLossStart": "",
+            "hearingLossDuration": "",
+            "lastEntExamDate": "2023-12-01"
+          },
+          "gastrointestinal": {
+            "gastritis": false,
+            "ulcers": false,
+            "abdominalPainAfterEating": false,
+            "stoolFrequency": "1-2 раза в день",
+            "stoolConsistency": 5
+          },
+          "urinary": { "kidneyStones": false },
+          "nephropathy": { "albuminCreatinine": "", "gfr": "" },
+          "neuropathy": {
+            "symptoms": { "numbness": false, "pain": false, "paresthesia": false },
+            "numbnessTime": "",
+            "paresthesiaType": {
+              "crawling": false,
+              "shots": false,
+              "allodynia": false,
+              "hyperalgesia": false,
+              "nightCramps": false,
+              "numbness": false,
+              "burning": false
+            },
+            "coldFeet": false,
+            "howWarmFeet": "",
+            "feetToRadiator": false,
+            "amputations": false,
+            "amputationLevel": "",
+            "amputationDate": "",
+            "footSkin": "normal",
+            "hyperkeratosisDegree": "",
+            "footTemperature": "warm",
+            "footColor": "normal",
+            "nails": "normal",
+            "footDeformity": "none",
+            "lowerLegs": "normal",
+            "halluxValgus": false,
+            "hammerToe": false,
+            "clawToe": false,
+            "digitusSuperductus": false,
+            "sensitivity": {
+              "vibration": { "right": 0, "left": 0 },
+              "temperature": { "right": 0, "left": 0 },
+              "pain": { "right": 0, "left": 0 },
+              "tactile": { "right": 0, "left": 0 },
+              "jointMuscle": { "right": 0, "left": 0 },
+              "achillesReflex": { "right": 0, "left": 0 },
+              "kneeReflex": { "right": 0, "left": 0 }
+            },
+            "veins": {
+              "norm": { "right": true, "left": true },
+              "telangiectasia": { "right": false, "left": false },
+              "varicoseVeins": { "right": false, "left": false },
+              "edema": { "right": false, "left": false },
+              "lipodermatosclerosis": { "right": false, "left": false },
+              "healingUlcer": { "right": false, "left": false },
+              "activeUlcer": { "right": false, "left": false }
+            },
+            "lymphedema": false,
+            "lymphedemaStage": {
+              "stageI": { "right": false, "left": false },
+              "stageII": { "right": false, "left": false },
+              "stageIII": { "right": false, "left": false },
+              "stageIV": { "right": false, "left": false }
+            },
+            "lasegueSymptom": "negative",
+            "lasegueSide": "",
+            "lasegueDetails": "",
+            "footExamNotes": "",
+            "woundAppearance": ""
+          }
+        },
+        "examination": {
+          "cardiovascularEvents": "",
+          "bloodPressure": "118/72",
+          "otherChronicDiseases": "",
+          "currentMedications": "Лантус, Хумалог",
+          "allergies": "",
+          "hospitalizations": "2012 — дебют СД 1",
+          "vaccinations": "COVID-19, грипп",
+          "thyroidDisease": false,
+          "celiacDisease": false,
+          "otherAutoimmune": "",
+          "familyHistory": "",
+          "pregnancies": null,
+          "births": null,
+          "menstrualCycle": ""
+        },
+        "lifestyle": {
+          "alcoholFrequency": "Не употребляет",
+          "alcoholType": "",
+          "smoking": false,
+          "smokingStartAge": null,
+          "cigarettesPerDay": null,
+          "saltFood": false,
+          "processedFood": false,
+          "coffeeCupsPerDay": 1,
+          "strongCoffee": false,
+          "energyDrinks": false,
+          "occupation": "Спортивный тренер",
+          "sedentaryWork": false,
+          "stress": false
+        },
+        "measurements": {
+          "pulseOximetry": { "leftHand": 99, "rightHand": 99 },
+          "pulsePalpation": {
+            "radialArtery": { "rhythm": "regular", "symmetry": "symmetric" },
+            "posteriorTibialArtery": { "left": true, "right": true },
+            "dorsalisPedisArtery": { "left": true, "right": true }
+          },
+          "conditionsMet": true,
+          "bpArms": {
+            "leftSystolic": 118,
+            "leftDiastolic": 72,
+            "rightSystolic": 120,
+            "rightDiastolic": 74
+          },
+          "pulsePressure": 46,
+          "bpLegs": {
+            "leftSystolic": 126,
+            "leftDiastolic": 76,
+            "rightSystolic": 128,
+            "rightDiastolic": 78
+          },
+          "abiIndex": { "left": 1.07, "right": 1.07 },
+          "legPainWalking": false,
+          "painStopsAfterRest": false,
+          "walkingDistance": "Без ограничений",
+          "limbColor": "Обычный",
+          "limbTemperature": "Тёплые",
+          "limbSkin": "Норма",
+          "bpRepeat": {
+            "leftSystolic": 116,
+            "leftDiastolic": 70,
+            "rightSystolic": 118,
+            "rightDiastolic": 72
+          }
+        },
+        "secondaryHypertension": {
+          "nsaidsFrequency": "",
+          "decongestantsFrequency": "",
+          "otherDrugs": "",
+          "hyperaldosteronism": {
+            "polydipsiaPolyuria": false,
+            "muscleWeakness": false,
+            "limbCramps": false,
+            "constipation": false
+          },
+          "frequentHeadaches": false,
+          "stroke": false,
+          "tia": false,
+          "tiaDetails": "",
+          "pheochromocytoma": {
+            "stableOrCrisis": "",
+            "profuseSweating": false,
+            "coldExtremities": false,
+            "arrhythmias": false
+          },
+          "hypercortisolism": {
+            "centralObesity": false,
+            "moonFace": false,
+            "cheekFlush": false,
+            "buffaloHump": false,
+            "bruises": false,
+            "proximalWeakness": false,
+            "striae": false,
+            "newDiabetes": false,
+            "amenorrhea": false
+          },
+          "osas": {
+            "nightSnoring": false,
+            "nightAwakenings": false,
+            "nocturia": false,
+            "daytimeSleepiness": false,
+            "obesity": false
+          },
+          "familyHistory": {
+            "hypertension": false,
+            "earlyHeartAttackStroke": false,
+            "pheochromocytoma": false
+          },
+          "pregnancyHypertension": false
+        },
+        "heartFailure": {
+          "urineColorChange": false,
+          "urineColor": "",
+          "chestPain": false,
+          "chestPainTrigger": "",
+          "radiatesToLeftArm": false,
+          "relievesWithNitroglycerin": false,
+          "frequentAttacks3Months": false,
+          "dyspneaOnExertion": false,
+          "dyspneaFunctionalClass": "",
+          "takesTicagrelor": false,
+          "smallCircle": {
+            "pillowsForSleep": false,
+            "forcedPosition": false,
+            "nightDyspnea": false,
+            "acrocyanosis": {
+              "nasolabialTriangle": false,
+              "hands": false,
+              "feet": false
+            },
+            "saturation": 99
+          },
+          "bigCircle": {
+            "legEdema": false,
+            "tightShoes": false,
+            "edemaOnset": "",
+            "symmetric": false,
+            "localization": "",
+            "timeOfDay": "",
+            "edemaImprovesNight": false,
+            "edemaImprovesElevation": false,
+            "edemaTemperature": "",
+            "edemaColor": "",
+            "edemaDensity": "",
+            "pittingEdema": false,
+            "edemaResolves": "",
+            "painful": false,
+            "takesNifedipineAmlodipineNsaids": false
+          },
+          "hepatomegaly": {
+            "rightHypochondriumPain": false,
+            "liverSize": "notPalpable",
+            "liverEdge": "notDefined",
+            "liverPainful": false,
+            "hepaticPulsation": false,
+            "hepatojugularReflux": false
+          },
+          "jugularVeins": {
+            "onInspirationAndExpiration": false,
+            "onlyOnInspiration": false
+          },
+          "nyhaClass": ""
+        },
+        "h2fpef": {
+          "obesityBMI30": false,
+          "hypertension2Drugs": false,
+          "atrialFibrillation": false,
+          "pulmonaryHypertension": false,
+          "pulmonaryHypertensionValue": null,
+          "elderly60": false,
+          "fillingPressure": false,
+          "fillingPressureValue": null,
+          "totalScore": 0
+        },
+        "additionalHistory": {
+          "myocardialInfarction": "",
+          "coronaryAngiography": "",
+          "stenting": "",
+          "surgeries": "",
+          "appendicitis": "",
+          "cholecystitis": "",
+          "tuberculosis": "",
+          "hiv": "",
+          "hepatitis": "",
+          "syphilis": "",
+          "covidYear": "2022",
+          "allergies": {
+            "what": "",
+            "how": "",
+            "angioedema": false
+          },
+          "travelOutsideRF": false,
+          "contactWithPatients": false,
+          "insectAnimalBites": false,
+          "weight": 74,
+          "height": 180,
+          "abdominalCircumference": 82
+        }
+      }
+    ]
+  },
+
+  {
+    "id": "p-004",
+    "fullName": "Кузнецова Мария Дмитриевна",
+    "birthDate": "1960-04-18",
+    "gender": "female",
+    "anamneses": [
+      {
+        "id": "a-004-1",
+        "savedAt": "2024-11-25T11:45:00.000Z",
+        "fullName": "Кузнецова Мария Дмитриевна",
+        "birthDate": "1960-04-18",
+        "gender": "female",
+        "primaryExam": {
+          "reason": "Жалобы на онемение стоп, боли в ногах при ходьбе, сухость кожи.",
+          "suspectedDiagnosis": "type2"
+        },
+        "type1Diabetes": null,
+        "type2Diabetes": {
+          "height": 158,
+          "weight": 82,
+          "bmi": 32.8,
+          "waistCircumference": 104,
+          "weightChange6Months": true,
+          "weightIncreasedBy": null,
+          "weightDecreasedBy": 2,
+          "firstGlucoseElevationYear": "2005",
+          "maxGlucoseValues": "Натощак до 11, постпрандиально до 15"
+        },
+        "therapy": {
+          "currentDrugs": [
+            { "name": "Метформин", "dose": "850 мг 2 раза в день" },
+            { "name": "Гликлазид МВ", "dose": "60 мг утром" }
+          ],
+          "basalInsulin": [{ "name": "Левемир", "dose": "18 ЕД вечером" }],
+          "prandialInsulin": [],
+          "carbCounting": false,
+          "carbRatio": "",
+          "injectionSites": "Живот",
+          "lipohypertrophy": true
+        },
+        "hypoglycemia": {
+          "frequencyPerWeek": 2,
+          "severeEpisodes": true,
+          "severeEpisodesCount": 1,
+          "severeEpisodesWhen": "Октябрь 2024",
+          "severeEpisodesClinic": "Потеря сознания, помощь скорой, глюкоза в/в.",
+          "awarenessPreserved": false,
+          "provokingFactors": {
+            "physicalActivity": true,
+            "missedMeal": true,
+            "alcohol": false
+          },
+          "hasGlucagon": false,
+          "familyTrained": false,
+          "nocturnalHypoglycemia": true
+        },
+        "selfMonitoring": {
+          "frequency": "2 раза в день",
+          "sameTime": false,
+          "ifNotSameTimeReason": "Забывает, контролирует нерегулярно.",
+          "diary": false
+        },
+        "complications": {
+          "eyes": {
+            "visionLoss": true,
+            "visionLossStart": "2020",
+            "visionLossDuration": "4 года",
+            "nightVisionGood": false,
+            "lastFundusExamDate": "2024-05-10"
+          },
+          "nose": { "snoring": true },
+          "ears": {
+            "hearingLoss": true,
+            "hearingLossStart": "2021",
+            "hearingLossDuration": "3 года",
+            "lastEntExamDate": "2024-03-20"
+          },
+          "gastrointestinal": {
+            "gastritis": true,
+            "ulcers": false,
+            "abdominalPainAfterEating": false,
+            "stoolFrequency": "1 раз в 2 дня",
+            "stoolConsistency": 7
+          },
+          "urinary": { "kidneyStones": false },
+          "nephropathy": {
+            "albuminCreatinine": "45 мг/ммоль",
+            "gfr": "62 мл/мин"
+          },
+          "neuropathy": {
+            "symptoms": { "numbness": true, "pain": true, "paresthesia": true },
+            "numbnessTime": "night",
+            "paresthesiaType": {
+              "crawling": true,
+              "shots": true,
+              "allodynia": false,
+              "hyperalgesia": false,
+              "nightCramps": true,
+              "numbness": true,
+              "burning": true
+            },
+            "coldFeet": true,
+            "howWarmFeet": "Тёплые носки, грелка",
+            "feetToRadiator": false,
+            "amputations": false,
+            "amputationLevel": "",
+            "amputationDate": "",
+            "footSkin": "dry",
+            "hyperkeratosisDegree": "moderate",
+            "footTemperature": "cold",
+            "footColor": "pale",
+            "nails": "onychomycosis",
+            "footDeformity": "flatfoot",
+            "lowerLegs": "hairLoss",
+            "halluxValgus": false,
+            "hammerToe": false,
+            "clawToe": false,
+            "digitusSuperductus": false,
+            "sensitivity": {
+              "vibration": { "right": 2, "left": 2 },
+              "temperature": { "right": 1, "left": 1 },
+              "pain": { "right": 1, "left": 2 },
+              "tactile": { "right": 2, "left": 2 },
+              "jointMuscle": { "right": 1, "left": 1 },
+              "achillesReflex": { "right": 2, "left": 2 },
+              "kneeReflex": { "right": 1, "left": 1 }
+            },
+            "veins": {
+              "norm": { "right": false, "left": false },
+              "telangiectasia": { "right": true, "left": true },
+              "varicoseVeins": { "right": true, "left": true },
+              "edema": { "right": true, "left": true },
+              "lipodermatosclerosis": { "right": false, "left": false },
+              "healingUlcer": { "right": false, "left": false },
+              "activeUlcer": { "right": false, "left": false }
+            },
+            "lymphedema": false,
+            "lymphedemaStage": {
+              "stageI": { "right": false, "left": false },
+              "stageII": { "right": false, "left": false },
+              "stageIII": { "right": false, "left": false },
+              "stageIV": { "right": false, "left": false }
+            },
+            "lasegueSymptom": "negative",
+            "lasegueSide": "",
+            "lasegueDetails": "",
+            "footExamNotes": "Сухость, гиперкератоз в области пяток.",
+            "woundAppearance": ""
+          }
+        },
+        "examination": {
+          "cardiovascularEvents": "ИБС, АГ с 2005 г.",
+          "bloodPressure": "158/92",
+          "otherChronicDiseases": "ХСН IIA, ХБП С3а",
+          "currentMedications": "Метформин, гликлазид, Левемир, периндоприл, бисопролол",
+          "allergies": "",
+          "hospitalizations": "2024 — гипогликемическая кома",
+          "vaccinations": "COVID-19, грипп, пневмококк",
+          "thyroidDisease": false,
+          "celiacDisease": false,
+          "otherAutoimmune": "",
+          "familyHistory": "У матери СД 2 типа, у отца ИБС",
+          "pregnancies": 3,
+          "births": 2,
+          "menstrualCycle": "Менопауза с 2008 г."
+        },
+        "lifestyle": {
+          "alcoholFrequency": "Не употребляет",
+          "alcoholType": "",
+          "smoking": false,
+          "smokingStartAge": null,
+          "cigarettesPerDay": null,
+          "saltFood": true,
+          "processedFood": true,
+          "coffeeCupsPerDay": 3,
+          "strongCoffee": true,
+          "energyDrinks": false,
+          "occupation": "Пенсионерка",
+          "sedentaryWork": true,
+          "stress": false
+        },
+        "measurements": {
+          "pulseOximetry": { "leftHand": 96, "rightHand": 96 },
+          "pulsePalpation": {
+            "radialArtery": { "rhythm": "irregular", "symmetry": "asymmetric" },
+            "posteriorTibialArtery": { "left": false, "right": false },
+            "dorsalisPedisArtery": { "left": false, "right": true }
+          },
+          "conditionsMet": true,
+          "bpArms": {
+            "leftSystolic": 158,
+            "leftDiastolic": 92,
+            "rightSystolic": 162,
+            "rightDiastolic": 94
+          },
+          "pulsePressure": 66,
+          "bpLegs": {
+            "leftSystolic": 170,
+            "leftDiastolic": 92,
+            "rightSystolic": 168,
+            "rightDiastolic": 90
+          },
+          "abiIndex": { "left": 1.08, "right": 1.04 },
+          "legPainWalking": true,
+          "painStopsAfterRest": true,
+          "walkingDistance": "200 метров",
+          "limbColor": "Бледный",
+          "limbTemperature": "Холодные",
+          "limbSkin": "Сухая",
+          "bpRepeat": {
+            "leftSystolic": 156,
+            "leftDiastolic": 90,
+            "rightSystolic": 160,
+            "rightDiastolic": 92
+          }
+        },
+        "secondaryHypertension": {
+          "nsaidsFrequency": "Часто",
+          "decongestantsFrequency": "Редко",
+          "otherDrugs": "",
+          "hyperaldosteronism": {
+            "polydipsiaPolyuria": false,
+            "muscleWeakness": true,
+            "limbCramps": true,
+            "constipation": false
+          },
+          "frequentHeadaches": true,
+          "stroke": false,
+          "tia": false,
+          "tiaDetails": "",
+          "pheochromocytoma": {
+            "stableOrCrisis": "stable",
+            "profuseSweating": false,
+            "coldExtremities": true,
+            "arrhythmias": true
+          },
+          "hypercortisolism": {
+            "centralObesity": true,
+            "moonFace": true,
+            "cheekFlush": true,
+            "buffaloHump": false,
+            "bruises": false,
+            "proximalWeakness": false,
+            "striae": false,
+            "newDiabetes": false,
+            "amenorrhea": false
+          },
+          "osas": {
+            "nightSnoring": true,
+            "nightAwakenings": true,
+            "nocturia": true,
+            "daytimeSleepiness": true,
+            "obesity": true
+          },
+          "familyHistory": {
+            "hypertension": true,
+            "earlyHeartAttackStroke": true,
+            "pheochromocytoma": false
+          },
+          "pregnancyHypertension": true
+        },
+        "heartFailure": {
+          "urineColorChange": false,
+          "urineColor": "",
+          "chestPain": true,
+          "chestPainTrigger": "physical",
+          "radiatesToLeftArm": true,
+          "relievesWithNitroglycerin": true,
+          "frequentAttacks3Months": true,
+          "dyspneaOnExertion": true,
+          "dyspneaFunctionalClass": "II",
+          "takesTicagrelor": false,
+          "smallCircle": {
+            "pillowsForSleep": true,
+            "forcedPosition": true,
+            "nightDyspnea": true,
+            "acrocyanosis": {
+              "nasolabialTriangle": false,
+              "hands": true,
+              "feet": true
+            },
+            "saturation": 94
+          },
+          "bigCircle": {
+            "legEdema": true,
+            "tightShoes": true,
+            "edemaOnset": "long",
+            "symmetric": true,
+            "localization": "Стопы, голени",
+            "timeOfDay": "evening",
+            "edemaImprovesNight": true,
+            "edemaImprovesElevation": true,
+            "edemaTemperature": "cold",
+            "edemaColor": "cyanotic",
+            "edemaDensity": "dense",
+            "pittingEdema": true,
+            "edemaResolves": "delayed",
+            "painful": false,
+            "takesNifedipineAmlodipineNsaids": true
+          },
+          "hepatomegaly": {
+            "rightHypochondriumPain": true,
+            "liverSize": "enlarged",
+            "liverEdge": "smooth",
+            "liverPainful": false,
+            "hepaticPulsation": true,
+            "hepatojugularReflux": true
+          },
+          "jugularVeins": {
+            "onInspirationAndExpiration": true,
+            "onlyOnInspiration": false
+          },
+          "nyhaClass": "IIA"
+        },
+        "h2fpef": {
+          "obesityBMI30": true,
+          "hypertension2Drugs": true,
+          "atrialFibrillation": true,
+          "pulmonaryHypertension": false,
+          "pulmonaryHypertensionValue": null,
+          "elderly60": true,
+          "fillingPressure": true,
+          "fillingPressureValue": 12,
+          "totalScore": 8
+        },
+        "additionalHistory": {
+          "myocardialInfarction": "",
+          "coronaryAngiography": "",
+          "stenting": "",
+          "surgeries": "",
+          "appendicitis": "",
+          "cholecystitis": "",
+          "tuberculosis": "",
+          "hiv": "",
+          "hepatitis": "",
+          "syphilis": "",
+          "covidYear": "2021",
+          "allergies": {
+            "what": "",
+            "how": "",
+            "angioedema": false
+          },
+          "travelOutsideRF": false,
+          "contactWithPatients": false,
+          "insectAnimalBites": false,
+          "weight": 82,
+          "height": 158,
+          "abdominalCircumference": 104
+        }
+      }
+    ]
+  },
+
+  {
+    "id": "p-005",
+    "fullName": "Смирнов Андрей Николаевич",
+    "birthDate": "1995-07-30",
+    "gender": "male",
+    "anamneses": [
+      {
+        "id": "a-005-1",
+        "savedAt": "2024-11-28T16:20:00.000Z",
+        "fullName": "Смирнов Андрей Николаевич",
+        "birthDate": "1995-07-30",
+        "gender": "male",
+        "primaryExam": {
+          "reason": "Дебют СД 1 типа, госпитализация в связи с кетоацидозом.",
+          "suspectedDiagnosis": "type1"
+        },
+        "type1Diabetes": {
+          "ageAtDiagnosis": 29,
+          "diagnosisDate": "2024-10-05",
+          "yearOfDiagnosis": "2024",
+          "howDiagnosed": "emergency",
+          "howDiagnosedDetails": "СМП, кетоацидоз, глюкоза 28 ммоль/л, кетоны ++++.",
+          "circumstances": "За 2 недели до дебюта перенёс тяжёлый грипп.",
+          "glycemiaAtOnset": 28,
+          "classicSymptoms": {
+            "polyuria": true,
+            "polydipsia": true,
+            "weakness": true,
+            "weightLoss": true,
+            "weightLossAmount": 8,
+            "weightLossUnknown": false
+          },
+          "furtherPlan": "Школа диабета, обучение подсчёту ХЕ.",
+          "initialTherapy": [
+            { "drugName": "Лантус", "dose": "12 ЕД вечером" },
+            { "drugName": "Апидра", "dose": "по 4-6-4 ЕД" }
+          ],
+          "stillTakingInitialTherapy": true,
+          "ifNotTakingReason": "",
+          "autoantibodies": {
+            "GAD": true,
+            "IA2": true,
+            "ZnT8": true,
+            "IAA": true,
+            "results": "Все четыре типа повышены."
+          },
+          "cPeptide": { "value": "0.1 нг/мл", "date": "2024-10-06" },
+          "hba1c": { "value": 11.2, "date": "2024-10-05" },
+          "usualGlucose": 8.0
+        },
+        "type2Diabetes": null,
+        "therapy": {
+          "currentDrugs": [],
+          "basalInsulin": [{ "name": "Лантус", "dose": "12 ЕД вечером" }],
+          "prandialInsulin": [{ "name": "Апидра", "dose": "4-6-4 ЕД" }],
+          "carbCounting": true,
+          "carbRatio": "1 ХЕ = 1.3 ЕД",
+          "injectionSites": "Живот, бедра",
+          "lipohypertrophy": false
+        },
+        "hypoglycemia": {
+          "frequencyPerWeek": 0,
+          "severeEpisodes": false,
+          "severeEpisodesCount": null,
+          "severeEpisodesWhen": "",
+          "severeEpisodesClinic": "",
+          "awarenessPreserved": true,
+          "provokingFactors": {
+            "physicalActivity": false,
+            "missedMeal": false,
+            "alcohol": false
+          },
+          "hasGlucagon": true,
+          "familyTrained": true,
+          "nocturnalHypoglycemia": false
+        },
+        "selfMonitoring": {
+          "frequency": "5 раз в день",
+          "sameTime": true,
+          "ifNotSameTimeReason": "",
+          "diary": true
+        },
+        "complications": {
+          "eyes": {
+            "visionLoss": false,
+            "visionLossStart": "",
+            "visionLossDuration": "",
+            "nightVisionGood": true,
+            "lastFundusExamDate": "2024-10-10"
+          },
+          "nose": { "snoring": false },
+          "ears": {
+            "hearingLoss": false,
+            "hearingLossStart": "",
+            "hearingLossDuration": "",
+            "lastEntExamDate": ""
+          },
+          "gastrointestinal": {
+            "gastritis": false,
+            "ulcers": false,
+            "abdominalPainAfterEating": false,
+            "stoolFrequency": "1 раз в день",
+            "stoolConsistency": 5
+          },
+          "urinary": { "kidneyStones": false },
+          "nephropathy": { "albuminCreatinine": "", "gfr": "" },
+          "neuropathy": {
+            "symptoms": { "numbness": false, "pain": false, "paresthesia": false },
+            "numbnessTime": "",
+            "paresthesiaType": {
+              "crawling": false,
+              "shots": false,
+              "allodynia": false,
+              "hyperalgesia": false,
+              "nightCramps": false,
+              "numbness": false,
+              "burning": false
+            },
+            "coldFeet": false,
+            "howWarmFeet": "",
+            "feetToRadiator": false,
+            "amputations": false,
+            "amputationLevel": "",
+            "amputationDate": "",
+            "footSkin": "normal",
+            "hyperkeratosisDegree": "",
+            "footTemperature": "warm",
+            "footColor": "normal",
+            "nails": "normal",
+            "footDeformity": "none",
+            "lowerLegs": "normal",
+            "halluxValgus": false,
+            "hammerToe": false,
+            "clawToe": false,
+            "digitusSuperductus": false,
+            "sensitivity": {
+              "vibration": { "right": 0, "left": 0 },
+              "temperature": { "right": 0, "left": 0 },
+              "pain": { "right": 0, "left": 0 },
+              "tactile": { "right": 0, "left": 0 },
+              "jointMuscle": { "right": 0, "left": 0 },
+              "achillesReflex": { "right": 0, "left": 0 },
+              "kneeReflex": { "right": 0, "left": 0 }
+            },
+            "veins": {
+              "norm": { "right": true, "left": true },
+              "telangiectasia": { "right": false, "left": false },
+              "varicoseVeins": { "right": false, "left": false },
+              "edema": { "right": false, "left": false },
+              "lipodermatosclerosis": { "right": false, "left": false },
+              "healingUlcer": { "right": false, "left": false },
+              "activeUlcer": { "right": false, "left": false }
+            },
+            "lymphedema": false,
+            "lymphedemaStage": {
+              "stageI": { "right": false, "left": false },
+              "stageII": { "right": false, "left": false },
+              "stageIII": { "right": false, "left": false },
+              "stageIV": { "right": false, "left": false }
+            },
+            "lasegueSymptom": "negative",
+            "lasegueSide": "",
+            "lasegueDetails": "",
+            "footExamNotes": "",
+            "woundAppearance": ""
+          }
+        },
+        "examination": {
+          "cardiovascularEvents": "",
+          "bloodPressure": "124/78",
+          "otherChronicDiseases": "Витилиго",
+          "currentMedications": "Лантус, Апидра",
+          "allergies": "",
+          "hospitalizations": "2024 — дебют СД 1, кетоацидоз",
+          "vaccinations": "COVID-19, грипп",
+          "thyroidDisease": false,
+          "celiacDisease": false,
+          "otherAutoimmune": "Витилиго с 2018 г.",
+          "familyHistory": "У деда СД 1 типа, у матери аутоиммунный тиреоидит.",
+          "pregnancies": null,
+          "births": null,
+          "menstrualCycle": ""
+        },
+        "lifestyle": {
+          "alcoholFrequency": "Редко",
+          "alcoholType": "Пиво",
+          "smoking": true,
+          "smokingStartAge": 18,
+          "cigarettesPerDay": 10,
+          "saltFood": false,
+          "processedFood": false,
+          "coffeeCupsPerDay": 2,
+          "strongCoffee": true,
+          "energyDrinks": true,
+          "occupation": "Дизайнер",
+          "sedentaryWork": true,
+          "stress": true
+        },
+        "measurements": {
+          "pulseOximetry": { "leftHand": 98, "rightHand": 98 },
+          "pulsePalpation": {
+            "radialArtery": { "rhythm": "regular", "symmetry": "symmetric" },
+            "posteriorTibialArtery": { "left": true, "right": true },
+            "dorsalisPedisArtery": { "left": true, "right": true }
+          },
+          "conditionsMet": true,
+          "bpArms": {
+            "leftSystolic": 124,
+            "leftDiastolic": 78,
+            "rightSystolic": 126,
+            "rightDiastolic": 80
+          },
+          "pulsePressure": 46,
+          "bpLegs": {
+            "leftSystolic": 132,
+            "leftDiastolic": 80,
+            "rightSystolic": 134,
+            "rightDiastolic": 82
+          },
+          "abiIndex": { "left": 1.06, "right": 1.06 },
+          "legPainWalking": false,
+          "painStopsAfterRest": false,
+          "walkingDistance": "Без ограничений",
+          "limbColor": "Обычный",
+          "limbTemperature": "Тёплые",
+          "limbSkin": "Норма",
+          "bpRepeat": {
+            "leftSystolic": 122,
+            "leftDiastolic": 76,
+            "rightSystolic": 124,
+            "rightDiastolic": 78
+          }
+        },
+        "secondaryHypertension": {
+          "nsaidsFrequency": "",
+          "decongestantsFrequency": "",
+          "otherDrugs": "",
+          "hyperaldosteronism": {
+            "polydipsiaPolyuria": false,
+            "muscleWeakness": false,
+            "limbCramps": false,
+            "constipation": false
+          },
+          "frequentHeadaches": false,
+          "stroke": false,
+          "tia": false,
+          "tiaDetails": "",
+          "pheochromocytoma": {
+            "stableOrCrisis": "",
+            "profuseSweating": false,
+            "coldExtremities": false,
+            "arrhythmias": false
+          },
+          "hypercortisolism": {
+            "centralObesity": false,
+            "moonFace": false,
+            "cheekFlush": false,
+            "buffaloHump": false,
+            "bruises": false,
+            "proximalWeakness": false,
+            "striae": false,
+            "newDiabetes": false,
+            "amenorrhea": false
+          },
+          "osas": {
+            "nightSnoring": false,
+            "nightAwakenings": false,
+            "nocturia": false,
+            "daytimeSleepiness": false,
+            "obesity": false
+          },
+          "familyHistory": {
+            "hypertension": false,
+            "earlyHeartAttackStroke": false,
+            "pheochromocytoma": false
+          },
+          "pregnancyHypertension": false
+        },
+        "heartFailure": {
+          "urineColorChange": false,
+          "urineColor": "",
+          "chestPain": false,
+          "chestPainTrigger": "",
+          "radiatesToLeftArm": false,
+          "relievesWithNitroglycerin": false,
+          "frequentAttacks3Months": false,
+          "dyspneaOnExertion": false,
+          "dyspneaFunctionalClass": "",
+          "takesTicagrelor": false,
+          "smallCircle": {
+            "pillowsForSleep": false,
+            "forcedPosition": false,
+            "nightDyspnea": false,
+            "acrocyanosis": {
+              "nasolabialTriangle": false,
+              "hands": false,
+              "feet": false
+            },
+            "saturation": 98
+          },
+          "bigCircle": {
+            "legEdema": false,
+            "tightShoes": false,
+            "edemaOnset": "",
+            "symmetric": false,
+            "localization": "",
+            "timeOfDay": "",
+            "edemaImprovesNight": false,
+            "edemaImprovesElevation": false,
+            "edemaTemperature": "",
+            "edemaColor": "",
+            "edemaDensity": "",
+            "pittingEdema": false,
+            "edemaResolves": "",
+            "painful": false,
+            "takesNifedipineAmlodipineNsaids": false
+          },
+          "hepatomegaly": {
+            "rightHypochondriumPain": false,
+            "liverSize": "notPalpable",
+            "liverEdge": "notDefined",
+            "liverPainful": false,
+            "hepaticPulsation": false,
+            "hepatojugularReflux": false
+          },
+          "jugularVeins": {
+            "onInspirationAndExpiration": false,
+            "onlyOnInspiration": false
+          },
+          "nyhaClass": ""
+        },
+        "h2fpef": {
+          "obesityBMI30": false,
+          "hypertension2Drugs": false,
+          "atrialFibrillation": false,
+          "pulmonaryHypertension": false,
+          "pulmonaryHypertensionValue": null,
+          "elderly60": false,
+          "fillingPressure": false,
+          "fillingPressureValue": null,
+          "totalScore": 0
+        },
+        "additionalHistory": {
+          "myocardialInfarction": "",
+          "coronaryAngiography": "",
+          "stenting": "",
+          "surgeries": "",
+          "appendicitis": "2010",
+          "cholecystitis": "",
+          "tuberculosis": "",
+          "hiv": "",
+          "hepatitis": "",
+          "syphilis": "",
+          "covidYear": "2023",
+          "allergies": {
+            "what": "",
+            "how": "",
+            "angioedema": false
+          },
+          "travelOutsideRF": false,
+          "contactWithPatients": false,
+          "insectAnimalBites": false,
+          "weight": 68,
+          "height": 178,
+          "abdominalCircumference": 78
+        }
+      }
+    ]
+  }
+]
