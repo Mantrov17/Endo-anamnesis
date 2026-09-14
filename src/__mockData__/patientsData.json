@@ -20,7 +20,6 @@
           "diagnosisDate": "2015-04-10",
           "yearOfDiagnosis": "2015",
           "howDiagnosed": "emergency",
-          "howDiagnosedDetails": "Госпитализирован в эндокринологическое отделение с гипергликемией 22 ммоль/л.",
           "circumstances": "Перенёс ОРВИ за месяц до дебюта.",
           "glycemiaAtOnset": 22,
           "classicSymptoms": {
@@ -737,7 +736,6 @@
           "diagnosisDate": "2012-06-18",
           "yearOfDiagnosis": "2012",
           "howDiagnosed": "accidental",
-          "howDiagnosedDetails": "Случайно выявлена гипергликемия при медосмотре.",
           "circumstances": "Стресс перед сессией в университете.",
           "glycemiaAtOnset": 14.5,
           "classicSymptoms": {
@@ -1457,7 +1455,6 @@
           "diagnosisDate": "2024-10-05",
           "yearOfDiagnosis": "2024",
           "howDiagnosed": "emergency",
-          "howDiagnosedDetails": "СМП, кетоацидоз, глюкоза 28 ммоль/л, кетоны ++++.",
           "circumstances": "За 2 недели до дебюта перенёс тяжёлый грипп.",
           "glycemiaAtOnset": 28,
           "classicSymptoms": {

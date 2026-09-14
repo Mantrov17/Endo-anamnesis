@@ -12,7 +12,7 @@ export const H2FPEFTab: React.FC<TabProps> = ({ register, watch }) => {
       <h3>Шкала H2FPEF</h3>
       <label>
         <input type="checkbox" {...register("h2fpef.obesityBMI30")} /> Ожирение
-        ИМТ &gt;30 кг/м² (2 балла)
+        ИМТ &gt;30 кг/см² (2 балла)
       </label>
       <label>
         <input type="checkbox" {...register("h2fpef.hypertension2Drugs")} /> АГ,

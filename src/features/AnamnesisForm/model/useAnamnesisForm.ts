@@ -39,16 +39,6 @@ export const useAnamnesisForm = ({
     setValue("gender", patient.gender);
   }, [patientId, setValue]);
 
-  // ИМТ (СД 2) — старое
-  const height = watch("type2Diabetes.height");
-  const weight = watch("type2Diabetes.weight");
-  useEffect(() => {
-    if (height && weight && height > 0) {
-      const bmi = +(weight / Math.pow(height / 100, 2)).toFixed(1);
-      setValue("type2Diabetes.bmi", bmi);
-    }
-  }, [height, weight, setValue]);
-
   // NEW — ИМТ для блока антропометрии в начале формы
   const pHeight = watch("primaryExam.height");
   const pWeight = watch("primaryExam.weight");

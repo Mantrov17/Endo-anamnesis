@@ -79,7 +79,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         yearOfDiagnosis: "",
         diseaseDuration: null,
         howDiagnosed: "",
-        howDiagnosedDetails: "",
         circumstances: "",
         glycemiaAtOnset: null,
         classicSymptoms: {
@@ -95,7 +94,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
           visionBlur: false,
           lossOfConsciousness: false,
         },
-        furtherPlan: "",
         investigatedAfterDetection: null,
         initiallyType2: null,
         autoantibodies: {
@@ -119,13 +117,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
     }
     if (isType2 && !type2Data) {
       setValue("type2Diabetes", {
-        height: null,
-        weight: null,
-        bmi: null,
-        waistCircumference: null,
-        weightChange6Months: null,
-        weightIncreasedBy: null,
-        weightDecreasedBy: null,
         firstGlucoseElevationYear: "",
         maxGlucoseValues: "",
         ageAtDiagnosis: null,

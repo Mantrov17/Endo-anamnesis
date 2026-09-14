@@ -81,7 +81,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
               label="ИМТ (авторасчёт)"
               type="number"
               step="0.1"
-              suffix="кг/м²"
+              suffix="кг/см²"
               {...register("primaryExam.bmi")}
               readOnly
             />
@@ -90,7 +90,6 @@ export const PrimaryTab: React.FC<TabProps> = ({
 
         {bmiCategory && (
           <div className={`${styles.bmiBadge} ${styles[bmiCategory.tone]}`}>
-            ИМТ: <strong>{Number(primaryBmi).toFixed(1)}</strong> кг/м² —{" "}
             {bmiCategory.label}
           </div>
         )}
@@ -276,12 +275,6 @@ export const PrimaryTab: React.FC<TabProps> = ({
             </div>
           </Field>
 
-          <Textarea
-            label="Детали (если нужно уточнить)"
-            {...register("type1Diabetes.howDiagnosedDetails")}
-            rows={2}
-          />
-
           <Field
             hint="Что послужило триггерным фактором?"
             noteKey="type1Diabetes.circumstances"
@@ -391,17 +384,6 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 Потеря сознания
               </label>
             </fieldset>
-          </Field>
-
-          <Field
-            hint="Вы обратились к эндокринологу после обнаружения повышенного результата?"
-            noteKey="type1Diabetes.furtherPlan"
-          >
-            <Textarea
-              label="План дальнейшего обследования"
-              {...register("type1Diabetes.furtherPlan")}
-              rows={2}
-            />
           </Field>
 
           <YesNo
@@ -552,59 +534,6 @@ export const PrimaryTab: React.FC<TabProps> = ({
       {isType2 && type2Data && (
         <div className={styles.section}>
           <h3>СД 2 типа — антропометрия и дебют</h3>
-
-          <div className={styles.row}>
-            <Input
-              label="Рост"
-              type="number"
-              suffix="см"
-              {...register("type2Diabetes.height")}
-            />
-            <Input
-              label="Вес"
-              type="number"
-              step="0.1"
-              suffix="кг"
-              {...register("type2Diabetes.weight")}
-            />
-            <Input
-              label="ИМТ"
-              type="number"
-              step="0.1"
-              suffix="кг/м²"
-              {...register("type2Diabetes.bmi")}
-              readOnly
-            />
-          </div>
-
-          <Input
-            label="Окружность талии"
-            type="number"
-            suffix="см"
-            {...register("type2Diabetes.waistCircumference")}
-          />
-
-          <YesNo
-            label="Изменился ли вес за последние 6 месяцев?"
-            name="type2Diabetes.weightChange6Months"
-            register={register}
-          />
-          {watch("type2Diabetes.weightChange6Months") === true && (
-            <div className={styles.row}>
-              <Input
-                label="Увеличился на"
-                type="number"
-                suffix="кг"
-                {...register("type2Diabetes.weightIncreasedBy")}
-              />
-              <Input
-                label="Уменьшился на"
-                type="number"
-                suffix="кг"
-                {...register("type2Diabetes.weightDecreasedBy")}
-              />
-            </div>
-          )}
 
           <Input
             label="Когда впервые замечено повышение глюкозы? (год)"

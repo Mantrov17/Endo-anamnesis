@@ -32,7 +32,6 @@ export interface Type1Diabetes {
     | "withComplaints" // NEW
     | "emergency"
     | "";
-  howDiagnosedDetails: string;
   circumstances: string;
   glycemiaAtOnset: number | null;
   classicSymptoms: {
@@ -49,7 +48,6 @@ export interface Type1Diabetes {
     visionBlur: boolean;
     lossOfConsciousness: boolean;
   };
-  furtherPlan: string;
   stillTakingInitialTherapy: boolean | null;
   ifNotTakingReason: string;
   autoantibodies: {
@@ -75,13 +73,6 @@ export interface Type1Diabetes {
 
 // ==================== СД 2 типа ====================
 export interface Type2Diabetes {
-  height: number | null;
-  weight: number | null;
-  bmi: number | null;
-  waistCircumference: number | null;
-  weightChange6Months: boolean | null;
-  weightIncreasedBy: number | null;
-  weightDecreasedBy: number | null;
   firstGlucoseElevationYear: string;
   maxGlucoseValues: string;
 
