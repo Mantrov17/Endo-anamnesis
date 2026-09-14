@@ -1,0 +1,12 @@
+export { PrimaryTab } from "./PrimaryTab";
+export { TherapyTab } from "./TherapyTab";
+export { HypoglycemiaTab } from "./HypoglycemiaTab";
+export { SelfMonitoringTab } from "./SelfMonitoringTab";
+export { ComplicationsTab } from "./ComplicationsTab";
+export { ExaminationTab } from "./ExaminationTab";
+export { LifestyleTab } from "./LifestyleTab";
+export { MeasurementsTab } from "./MeasurementsTab";
+export { SecondaryAHTab } from "./SecondaryAHTab";
+export { HeartFailureTab } from "./HeartFailureTab";
+export { H2FPEFTab } from "./H2FPEFTab";
+export { AdditionalTab } from "./AdditionalTab";

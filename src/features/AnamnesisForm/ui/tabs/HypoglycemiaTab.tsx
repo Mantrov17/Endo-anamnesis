@@ -1,82 +1,170 @@
 import React from "react";
 import { Input } from "@/shared/ui/Input";
 import { Textarea } from "@/shared/ui/Textarea";
-import { RadioGroup } from "@/shared/ui/RadioGroup";
-import { Checkbox } from "@/shared/ui/Checkbox";
-import { Fieldset } from "@/shared/ui/Fieldset";
-import styles from "./styles.module.scss";
+import { Field } from "../Field";
+import { YesNo } from "../YesNo";
+import type { TabProps } from "./types";
+import styles from "../styles.module.scss";
 
-export const HypoglycemiaTab: React.FC<{ register: any; errors: any }> = ({
-  register,
-}) => {
-  return (
-    <div className={styles.section}>
-      <h3>Гипогликемии</h3>
-      <Input
-        label="Частота гипогликемий (эпизодов в неделю)"
-        type="number"
-        {...register("hypoglycemia.frequencyPerWeek")}
-      />
-      <Fieldset legend="Тяжёлые эпизоды">
-        <Input
-          label="Количество"
-          type="number"
-          {...register("hypoglycemia.severeEpisodes.count")}
-        />
-        <Input
-          label="Когда (дата/период)"
-          {...register("hypoglycemia.severeEpisodes.when")}
-        />
-        <Textarea
-          label="Клиника"
-          {...register("hypoglycemia.severeEpisodes.clinic")}
-          rows={2}
-        />
-      </Fieldset>
-      <RadioGroup
-        name="hypoglycemia.awarenessPreserved"
-        register={register}
-        options={[
-          { value: "true", label: "Да" },
-          { value: "false", label: "Нет (нарушено восприятие)" },
-        ]}
-        label="Сохранено ли распознавание гипогликемии?"
-      />
-      <Fieldset legend="Типичные провоцирующие факторы">
-        <Checkbox
-          name="hypoglycemia.provokingFactors.physicalActivity"
-          register={register}
-          label="Физическая нагрузка"
-        />
-        <Checkbox
-          name="hypoglycemia.provokingFactors.missedMeal"
-          register={register}
-          label="Пропуск еды"
-        />
-        <Checkbox
-          name="hypoglycemia.provokingFactors.alcohol"
-          register={register}
-          label="Алкоголь"
-        />
-      </Fieldset>
-      <RadioGroup
-        name="hypoglycemia.hasGlucagon"
-        register={register}
-        options={[
-          { value: "true", label: "Да" },
-          { value: "false", label: "Нет" },
-        ]}
-        label="Есть ли дома глюкагон, обучены ли близкие его введению?"
-      />
-      <RadioGroup
-        name="hypoglycemia.nocturnalHypoglycemia"
-        register={register}
-        options={[
-          { value: "true", label: "Да" },
-          { value: "false", label: "Нет" },
-        ]}
-        label="Ночные гипогликемии"
-      />
+export const HypoglycemiaTab: React.FC<TabProps> = ({ register, watch }) => (
+  <div className={styles.section}>
+    <h3>Гипогликемии</h3>
+    <Input
+      label="Частота гипогликемий"
+      type="number"
+      suffix="эпиз./нед."
+      {...register("hypoglycemia.frequencyPerWeek")}
+    />
+    <YesNo
+      label="Были ли тяжёлые эпизоды?"
+      name="hypoglycemia.severeEpisodes"
+      register={register}
+    />
+    {watch("hypoglycemia.severeEpisodes") === true && (
+      <Field noteKey="hypoglycemia.severeEpisodes">
+        <>
+          <Input
+            label="Количество"
+            type="number"
+            suffix="эпиз."
+            {...register("hypoglycemia.severeEpisodesCount")}
+          />
+          <Input
+            label="Когда (дата)"
+            {...register("hypoglycemia.severeEpisodesWhen")}
+          />
+          <Textarea
+            label="Клиника"
+            {...register("hypoglycemia.severeEpisodesClinic")}
+            rows={2}
+          />
+        </>
+      </Field>
+    )}
+    <YesNo
+      label="Сохранено ли распознавание гипогликемии?"
+      name="hypoglycemia.awarenessPreserved"
+      register={register}
+    />
+
+    <div className={styles.radioGroup}>
+      <label>Тяжесть гипогликемий:</label>
+      <label>
+        <input
+          type="radio"
+          value="mild"
+          {...register("hypoglycemia.severity")}
+        />{" "}
+        Лёгкие
+      </label>
+      <label>
+        <input
+          type="radio"
+          value="severe"
+          {...register("hypoglycemia.severity")}
+        />{" "}
+        Тяжёлые (требовали помощи)
+      </label>
     </div>
-  );
-};
+
+    <fieldset className={styles.fieldset}>
+      <legend>Симптомы гипогликемии</legend>
+      <label>
+        <input type="checkbox" {...register("hypoglycemia.symptoms.hunger")} />{" "}
+        Волчий голод
+      </label>
+      <label>
+        <input type="checkbox" {...register("hypoglycemia.symptoms.tremor")} />{" "}
+        Тремор
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          {...register("hypoglycemia.symptoms.sweating")}
+        />{" "}
+        Потливость (холодный пот)
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          {...register("hypoglycemia.symptoms.tachycardia")}
+        />{" "}
+        Тахикардия
+      </label>
+      <label>
+        <input type="checkbox" {...register("hypoglycemia.symptoms.anxiety")} />{" "}
+        Тревожность
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          {...register("hypoglycemia.symptoms.weakness")}
+        />{" "}
+        Слабость
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          {...register("hypoglycemia.symptoms.diplopia")}
+        />{" "}
+        Диплопия (двоение в глазах)
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          {...register("hypoglycemia.symptoms.headache")}
+        />{" "}
+        Головная боль
+      </label>
+    </fieldset>
+
+    <Field noteKey="hypoglycemia.provokingFactors">
+      <fieldset className={styles.fieldset}>
+        <legend>Типичные провоцирующие факторы</legend>
+        <label>
+          <input
+            type="checkbox"
+            {...register("hypoglycemia.provokingFactors.physicalActivity")}
+          />{" "}
+          Физическая нагрузка
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            {...register("hypoglycemia.provokingFactors.missedMeal")}
+          />{" "}
+          Пропуск еды
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            {...register("hypoglycemia.provokingFactors.alcohol")}
+          />{" "}
+          Алкоголь
+        </label>
+      </fieldset>
+    </Field>
+
+    <YesNo
+      label="Есть ли дома глюкагон?"
+      name="hypoglycemia.hasGlucagon"
+      register={register}
+    />
+    <YesNo
+      label="Обучены ли близкие введению глюкагона?"
+      name="hypoglycemia.familyTrained"
+      register={register}
+    />
+    <YesNo
+      label="Ночные гипогликемии"
+      name="hypoglycemia.nocturnalHypoglycemia"
+      register={register}
+    />
+    <Field
+      noteKey="hypoglycemia.general"
+      noteLabel="Примечание по гипогликемиям"
+    >
+      <div />
+    </Field>
+  </div>
+);

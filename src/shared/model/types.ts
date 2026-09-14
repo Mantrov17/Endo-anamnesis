@@ -104,10 +104,10 @@ export interface Type2Diabetes {
     visionBlur: boolean;
   };
   investigatedAfterDetection: boolean | null;
-  initialTherapy: { drugName: string; dose: string; frequency: string }[];
+  initialTherapy: { drugName: string; dose: string }[];
   stillTakingInitialTherapy: boolean | null;
   ifNotTakingReason: string;
-  currentTherapy: { drugName: string; dose: string; frequency: string }[];
+  currentTherapy: { drugName: string; dose: string }[];
   therapyRegularity: boolean | null;
   missedDosesPerWeek: string;
   missedReasons: string;

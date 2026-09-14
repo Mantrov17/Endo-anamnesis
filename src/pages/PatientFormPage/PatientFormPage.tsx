@@ -10,6 +10,7 @@ import { Input } from "@/shared/ui/Input";
 import { RadioGroup } from "@/shared/ui/RadioGroup";
 import { Button } from "@/shared/ui/Button";
 import styles from "./styles.module.scss";
+import { DateInput } from "@/shared/ui/DateInput/DateInput.tsx";
 
 export const PatientFormPage: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
@@ -69,13 +70,10 @@ export const PatientFormPage: React.FC = () => {
           onChange={(e) => handleChange(e.target.name, e.target.value)}
           required
         />
-        <Input
+        <DateInput
           label="Дата рождения"
-          type="date"
-          name="birthDate"
           value={formData.birthDate}
-          onChange={(e) => handleChange(e.target.name, e.target.value)}
-          required
+          onChange={(iso) => handleChange("birthDate", iso)}
         />
         <RadioGroup
           label="Пол"

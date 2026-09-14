@@ -9,6 +9,7 @@ import {
 } from "@/shared";
 import { Button } from "@/shared/ui/Button";
 import styles from "./styles.module.scss";
+import { DateInput } from "@/shared/ui/DateInput/DateInput.tsx";
 
 // Функция для вычисления возраста
 const getAge = (birthDate: string): string => {
@@ -242,27 +243,23 @@ export const PatientsListPage: React.FC = () => {
             </select>
           </div>
           <div className={styles.filterGroup}>
-            <label>Дата рождения от:</label>
-            <input
-              type="date"
+            <DateInput
+              label="Дата рождения от:"
               value={dateFrom}
-              onChange={(e) => {
-                setDateFrom(e.target.value);
+              onChange={(iso) => {
+                setDateFrom(iso);
                 setCurrentPage(1);
               }}
-              className={styles.filterInput}
             />
           </div>
           <div className={styles.filterGroup}>
-            <label>до:</label>
-            <input
-              type="date"
+            <DateInput
+              label="до:"
               value={dateTo}
-              onChange={(e) => {
-                setDateTo(e.target.value);
+              onChange={(iso) => {
+                setDateTo(iso);
                 setCurrentPage(1);
               }}
-              className={styles.filterInput}
             />
           </div>
           <Button onClick={resetFilters} variant="secondary">
