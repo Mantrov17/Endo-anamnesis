@@ -17,6 +17,7 @@ export const getDefaultValues = (): AnamnesisFormData => ({
     weightChange6Months: null,
     weightIncreasedBy: null,
     weightDecreasedBy: null,
+    weightChangeReason: "", // NEW
   },
 
   type1Diabetes: null,

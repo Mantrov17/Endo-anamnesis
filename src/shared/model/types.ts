@@ -13,18 +13,18 @@ export interface PrimaryExam {
   // NEW — антропометрия в начале формы
   height: number | null;
   weight: number | null;
-  bmi: number | null; // авторасчёт
+  bmi: number | null;
   waistCircumference: number | null;
   weightChange6Months: boolean | null;
   weightIncreasedBy: number | null;
   weightDecreasedBy: number | null;
+  weightChangeReason: "unmotivated" | "stress" | "diet" | "sport" | ""; // NEW
 }
-
 // ==================== СД 1 типа ====================
 export interface Type1Diabetes {
   ageAtDiagnosis: number | null;
-  diagnosisDate: string;
   yearOfDiagnosis: string;
+  diseaseDuration: number | null; // NEW
   howDiagnosed:
     | "accidental"
     | "planned"
@@ -50,7 +50,6 @@ export interface Type1Diabetes {
     lossOfConsciousness: boolean;
   };
   furtherPlan: string;
-  initialTherapy: { drugName: string; dose: string }[];
   stillTakingInitialTherapy: boolean | null;
   ifNotTakingReason: string;
   autoantibodies: {
@@ -69,6 +68,7 @@ export interface Type1Diabetes {
   usualGlucose: number | null;
 
   // NEW
+  initialTherapy: { drugName: string; dose: string }[];
   investigatedAfterDetection: boolean | null;
   initiallyType2: boolean | null;
 }
@@ -594,7 +594,7 @@ export interface AnamnesisRecord extends AnamnesisFormData {
 }
 
 // ==================== Пациент ====================
-export interface PatientFormData extends PatientBase {}
+export type PatientFormData = PatientBase;
 
 export interface Patient extends PatientBase {
   id: string;

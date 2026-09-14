@@ -283,10 +283,16 @@ select {
 .hintedField {
   position: relative;
 
-  .fieldHint {
+  .fieldIcons {
     position: absolute;
     top: 6px;
     right: 8px;
+    display: flex;
+    gap: 4px;
+    z-index: 2;
+  }
+
+  .fieldIcon {
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -302,7 +308,6 @@ select {
     user-select: none;
     border: none;
     padding: 0;
-    z-index: 2;
 
     &:active {
       background: #d6e2f1;
@@ -323,7 +328,7 @@ select {
     border-radius: 8px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
     word-break: break-word;
-    white-space: normal;
+    white-space: pre-line;
 
     &::before {
       content: "";
@@ -335,6 +340,10 @@ select {
       background: #1f2d3d;
       transform: rotate(45deg);
     }
+  }
+
+  .noteBelow {
+    margin-top: 6px;
   }
 }
 
@@ -359,5 +368,44 @@ select {
 
   &:hover {
     background: #eef3f8;
+  }
+}
+
+
+/* ===== Бейдж ИМТ ===== */
+.bmiBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 4px 0 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.3;
+  font-weight: 500;
+  border: 1px solid transparent;
+  align-self: flex-start;
+  width: fit-content;
+
+  strong {
+    font-weight: 700;
+  }
+
+  &.ok {
+    background: #e6f4ea;
+    color: #1e6b34;
+    border-color: #b7e0c2;
+  }
+
+  &.warn {
+    background: #fff4e5;
+    color: #8a5300;
+    border-color: #ffd9a8;
+  }
+
+  &.bad {
+    background: #fdecea;
+    color: #a4231b;
+    border-color: #f5b8b3;
   }
 }

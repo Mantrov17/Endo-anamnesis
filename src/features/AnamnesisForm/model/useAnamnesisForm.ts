@@ -29,6 +29,16 @@ export const useAnamnesisForm = ({
     defaultValues: initialData ?? getDefaultValues(),
   });
 
+  // Подгружаем данные пациента в скрытые поля формы,
+  // чтобы можно было считать возраст по дате рождения
+  useEffect(() => {
+    const patient = getPatientById(patientId);
+    if (!patient) return;
+    setValue("birthDate", patient.birthDate);
+    setValue("fullName", patient.fullName);
+    setValue("gender", patient.gender);
+  }, [patientId, setValue]);
+
   // ИМТ (СД 2) — старое
   const height = watch("type2Diabetes.height");
   const weight = watch("type2Diabetes.weight");

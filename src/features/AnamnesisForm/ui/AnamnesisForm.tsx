@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   useFieldArray,
   type Control,
@@ -51,28 +51,48 @@ const tabs: { id: TabId; label: string }[] = [
   { id: "additional", label: "Доп. анамнез" },
 ];
 
-// ===== Обёртка с иконкой-подсказкой справа в поле =====
+// ===== Универсальный враппер: ? и + в одном месте =====
 interface HintedFieldProps {
   hint?: string;
+  noteKey?: string;
+  noteLabel?: string;
+  register?: UseFormRegister<AnamnesisFormData>;
+  watch?: UseFormWatch<AnamnesisFormData>;
   children: React.ReactNode;
 }
 
-const HintedField: React.FC<HintedFieldProps> = ({ hint, children }) => {
-  const [open, setOpen] = useState(false);
+const HintedField: React.FC<HintedFieldProps> = ({
+  hint,
+  noteKey,
+  noteLabel = "Примечание",
+  register,
+  watch,
+  children,
+}) => {
+  const [hintOpen, setHintOpen] = useState(false);
+  const [noteOpen, setNoteOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!open) return;
+  const notePath = noteKey
+    ? (`notes.${noteKey}` as Path<AnamnesisFormData>)
+    : null;
+  const noteValue =
+    notePath && watch ? (watch(notePath) as string | undefined) : undefined;
+  const noteVisible = noteOpen || Boolean(noteValue);
 
+  const hasHint = Boolean(hint);
+  const hasNote = Boolean(noteKey && register && watch);
+
+  useEffect(() => {
+    if (!hintOpen) return;
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
+        setHintOpen(false);
       }
     };
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") setHintOpen(false);
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("touchstart", handleClickOutside);
     document.addEventListener("keydown", handleKey);
@@ -81,72 +101,58 @@ const HintedField: React.FC<HintedFieldProps> = ({ hint, children }) => {
       document.removeEventListener("touchstart", handleClickOutside);
       document.removeEventListener("keydown", handleKey);
     };
-  }, [open]);
+  }, [hintOpen]);
 
-  if (!hint) return <>{children}</>;
+  if (!hasHint && !hasNote) return <>{children}</>;
 
   return (
     <div className={styles.hintedField} ref={ref}>
       {children}
-      <button
-        type="button"
-        className={styles.fieldHint}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setOpen((v) => !v);
-        }}
-        aria-label="Показать подсказку"
-        aria-expanded={open}
-      >
-        ?
-      </button>
-      {open && (
+
+      <div className={styles.fieldIcons}>
+        {hasHint && (
+          <button
+            type="button"
+            className={styles.fieldIcon}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setHintOpen((v) => !v);
+            }}
+            aria-label="Показать подсказку"
+            aria-expanded={hintOpen}
+          >
+            ?
+          </button>
+        )}
+        {hasNote && (
+          <button
+            type="button"
+            className={styles.fieldIcon}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setNoteOpen((v) => !v);
+            }}
+            aria-label="Добавить примечание"
+            aria-expanded={noteVisible}
+            title="Добавить примечание"
+          >
+            +
+          </button>
+        )}
+      </div>
+
+      {hintOpen && (
         <div className={styles.hintPopover} role="tooltip">
           {hint}
         </div>
       )}
-    </div>
-  );
-};
 
-// ===== Поле "Примечание" =====
-interface NoteFieldProps {
-  noteKey: string;
-  register: UseFormRegister<AnamnesisFormData>;
-  watch: UseFormWatch<AnamnesisFormData>;
-  label?: string;
-  title?: string;
-}
-
-const NoteField: React.FC<NoteFieldProps> = ({
-  noteKey,
-  register,
-  watch,
-  label = "Примечание",
-  title = "Введите примечание…",
-}) => {
-  const [open, setOpen] = useState(false);
-  const path = `notes.${noteKey}` as Path<AnamnesisFormData>;
-  const value = watch(path) as string | undefined;
-  const visible = open || Boolean(value);
-
-  return (
-    <div className={styles.noteField}>
-      {!visible ? (
-        <button
-          type="button"
-          className={styles.noteToggle}
-          onClick={() => setOpen(true)}
-          title="Добавить примечание"
-          aria-label="Добавить примечание"
-        >
-          +
-        </button>
-      ) : (
-        <HintedField hint={title}>
-          <Textarea label={label} {...register(path)} rows={2} />
-        </HintedField>
+      {hasNote && noteVisible && (
+        <div className={styles.noteBelow}>
+          <Textarea label={noteLabel} {...register!(notePath!)} rows={2} />
+        </div>
       )}
     </div>
   );
@@ -172,11 +178,22 @@ interface YesNoProps {
   hint?: string;
   name: Path<AnamnesisFormData>;
   register: UseFormRegister<AnamnesisFormData>;
+  /** Окрасить label в синий */
+  blue?: boolean;
+  /** Свои тексты для кнопок [Да, Нет] */
+  yesNoLabels?: [string, string];
 }
 
-const YesNo: React.FC<YesNoProps> = ({ label, hint, name, register }) => (
+const YesNo: React.FC<YesNoProps> = ({
+  label,
+  hint,
+  name,
+  register,
+  blue,
+  yesNoLabels = ["Да", "Нет"],
+}) => (
   <div className={styles.radioGroup}>
-    <label>
+    <label className={blue ? styles.blueLabel : undefined}>
       {label} {hint && <Hint text={hint} />}
     </label>
     <label>
@@ -185,7 +202,7 @@ const YesNo: React.FC<YesNoProps> = ({ label, hint, name, register }) => (
         value="true"
         {...register(name, { setValueAs: boolFromString })}
       />{" "}
-      Да
+      {yesNoLabels[0]}
     </label>
     <label>
       <input
@@ -193,7 +210,7 @@ const YesNo: React.FC<YesNoProps> = ({ label, hint, name, register }) => (
         value="false"
         {...register(name, { setValueAs: boolFromString })}
       />{" "}
-      Нет
+      {yesNoLabels[1]}
     </label>
   </div>
 );
@@ -295,13 +312,111 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
   const znt8Checked = watch("type1Diabetes.autoantibodies.ZnT8");
   const iaaChecked = watch("type1Diabetes.autoantibodies.IAA");
 
+  // ===== ИМТ — динамическая интерпретация =====
+  const primaryBmi = watch("primaryExam.bmi");
+
+  const bmiCategory = useMemo(() => {
+    if (primaryBmi === null || primaryBmi === undefined || isNaN(primaryBmi)) {
+      return null;
+    }
+    const v = Number(primaryBmi);
+    if (v < 18) return { label: "Дефицит массы тела", tone: "warn" as const };
+    if (v < 25) return { label: "Норма", tone: "ok" as const };
+    if (v < 31)
+      return { label: "Избыточная масса тела", tone: "warn" as const };
+    if (v < 36) return { label: "Ожирение I степени", tone: "bad" as const };
+    if (v < 41) return { label: "Ожирение II степени", tone: "bad" as const };
+    if (v < 46) return { label: "Ожирение III степени", tone: "bad" as const };
+    return { label: "Ожирение IV степени", tone: "bad" as const };
+  }, [primaryBmi]);
+
+  const BMI_REFERENCE =
+    "<18 — дефицит массы тела\n" +
+    "18–24.9 — норма\n" +
+    "25–30.9 — избыточная масса тела\n" +
+    "31–35.9 — ожирение I степени\n" +
+    "36–40.9 — ожирение II степени\n" +
+    "41–45.9 — ожирение III степени\n" +
+    "≥46 — ожирение IV степени";
+
+  // Локальный враппер, чтобы не таскать register/watch руками
+  const Field = useMemo(
+    () =>
+      ({
+        hint,
+        noteKey,
+        noteLabel,
+        children,
+      }: {
+        hint?: string;
+        noteKey?: string;
+        noteLabel?: string;
+        children: React.ReactNode;
+      }) => (
+        <HintedField
+          hint={hint}
+          noteKey={noteKey}
+          noteLabel={noteLabel}
+          register={register}
+          watch={watch}
+        >
+          {children}
+        </HintedField>
+      ),
+    // register/watch из react-hook-form стабильны между рендерами
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  // ===== СД 1 типа: авторасчёт возраста и длительности =====
+  const yearOfDiagnosis = watch("type1Diabetes.yearOfDiagnosis");
+  const ageAtDiagnosis = watch("type1Diabetes.ageAtDiagnosis");
+  const birthDate = watch("birthDate");
+
+  // Год → возраст и длительность
+  useEffect(() => {
+    const yearStr = String(yearOfDiagnosis ?? "").trim();
+    if (!/^\d{4}$/.test(yearStr)) return; // ничего не трогаем, если год не введён полностью
+
+    const diagYear = Number(yearStr);
+    const nowYear = new Date().getFullYear();
+    if (diagYear < 1900 || diagYear > nowYear) return;
+
+    // возраст: только если есть дата рождения
+    if (birthDate) {
+      const birthYear = new Date(birthDate).getFullYear();
+      if (!isNaN(birthYear) && diagYear >= birthYear) {
+        setValue("type1Diabetes.ageAtDiagnosis", diagYear - birthYear);
+      }
+    }
+
+    // длительность
+    setValue("type1Diabetes.diseaseDuration", nowYear - diagYear);
+  }, [yearOfDiagnosis, birthDate, setValue]);
+
+  // Возраст → год (только если год ещё пустой)
+  useEffect(() => {
+    if (!birthDate) return;
+    if (ageAtDiagnosis === null || ageAtDiagnosis === undefined) return;
+
+    const age = Number(ageAtDiagnosis);
+    if (isNaN(age) || age < 0 || age > 120) return;
+
+    const yearStr = String(yearOfDiagnosis ?? "").trim();
+    if (yearStr) return; // год уже введён — не перетираем
+
+    const birthYear = new Date(birthDate).getFullYear();
+    if (isNaN(birthYear)) return;
+
+    setValue("type1Diabetes.yearOfDiagnosis", String(birthYear + age));
+  }, [ageAtDiagnosis, birthDate, yearOfDiagnosis, setValue]);
   // При выборе типа СД инициализируем соответствующий объект
   useEffect(() => {
     if (isType1 && !type1Data) {
       setValue("type1Diabetes", {
         ageAtDiagnosis: null,
-        diagnosisDate: "",
         yearOfDiagnosis: "",
+        diseaseDuration: null,
         howDiagnosed: "",
         howDiagnosedDetails: "",
         circumstances: "",
@@ -320,7 +435,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
           lossOfConsciousness: false,
         },
         furtherPlan: "",
-        initialTherapy: [{ drugName: "", dose: "" }],
         stillTakingInitialTherapy: null,
         ifNotTakingReason: "",
         autoantibodies: {
@@ -337,6 +451,7 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         cPeptide: { value: "", date: "" },
         hba1c: { value: null, date: "" },
         usualGlucose: null,
+        initialTherapy: [{ drugName: "", dose: "" }],
         investigatedAfterDetection: null,
         initiallyType2: null,
       });
@@ -384,21 +499,19 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
       case "primary":
         return (
           <>
-            <HintedField hint="Что вас к нам привело? С какими жалобами поступили?">
+            <Field
+              hint="Что вас к нам привело? С какими жалобами поступили?"
+              noteKey="primaryExam.reason"
+            >
               <Textarea
                 label="Причина обращения"
                 {...register("primaryExam.reason")}
                 error={errors.primaryExam?.reason?.message}
                 rows={3}
               />
-            </HintedField>
-            <NoteField
-              noteKey="primaryExam.reason"
-              register={register}
-              watch={watch}
-            />
+            </Field>
 
-            {/* ===== NEW — Антропометрия в начале формы ===== */}
+            {/* ===== Антропометрия ===== */}
             <fieldset className={styles.fieldset}>
               <legend>Антропометрия</legend>
               <div className={styles.row}>
@@ -415,48 +528,109 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                   suffix="кг"
                   {...register("primaryExam.weight")}
                 />
-                <Input
-                  label="ИМТ (авторасчёт)"
-                  type="number"
-                  step="0.1"
-                  suffix="кг/м²"
-                  {...register("primaryExam.bmi")}
-                  readOnly
-                />
+                <Field hint={BMI_REFERENCE}>
+                  <Input
+                    label="ИМТ (авторасчёт)"
+                    type="number"
+                    step="0.1"
+                    suffix="кг/м²"
+                    {...register("primaryExam.bmi")}
+                    readOnly
+                  />
+                </Field>
               </div>
+
+              {bmiCategory && (
+                <div
+                  className={`${styles.bmiBadge} ${styles[bmiCategory.tone]}`}
+                >
+                  ИМТ: <strong>{Number(primaryBmi).toFixed(1)}</strong> кг/м² —{" "}
+                  {bmiCategory.label}
+                </div>
+              )}
+
               <Input
                 label="Окружность талии"
                 type="number"
                 suffix="см"
                 {...register("primaryExam.waistCircumference")}
               />
-              <YesNo
-                label="Изменился ли вес за последние 6 месяцев?"
-                name="primaryExam.weightChange6Months"
-                register={register}
-              />
+
+              <Field noteKey="primaryExam.weightChangeReason">
+                <YesNo
+                  label="Изменился ли вес за последние 6 месяцев?"
+                  name="primaryExam.weightChange6Months"
+                  register={register}
+                />
+              </Field>
+
               {watch("primaryExam.weightChange6Months") === true && (
-                <div className={styles.row}>
-                  <Input
-                    label="Увеличился на"
-                    type="number"
-                    suffix="кг"
-                    {...register("primaryExam.weightIncreasedBy")}
-                  />
-                  <Input
-                    label="Уменьшился на"
-                    type="number"
-                    suffix="кг"
-                    {...register("primaryExam.weightDecreasedBy")}
-                  />
-                </div>
+                <>
+                  <div className={styles.row}>
+                    <Input
+                      label="Увеличился на"
+                      type="number"
+                      suffix="кг"
+                      {...register("primaryExam.weightIncreasedBy")}
+                    />
+                    <Input
+                      label="Уменьшился на"
+                      type="number"
+                      suffix="кг"
+                      {...register("primaryExam.weightDecreasedBy")}
+                    />
+                  </div>
+
+                  <div className={styles.radioGroup}>
+                    <label>Причина изменения веса:</label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="unmotivated"
+                        {...register("primaryExam.weightChangeReason")}
+                      />{" "}
+                      Немотивируемое
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="stress"
+                        {...register("primaryExam.weightChangeReason")}
+                      />{" "}
+                      Стресс
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="diet"
+                        {...register("primaryExam.weightChangeReason")}
+                      />{" "}
+                      Диета
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="sport"
+                        {...register("primaryExam.weightChangeReason")}
+                      />{" "}
+                      Спорт
+                    </label>
+                  </div>
+
+                  <Field noteKey="primaryExam.weightChangeReasonDetails">
+                    <Input
+                      label="Комментарий к причине (необязательно)"
+                      {...register(
+                        "primaryExam.weightChangeReasonDetails" as never,
+                      )}
+                    />
+                  </Field>
+                </>
               )}
-              <NoteField
-                noteKey="primaryExam.anthropometry"
-                register={register}
-                watch={watch}
-                label="Примечание по антропометрии"
-              />
+
+              <Field noteKey="primaryExam.anthropometry">
+                <div />
+              </Field>
             </fieldset>
 
             <div className={styles.radioGroup}>
@@ -491,71 +665,72 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
 
                 <div className={styles.row}>
                   <Input
+                    label="Год постановки диагноза"
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={4}
+                    placeholder="ГГГГ"
+                    {...register("type1Diabetes.yearOfDiagnosis")}
+                  />
+                  <Input
                     label="Возраст постановки диагноза"
                     type="number"
                     suffix="лет"
                     {...register("type1Diabetes.ageAtDiagnosis")}
                   />
                   <Input
-                    label="Дата постановки"
-                    type="date"
-                    {...register("type1Diabetes.diagnosisDate")}
+                    label="Длительность заболевания"
+                    type="number"
+                    suffix="лет"
+                    {...register("type1Diabetes.diseaseDuration")}
                   />
                 </div>
 
-                <Input
-                  label="Год постановки диагноза"
-                  {...register("type1Diabetes.yearOfDiagnosis")}
-                />
-
-                <div className={styles.radioGroup}>
-                  <label>Как был поставлен диагноз?</label>
-                  <label>
-                    <input
-                      type="radio"
-                      value="accidental"
-                      {...register("type1Diabetes.howDiagnosed")}
-                    />{" "}
-                    Случайная находка
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      value="planned"
-                      {...register("type1Diabetes.howDiagnosed")}
-                    />{" "}
-                    Плановый осмотр
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      value="dispanserization"
-                      {...register("type1Diabetes.howDiagnosed")}
-                    />{" "}
-                    Диспансеризация
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      value="withComplaints"
-                      {...register("type1Diabetes.howDiagnosed")}
-                    />{" "}
-                    Приём с жалобами
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      value="emergency"
-                      {...register("type1Diabetes.howDiagnosed")}
-                    />{" "}
-                    Неотложная госпитализация
-                  </label>
-                </div>
-                <NoteField
-                  noteKey="type1Diabetes.howDiagnosed"
-                  register={register}
-                  watch={watch}
-                />
+                <Field noteKey="type1Diabetes.howDiagnosed">
+                  <div className={styles.radioGroup}>
+                    <label>Как был поставлен диагноз?</label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="accidental"
+                        {...register("type1Diabetes.howDiagnosed")}
+                      />{" "}
+                      Случайная находка
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="planned"
+                        {...register("type1Diabetes.howDiagnosed")}
+                      />{" "}
+                      Плановый осмотр
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="dispanserization"
+                        {...register("type1Diabetes.howDiagnosed")}
+                      />{" "}
+                      Диспансеризация
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="withComplaints"
+                        {...register("type1Diabetes.howDiagnosed")}
+                      />{" "}
+                      Приём с жалобами
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="emergency"
+                        {...register("type1Diabetes.howDiagnosed")}
+                      />{" "}
+                      Неотложная госпитализация
+                    </label>
+                  </div>
+                </Field>
 
                 <Textarea
                   label="Детали (если нужно уточнить)"
@@ -563,18 +738,16 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                   rows={2}
                 />
 
-                <HintedField hint="Что послужило триггерным фактором?">
+                <Field
+                  hint="Что послужило триггерным фактором?"
+                  noteKey="type1Diabetes.circumstances"
+                >
                   <Textarea
-                    label="При каких обстоятельствах?"
+                    label="Триггерный фактор"
                     {...register("type1Diabetes.circumstances")}
                     rows={2}
                   />
-                </HintedField>
-                <NoteField
-                  noteKey="type1Diabetes.circumstances"
-                  register={register}
-                  watch={watch}
-                />
+                </Field>
 
                 <Input
                   label="Уровень гликемии в дебюте"
@@ -584,164 +757,128 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                   {...register("type1Diabetes.glycemiaAtOnset")}
                 />
 
-                <fieldset className={styles.fieldset}>
-                  <legend>Классические симптомы при дебюте</legend>
-                  <label>
-                    <input
-                      type="checkbox"
-                      {...register("type1Diabetes.classicSymptoms.polyuria")}
-                    />{" "}
-                    Полиурия
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      {...register("type1Diabetes.classicSymptoms.polydipsia")}
-                    />{" "}
-                    Полидипсия
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      {...register("type1Diabetes.classicSymptoms.weakness")}
-                    />{" "}
-                    Слабость
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      {...register("type1Diabetes.classicSymptoms.weightLoss")}
-                    />{" "}
-                    Снижение веса
-                  </label>
-                  {watch("type1Diabetes.classicSymptoms.weightLoss") && (
-                    <>
-                      <Input
-                        label="Потеря веса"
-                        type="number"
-                        suffix="кг"
+                <Field noteKey="type1Diabetes.classicSymptoms">
+                  <fieldset className={styles.fieldset}>
+                    <legend>Классические симптомы при дебюте</legend>
+                    <label>
+                      <input
+                        type="checkbox"
+                        {...register("type1Diabetes.classicSymptoms.polyuria")}
+                      />{" "}
+                      Полиурия
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
                         {...register(
-                          "type1Diabetes.classicSymptoms.weightLossAmount",
+                          "type1Diabetes.classicSymptoms.polydipsia",
                         )}
-                      />
-                      <label>
-                        <input
-                          type="checkbox"
+                      />{" "}
+                      Полидипсия
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        {...register("type1Diabetes.classicSymptoms.weakness")}
+                      />{" "}
+                      Слабость
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        {...register(
+                          "type1Diabetes.classicSymptoms.weightLoss",
+                        )}
+                      />{" "}
+                      Снижение веса
+                    </label>
+                    {watch("type1Diabetes.classicSymptoms.weightLoss") && (
+                      <>
+                        <Input
+                          label="Потеря веса"
+                          type="number"
+                          suffix="кг"
                           {...register(
-                            "type1Diabetes.classicSymptoms.weightLossUnknown",
+                            "type1Diabetes.classicSymptoms.weightLossAmount",
                           )}
-                        />{" "}
-                        Затрудняюсь сказать
-                      </label>
-                    </>
-                  )}
-                  {/* NEW — расширенные симптомы */}
-                  <label>
-                    <input
-                      type="checkbox"
-                      {...register("type1Diabetes.classicSymptoms.nausea")}
-                    />{" "}
-                    Тошнота
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      {...register("type1Diabetes.classicSymptoms.vomiting")}
-                    />{" "}
-                    Рвота
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      {...register(
-                        "type1Diabetes.classicSymptoms.abdominalPain",
-                      )}
-                    />{" "}
-                    Боли в животе
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      {...register("type1Diabetes.classicSymptoms.visionBlur")}
-                    />{" "}
-                    Помутнение зрения
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      {...register(
-                        "type1Diabetes.classicSymptoms.lossOfConsciousness",
-                      )}
-                    />{" "}
-                    Потеря сознания
-                  </label>
-                  <NoteField
-                    noteKey="type1Diabetes.classicSymptoms"
-                    register={register}
-                    watch={watch}
-                  />
-                </fieldset>
+                        />
+                        <label>
+                          <input
+                            type="checkbox"
+                            {...register(
+                              "type1Diabetes.classicSymptoms.weightLossUnknown",
+                            )}
+                          />{" "}
+                          Затрудняюсь сказать
+                        </label>
+                      </>
+                    )}
+                    <label>
+                      <input
+                        type="checkbox"
+                        {...register("type1Diabetes.classicSymptoms.nausea")}
+                      />{" "}
+                      Тошнота
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        {...register("type1Diabetes.classicSymptoms.vomiting")}
+                      />{" "}
+                      Рвота
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        {...register(
+                          "type1Diabetes.classicSymptoms.abdominalPain",
+                        )}
+                      />{" "}
+                      Боли в животе
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        {...register(
+                          "type1Diabetes.classicSymptoms.visionBlur",
+                        )}
+                      />{" "}
+                      Помутнение зрения
+                    </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        {...register(
+                          "type1Diabetes.classicSymptoms.lossOfConsciousness",
+                        )}
+                      />{" "}
+                      Потеря сознания
+                    </label>
+                  </fieldset>
+                </Field>
 
-                <HintedField hint="Вы обратились к эндокринологу после обнаружения повышенного результата?">
+                <Field
+                  hint="Вы обратились к эндокринологу после обнаружения повышенного результата?"
+                  noteKey="type1Diabetes.furtherPlan"
+                >
                   <Textarea
                     label="План дальнейшего обследования"
                     {...register("type1Diabetes.furtherPlan")}
                     rows={2}
                   />
-                </HintedField>
-                <NoteField
-                  noteKey="type1Diabetes.furtherPlan"
-                  register={register}
-                  watch={watch}
-                />
+                </Field>
 
-                {/* NEW */}
                 <YesNo
-                  label="Вы обратились к эндокринологу после обнаружения повышенного результата?"
+                  label="Обращение к эндокринологу после обнаружения гипергликемии"
                   name="type1Diabetes.investigatedAfterDetection"
                   register={register}
+                  yesNoLabels={["Было", "Не было"]}
                 />
                 <YesNo
                   label="Первично поставлен СД 2 типа?"
                   name="type1Diabetes.initiallyType2"
                   register={register}
                 />
-
-                <fieldset className={styles.fieldset}>
-                  <legend>Терапия в дебюте</legend>
-                  <DrugList
-                    control={control}
-                    register={register}
-                    name="type1Diabetes.initialTherapy"
-                    firstField="drugName"
-                    nameLabel="Название препарата"
-                  />
-                  <NoteField
-                    noteKey="type1Diabetes.initialTherapy"
-                    register={register}
-                    watch={watch}
-                  />
-                </fieldset>
-
-                <YesNo
-                  label="Данную терапию принимаете до сих пор?"
-                  name="type1Diabetes.stillTakingInitialTherapy"
-                  register={register}
-                />
-                {watch("type1Diabetes.stillTakingInitialTherapy") === false && (
-                  <>
-                    <Textarea
-                      label="Что изменилось?"
-                      {...register("type1Diabetes.ifNotTakingReason")}
-                      rows={2}
-                    />
-                    <NoteField
-                      noteKey="type1Diabetes.ifNotTakingReason"
-                      register={register}
-                      watch={watch}
-                    />
-                  </>
-                )}
 
                 <fieldset className={styles.fieldset}>
                   <legend>Исследовались ли островковые аутоантитела?</legend>
@@ -763,7 +900,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                       </label>
                       {gadChecked && (
                         <Input
-                          label="GAD"
                           type="number"
                           step="0.1"
                           suffix="Ед/мл"
@@ -780,7 +916,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                       </label>
                       {ia2Checked && (
                         <Input
-                          label="IA-2"
                           type="number"
                           step="0.1"
                           suffix="Ед/мл"
@@ -797,7 +932,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                       </label>
                       {znt8Checked && (
                         <Input
-                          label="ZnT8"
                           type="number"
                           step="0.1"
                           suffix="Ед/мл"
@@ -816,7 +950,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                       </label>
                       {iaaChecked && (
                         <Input
-                          label="IAA"
                           type="number"
                           step="0.1"
                           suffix="Ед/мл"
@@ -824,57 +957,49 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                         />
                       )}
 
-                      <NoteField
-                        noteKey="type1Diabetes.autoantibodies"
-                        register={register}
-                        watch={watch}
-                      />
+                      <Field noteKey="type1Diabetes.autoantibodies">
+                        <div />
+                      </Field>
                     </>
                   )}
                 </fieldset>
 
-                <fieldset className={styles.fieldset}>
-                  <legend>C-пептид</legend>
-                  <Input
-                    label="Значение"
-                    suffix="нг/мл"
-                    {...register("type1Diabetes.cPeptide.value")}
-                  />
-                  <Input
-                    label="Дата"
-                    type="date"
-                    {...register("type1Diabetes.cPeptide.date")}
-                  />
-                  <NoteField
-                    noteKey="type1Diabetes.cPeptide"
-                    register={register}
-                    watch={watch}
-                  />
-                </fieldset>
+                <Field noteKey="type1Diabetes.cPeptide">
+                  <fieldset className={styles.fieldset}>
+                    <legend>C-пептид</legend>
+                    <Input
+                      label="Значение"
+                      suffix="нг/мл"
+                      {...register("type1Diabetes.cPeptide.value")}
+                    />
+                    <Input
+                      label="Дата"
+                      type="date"
+                      {...register("type1Diabetes.cPeptide.date")}
+                    />
+                  </fieldset>
+                </Field>
 
-                <fieldset className={styles.fieldset}>
-                  <legend>Гликированный гемоглобин</legend>
-                  <Input
-                    label="Значение"
-                    type="number"
-                    step="0.1"
-                    suffix="%"
-                    {...register("type1Diabetes.hba1c.value")}
-                  />
-                  <Input
-                    label="Дата"
-                    type="date"
-                    {...register("type1Diabetes.hba1c.date")}
-                  />
-                  <NoteField
-                    noteKey="type1Diabetes.hba1c"
-                    register={register}
-                    watch={watch}
-                  />
-                </fieldset>
+                <Field noteKey="type1Diabetes.hba1c">
+                  <fieldset className={styles.fieldset}>
+                    <legend>Гликированный гемоглобин</legend>
+                    <Input
+                      label="Значение"
+                      type="number"
+                      step="0.1"
+                      suffix="%"
+                      {...register("type1Diabetes.hba1c.value")}
+                    />
+                    <Input
+                      label="Дата"
+                      type="date"
+                      {...register("type1Diabetes.hba1c.date")}
+                    />
+                  </fieldset>
+                </Field>
 
                 <Input
-                  label="Привычные цифры глюкозы сейчас"
+                  label="Уровень гликемии на инсулинотерапии?"
                   type="number"
                   step="0.1"
                   suffix="ммоль/л"
@@ -946,7 +1071,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                   {...register("type2Diabetes.firstGlucoseElevationYear")}
                 />
 
-                {/* NEW — дебют СД2 */}
                 <div className={styles.row}>
                   <Input
                     label="Возраст постановки диагноза"
@@ -1056,16 +1180,13 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                   </label>
                 </fieldset>
 
-                <Textarea
-                  label="Максимально зафиксированные значения глюкозы"
-                  {...register("type2Diabetes.maxGlucoseValues")}
-                  rows={2}
-                />
-                <NoteField
-                  noteKey="type2Diabetes.maxGlucoseValues"
-                  register={register}
-                  watch={watch}
-                />
+                <Field noteKey="type2Diabetes.maxGlucoseValues">
+                  <Textarea
+                    label="Максимально зафиксированные значения глюкозы"
+                    {...register("type2Diabetes.maxGlucoseValues")}
+                    rows={2}
+                  />
+                </Field>
 
                 <YesNo
                   label="Вы обратились к эндокринологу после обнаружения повышенного результата?"
@@ -1110,7 +1231,7 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                   rows={2}
                 />
                 <Input
-                  label="Привычные цифры глюкозы на терапии"
+                  label="Уровень гликемии на инсулинотерапии?"
                   type="number"
                   step="0.1"
                   suffix="ммоль/л"
@@ -1155,12 +1276,38 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
           <div className={styles.section}>
             <h3>Терапия</h3>
 
-            {/* ===== NEW — Актуальная терапия ===== */}
             <fieldset className={styles.fieldset}>
+              <Field noteKey="type1Diabetes.initialTherapy">
+                <fieldset className={styles.fieldset}>
+                  <legend>Терапия в дебюте</legend>
+                  <DrugList
+                    control={control}
+                    register={register}
+                    name="type1Diabetes.initialTherapy"
+                    firstField="drugName"
+                    nameLabel="Название препарата"
+                  />
+                </fieldset>
+              </Field>
+
+              <YesNo
+                label="Данную терапию принимаете до сих пор?"
+                name="type1Diabetes.stillTakingInitialTherapy"
+                register={register}
+              />
+              {watch("type1Diabetes.stillTakingInitialTherapy") === false && (
+                <Field noteKey="type1Diabetes.ifNotTakingReason">
+                  <Textarea
+                    label="Что изменилось?"
+                    {...register("type1Diabetes.ifNotTakingReason")}
+                    rows={2}
+                  />
+                </Field>
+              )}
               <legend>Актуальная терапия</legend>
 
               <YesNo
-                label="Совпадает с терапией в дебюте?"
+                label="Актуальная терапия совпадает с терапией в дебюте?"
                 name="actualTherapy.sameAsInitial"
                 register={register}
               />
@@ -1296,50 +1443,41 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               )}
             </fieldset>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Сахаропонижающие препараты (кроме инсулина)</legend>
-              <DrugList
-                control={control}
-                register={register}
-                name="therapy.currentDrugs"
-                firstField="name"
-              />
-              <NoteField
-                noteKey="therapy.currentDrugs"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="therapy.currentDrugs">
+              <fieldset className={styles.fieldset}>
+                <legend>Сахаропонижающие препараты (кроме инсулина)</legend>
+                <DrugList
+                  control={control}
+                  register={register}
+                  name="therapy.currentDrugs"
+                  firstField="name"
+                />
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Базальный инсулин</legend>
-              <DrugList
-                control={control}
-                register={register}
-                name="therapy.basalInsulin"
-                firstField="name"
-              />
-              <NoteField
-                noteKey="therapy.basalInsulin"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="therapy.basalInsulin">
+              <fieldset className={styles.fieldset}>
+                <legend>Базальный инсулин</legend>
+                <DrugList
+                  control={control}
+                  register={register}
+                  name="therapy.basalInsulin"
+                  firstField="name"
+                />
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Прандиальный (болюсный) инсулин</legend>
-              <DrugList
-                control={control}
-                register={register}
-                name="therapy.prandialInsulin"
-                firstField="name"
-              />
-              <NoteField
-                noteKey="therapy.prandialInsulin"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="therapy.prandialInsulin">
+              <fieldset className={styles.fieldset}>
+                <legend>Прандиальный (болюсный) инсулин</legend>
+                <DrugList
+                  control={control}
+                  register={register}
+                  name="therapy.prandialInsulin"
+                  firstField="name"
+                />
+              </fieldset>
+            </Field>
 
             <YesNo
               label="Используется ли подсчёт углеводов?"
@@ -1352,27 +1490,21 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                 {...register("therapy.carbRatio")}
               />
             )}
-            <Textarea
-              label="Места инъекций"
-              {...register("therapy.injectionSites")}
-              rows={2}
-            />
-            <NoteField
-              noteKey="therapy.injectionSites"
-              register={register}
-              watch={watch}
-            />
+            <Field noteKey="therapy.injectionSites">
+              <Textarea
+                label="Места инъекций"
+                {...register("therapy.injectionSites")}
+                rows={2}
+              />
+            </Field>
             <YesNo
               label="Наличие липогипертрофии"
               name="therapy.lipohypertrophy"
               register={register}
             />
-            <NoteField
-              noteKey="therapy.general"
-              register={register}
-              watch={watch}
-              label="Примечание по терапии"
-            />
+            <Field noteKey="therapy.general" noteLabel="Примечание по терапии">
+              <div />
+            </Field>
           </div>
         );
 
@@ -1392,28 +1524,25 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               register={register}
             />
             {watch("hypoglycemia.severeEpisodes") === true && (
-              <>
-                <Input
-                  label="Количество"
-                  type="number"
-                  suffix="эпиз."
-                  {...register("hypoglycemia.severeEpisodesCount")}
-                />
-                <Input
-                  label="Когда (дата)"
-                  {...register("hypoglycemia.severeEpisodesWhen")}
-                />
-                <Textarea
-                  label="Клиника"
-                  {...register("hypoglycemia.severeEpisodesClinic")}
-                  rows={2}
-                />
-                <NoteField
-                  noteKey="hypoglycemia.severeEpisodes"
-                  register={register}
-                  watch={watch}
-                />
-              </>
+              <Field noteKey="hypoglycemia.severeEpisodes">
+                <>
+                  <Input
+                    label="Количество"
+                    type="number"
+                    suffix="эпиз."
+                    {...register("hypoglycemia.severeEpisodesCount")}
+                  />
+                  <Input
+                    label="Когда (дата)"
+                    {...register("hypoglycemia.severeEpisodesWhen")}
+                  />
+                  <Textarea
+                    label="Клиника"
+                    {...register("hypoglycemia.severeEpisodesClinic")}
+                    rows={2}
+                  />
+                </>
+              </Field>
             )}
             <YesNo
               label="Сохранено ли распознавание гипогликемии?"
@@ -1421,7 +1550,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               register={register}
             />
 
-            {/* NEW — тяжесть */}
             <div className={styles.radioGroup}>
               <label>Тяжесть гипогликемий:</label>
               <label>
@@ -1442,7 +1570,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               </label>
             </div>
 
-            {/* NEW — симптомы */}
             <fieldset className={styles.fieldset}>
               <legend>Симптомы гипогликемии</legend>
               <label>
@@ -1503,37 +1630,35 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               </label>
             </fieldset>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Типичные провоцирующие факторы</legend>
-              <label>
-                <input
-                  type="checkbox"
-                  {...register(
-                    "hypoglycemia.provokingFactors.physicalActivity",
-                  )}
-                />{" "}
-                Физическая нагрузка
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  {...register("hypoglycemia.provokingFactors.missedMeal")}
-                />{" "}
-                Пропуск еды
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  {...register("hypoglycemia.provokingFactors.alcohol")}
-                />{" "}
-                Алкоголь
-              </label>
-              <NoteField
-                noteKey="hypoglycemia.provokingFactors"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="hypoglycemia.provokingFactors">
+              <fieldset className={styles.fieldset}>
+                <legend>Типичные провоцирующие факторы</legend>
+                <label>
+                  <input
+                    type="checkbox"
+                    {...register(
+                      "hypoglycemia.provokingFactors.physicalActivity",
+                    )}
+                  />{" "}
+                  Физическая нагрузка
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    {...register("hypoglycemia.provokingFactors.missedMeal")}
+                  />{" "}
+                  Пропуск еды
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    {...register("hypoglycemia.provokingFactors.alcohol")}
+                  />{" "}
+                  Алкоголь
+                </label>
+              </fieldset>
+            </Field>
+
             <YesNo
               label="Есть ли дома глюкагон?"
               name="hypoglycemia.hasGlucagon"
@@ -1549,12 +1674,12 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               name="hypoglycemia.nocturnalHypoglycemia"
               register={register}
             />
-            <NoteField
+            <Field
               noteKey="hypoglycemia.general"
-              register={register}
-              watch={watch}
-              label="Примечание по гипогликемиям"
-            />
+              noteLabel="Примечание по гипогликемиям"
+            >
+              <div />
+            </Field>
           </div>
         );
 
@@ -1585,7 +1710,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               register={register}
             />
 
-            {/* NEW — для СД 1 */}
             <fieldset className={styles.fieldset}>
               <legend>Для СД 1 типа</legend>
               <Input
@@ -1602,7 +1726,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               />
             </fieldset>
 
-            {/* NEW — для СД 1 и 2 */}
             <fieldset className={styles.fieldset}>
               <legend>Для СД 1 и 2 типа</legend>
               <YesNo
@@ -1630,12 +1753,12 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               </label>
             </fieldset>
 
-            <NoteField
+            <Field
               noteKey="selfMonitoring.general"
-              register={register}
-              watch={watch}
-              label="Примечание по самоконтролю"
-            />
+              noteLabel="Примечание по самоконтролю"
+            >
+              <div />
+            </Field>
           </div>
         );
 
@@ -1644,233 +1767,215 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
           <div className={styles.section}>
             <h3>Осложнения</h3>
 
-            <fieldset className={styles.fieldset}>
-              <legend>👁 Глаза</legend>
-              <YesNo
-                label="Снижение зрения?"
-                name="complications.eyes.visionLoss"
-                register={register}
-              />
-              {watch("complications.eyes.visionLoss") === true && (
-                <>
-                  <Input
-                    label="Когда началось снижение зрения?"
-                    {...register("complications.eyes.visionLossStart")}
-                  />
-                  <Input
-                    label="За какой промежуток времени (авторасчёт)"
-                    {...register("complications.eyes.visionLossDuration")}
-                    readOnly
-                  />
-                  <YesNo
-                    label="Хорошо ли видите ночью?"
-                    name="complications.eyes.nightVisionGood"
-                    register={register}
-                  />
-                </>
-              )}
-              <Input
-                label="Дата последнего осмотра глазного дна"
-                type="date"
-                {...register("complications.eyes.lastFundusExamDate")}
-              />
-              <label>
+            <Field noteKey="complications.eyes">
+              <fieldset className={styles.fieldset}>
+                <legend>👁 Глаза</legend>
+                <YesNo
+                  label="Снижение зрения?"
+                  name="complications.eyes.visionLoss"
+                  register={register}
+                />
+                {watch("complications.eyes.visionLoss") === true && (
+                  <>
+                    <Input
+                      label="Когда началось снижение зрения?"
+                      {...register("complications.eyes.visionLossStart")}
+                    />
+                    <Input
+                      label="За какой промежуток времени (авторасчёт)"
+                      {...register("complications.eyes.visionLossDuration")}
+                      readOnly
+                    />
+                    <YesNo
+                      label="Хорошо ли видите ночью?"
+                      name="complications.eyes.nightVisionGood"
+                      register={register}
+                    />
+                  </>
+                )}
+                <Input
+                  label="Дата последнего осмотра глазного дна"
+                  type="date"
+                  {...register("complications.eyes.lastFundusExamDate")}
+                />
+                <label>
+                  <input
+                    type="checkbox"
+                    {...register("complications.eyes.lastFundusExamUnknown")}
+                  />{" "}
+                  Затрудняюсь ответить
+                </label>
+
+                <YesNo
+                  label="Никталопия («куриная слепота») — плохо видите ночью?"
+                  name="complications.eyes.nyctalopia"
+                  register={register}
+                />
+                <YesNo
+                  label="Замедленная адаптация к темноте?"
+                  name="complications.eyes.delayedDarkAdaptation"
+                  register={register}
+                />
+                <YesNo
+                  label="Появляются ли мушки/сетка перед глазами?"
+                  name="complications.eyes.floaters"
+                  register={register}
+                />
+                {watch("complications.eyes.floaters") === true && (
+                  <div className={styles.radioGroup}>
+                    <label>При каких условиях?</label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="bp"
+                        {...register("complications.eyes.floatersWhen")}
+                      />{" "}
+                      Повышение АД
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="glucose"
+                        {...register("complications.eyes.floatersWhen")}
+                      />{" "}
+                      Повышение глюкозы
+                    </label>
+                  </div>
+                )}
+                <YesNo
+                  label="Выпадение боковых полей зрения (например, за рулём)?"
+                  name="complications.eyes.visualFieldLoss"
+                  register={register}
+                />
+                <Input
+                  label="Как часто наблюдаетесь у офтальмолога?"
+                  {...register("complications.eyes.ophthalmologistFrequency")}
+                />
+              </fieldset>
+            </Field>
+
+            <Field noteKey="complications.nose">
+              <fieldset className={styles.fieldset}>
+                <legend>👃 Нос (в разработке)</legend>
+                <YesNo
+                  label="Храп"
+                  name="complications.nose.snoring"
+                  register={register}
+                />
+              </fieldset>
+            </Field>
+
+            <Field noteKey="complications.ears">
+              <fieldset className={styles.fieldset}>
+                <legend>👂 Уши</legend>
+                <YesNo
+                  label="Снижение слуха?"
+                  name="complications.ears.hearingLoss"
+                  register={register}
+                />
+                {watch("complications.ears.hearingLoss") === true && (
+                  <>
+                    <Input
+                      label="Когда началось снижение слуха?"
+                      {...register("complications.ears.hearingLossStart")}
+                    />
+                    <Input
+                      label="За какой промежуток времени"
+                      {...register("complications.ears.hearingLossDuration")}
+                    />
+                  </>
+                )}
+                <Input
+                  label="Дата последнего осмотра ЛОРа"
+                  type="date"
+                  {...register("complications.ears.lastEntExamDate")}
+                />
+              </fieldset>
+            </Field>
+
+            <Field noteKey="complications.gastrointestinal">
+              <fieldset className={styles.fieldset}>
+                <legend>🫃 ЖКТ</legend>
+                <YesNo
+                  label="Гастрит"
+                  name="complications.gastrointestinal.gastritis"
+                  register={register}
+                />
+                <YesNo
+                  label="Язвы"
+                  name="complications.gastrointestinal.ulcers"
+                  register={register}
+                />
+                <YesNo
+                  label="Боли в животе после еды?"
+                  name="complications.gastrointestinal.abdominalPainAfterEating"
+                  register={register}
+                />
+                <label>Провоцирующие факторы болей в животе:</label>
+                <label>
+                  <input
+                    type="checkbox"
+                    {...register(
+                      "complications.gastrointestinal.painTriggerFatty",
+                    )}
+                  />{" "}
+                  Жирная пища
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    {...register(
+                      "complications.gastrointestinal.painTriggerAlcohol",
+                    )}
+                  />{" "}
+                  Алкоголь
+                </label>
+
+                <Textarea
+                  label="Частота стула"
+                  {...register("complications.gastrointestinal.stoolFrequency")}
+                  rows={2}
+                />
+                <label>
+                  Оформленность кала (0 = диарея, 5 = норма, 10 = запор)
+                </label>
                 <input
-                  type="checkbox"
-                  {...register("complications.eyes.lastFundusExamUnknown")}
-                />{" "}
-                Затрудняюсь ответить
-              </label>
-
-              {/* NEW — расширенный блок глаз */}
-              <YesNo
-                label="Никталопия («куриная слепота») — плохо видите ночью?"
-                name="complications.eyes.nyctalopia"
-                register={register}
-              />
-              <YesNo
-                label="Замедленная адаптация к темноте?"
-                name="complications.eyes.delayedDarkAdaptation"
-                register={register}
-              />
-              <YesNo
-                label="Появляются ли мушки/сетка перед глазами?"
-                name="complications.eyes.floaters"
-                register={register}
-              />
-              {watch("complications.eyes.floaters") === true && (
-                <div className={styles.radioGroup}>
-                  <label>При каких условиях?</label>
-                  <label>
-                    <input
-                      type="radio"
-                      value="bp"
-                      {...register("complications.eyes.floatersWhen")}
-                    />{" "}
-                    Повышение АД
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      value="glucose"
-                      {...register("complications.eyes.floatersWhen")}
-                    />{" "}
-                    Повышение глюкозы
-                  </label>
-                </div>
-              )}
-              <YesNo
-                label="Выпадение боковых полей зрения (например, за рулём)?"
-                name="complications.eyes.visualFieldLoss"
-                register={register}
-              />
-              <Input
-                label="Как часто наблюдаетесь у офтальмолога?"
-                {...register("complications.eyes.ophthalmologistFrequency")}
-              />
-              <NoteField
-                noteKey="complications.eyes"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
-
-            <fieldset className={styles.fieldset}>
-              <legend>👃 Нос (в разработке)</legend>
-              <YesNo
-                label="Храп"
-                name="complications.nose.snoring"
-                register={register}
-              />
-              <NoteField
-                noteKey="complications.nose"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
-
-            <fieldset className={styles.fieldset}>
-              <legend>👂 Уши</legend>
-              <YesNo
-                label="Снижение слуха?"
-                name="complications.ears.hearingLoss"
-                register={register}
-              />
-              {watch("complications.ears.hearingLoss") === true && (
-                <>
-                  <Input
-                    label="Когда началось снижение слуха?"
-                    {...register("complications.ears.hearingLossStart")}
-                  />
-                  <Input
-                    label="За какой промежуток времени"
-                    {...register("complications.ears.hearingLossDuration")}
-                  />
-                </>
-              )}
-              <Input
-                label="Дата последнего осмотра ЛОРа"
-                type="date"
-                {...register("complications.ears.lastEntExamDate")}
-              />
-              <NoteField
-                noteKey="complications.ears"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
-
-            <fieldset className={styles.fieldset}>
-              <legend>🫃 ЖКТ</legend>
-              <YesNo
-                label="Гастрит"
-                name="complications.gastrointestinal.gastritis"
-                register={register}
-              />
-              <YesNo
-                label="Язвы"
-                name="complications.gastrointestinal.ulcers"
-                register={register}
-              />
-              <YesNo
-                label="Боли в животе после еды?"
-                name="complications.gastrointestinal.abdominalPainAfterEating"
-                register={register}
-              />
-              {/* NEW — провоцирующие факторы болей */}
-              <label>Провоцирующие факторы болей в животе:</label>
-              <label>
-                <input
-                  type="checkbox"
+                  type="range"
+                  min={0}
+                  max={10}
+                  step={1}
                   {...register(
-                    "complications.gastrointestinal.painTriggerFatty",
+                    "complications.gastrointestinal.stoolConsistency",
                   )}
-                />{" "}
-                Жирная пища
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  {...register(
-                    "complications.gastrointestinal.painTriggerAlcohol",
-                  )}
-                />{" "}
-                Алкоголь
-              </label>
+                  className={styles.slider}
+                />
+              </fieldset>
+            </Field>
 
-              <Textarea
-                label="Частота стула"
-                {...register("complications.gastrointestinal.stoolFrequency")}
-                rows={2}
-              />
-              <label>
-                Оформленность кала (0 = диарея, 5 = норма, 10 = запор)
-              </label>
-              <input
-                type="range"
-                min={0}
-                max={10}
-                step={1}
-                {...register("complications.gastrointestinal.stoolConsistency")}
-                className={styles.slider}
-              />
-              <NoteField
-                noteKey="complications.gastrointestinal"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="complications.urinary">
+              <fieldset className={styles.fieldset}>
+                <legend>🚽 Мочевыделительная система</legend>
+                <YesNo
+                  label="Камни в почках?"
+                  name="complications.urinary.kidneyStones"
+                  register={register}
+                />
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>🚽 Мочевыделительная система</legend>
-              <YesNo
-                label="Камни в почках?"
-                name="complications.urinary.kidneyStones"
-                register={register}
-              />
-              <NoteField
-                noteKey="complications.urinary"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
-
-            <fieldset className={styles.fieldset}>
-              <legend>🫘 Нефропатия</legend>
-              <Input
-                label="Альбумин/креатинин мочи"
-                {...register("complications.nephropathy.albuminCreatinine")}
-              />
-              <Input
-                label="СКФ"
-                {...register("complications.nephropathy.gfr")}
-              />
-              <NoteField
-                noteKey="complications.nephropathy"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="complications.nephropathy">
+              <fieldset className={styles.fieldset}>
+                <legend>🫘 Нефропатия</legend>
+                <Input
+                  label="Альбумин/креатинин мочи"
+                  {...register("complications.nephropathy.albuminCreatinine")}
+                />
+                <Input
+                  label="СКФ"
+                  {...register("complications.nephropathy.gfr")}
+                />
+              </fieldset>
+            </Field>
 
             <fieldset className={styles.fieldset}>
               <legend>🦶 Нейропатия (стопы)</legend>
@@ -2008,22 +2113,19 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                 register={register}
               />
               {watch("complications.neuropathy.amputations") === true && (
-                <>
-                  <Input
-                    label="Уровень ампутации"
-                    {...register("complications.neuropathy.amputationLevel")}
-                  />
-                  <Input
-                    label="Дата"
-                    type="date"
-                    {...register("complications.neuropathy.amputationDate")}
-                  />
-                  <NoteField
-                    noteKey="complications.neuropathy.amputations"
-                    register={register}
-                    watch={watch}
-                  />
-                </>
+                <Field noteKey="complications.neuropathy.amputations">
+                  <>
+                    <Input
+                      label="Уровень ампутации"
+                      {...register("complications.neuropathy.amputationLevel")}
+                    />
+                    <Input
+                      label="Дата"
+                      type="date"
+                      {...register("complications.neuropathy.amputationDate")}
+                    />
+                  </>
+                </Field>
               )}
 
               <div className={styles.row}>
@@ -2135,93 +2237,89 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                 register={register}
               />
 
-              <NoteField
+              <Field
                 noteKey="complications.neuropathy"
-                register={register}
-                watch={watch}
-                label="Примечание по нейропатии"
-              />
+                noteLabel="Примечание по нейропатии"
+              >
+                <div />
+              </Field>
             </fieldset>
 
-            <fieldset className={styles.fieldset}>
-              <legend>
-                Чувствительность (0 = норма, 1 = снижение, 2 = отсутствует)
-              </legend>
-              <div className={styles.table}>
-                <div className={styles.tableRow}>
-                  <span>Вид</span>
-                  <span>Правая</span>
-                  <span>Левая</span>
+            <Field noteKey="complications.neuropathy.sensitivity">
+              <fieldset className={styles.fieldset}>
+                <legend>
+                  Чувствительность (0 = норма, 1 = снижение, 2 = отсутствует)
+                </legend>
+                <div className={styles.table}>
+                  <div className={styles.tableRow}>
+                    <span>Вид</span>
+                    <span>Правая</span>
+                    <span>Левая</span>
+                  </div>
+                  {(
+                    [
+                      "vibration",
+                      "temperature",
+                      "pain",
+                      "tactile",
+                      "jointMuscle",
+                      "achillesReflex",
+                      "kneeReflex",
+                    ] as const
+                  ).map((key) => {
+                    const rightName: Path<AnamnesisFormData> = `complications.neuropathy.sensitivity.${key}.right`;
+                    const leftName: Path<AnamnesisFormData> = `complications.neuropathy.sensitivity.${key}.left`;
+
+                    return (
+                      <div key={key} className={styles.tableRow}>
+                        <span>{key}</span>
+                        <input
+                          type="number"
+                          min={0}
+                          max={2}
+                          {...register(rightName)}
+                        />
+                        <input
+                          type="number"
+                          min={0}
+                          max={2}
+                          {...register(leftName)}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
-                {(
-                  [
-                    "vibration",
-                    "temperature",
-                    "pain",
-                    "tactile",
-                    "jointMuscle",
-                    "achillesReflex",
-                    "kneeReflex",
-                  ] as const
-                ).map((key) => {
-                  const rightName: Path<AnamnesisFormData> = `complications.neuropathy.sensitivity.${key}.right`;
-                  const leftName: Path<AnamnesisFormData> = `complications.neuropathy.sensitivity.${key}.left`;
+              </fieldset>
+            </Field>
 
-                  return (
-                    <div key={key} className={styles.tableRow}>
-                      <span>{key}</span>
-                      <input
-                        type="number"
-                        min={0}
-                        max={2}
-                        {...register(rightName)}
-                      />
-                      <input
-                        type="number"
-                        min={0}
-                        max={2}
-                        {...register(leftName)}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-              <NoteField
-                noteKey="complications.neuropathy.sensitivity"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
-
-            <fieldset className={styles.fieldset}>
-              <legend>Вены нижних конечностей</legend>
-              <YesNo
-                label="Лимфедема"
-                name="complications.neuropathy.lymphedema"
-                register={register}
-              />
-              <Textarea
-                label="Симптом Ласега (детали)"
-                {...register("complications.neuropathy.lasegueDetails")}
-                rows={2}
-              />
-              <Textarea
-                label="Осмотр стоп, наличие язв в анамнезе"
-                {...register("complications.neuropathy.footExamNotes")}
-                rows={3}
-              />
-              <Textarea
-                label="Когда появилась рана?"
-                {...register("complications.neuropathy.woundAppearance")}
-                rows={2}
-              />
-              <NoteField
-                noteKey="complications.neuropathy.veins"
-                register={register}
-                watch={watch}
-                label="Примечание по венам / стопам"
-              />
-            </fieldset>
+            <Field
+              noteKey="complications.neuropathy.veins"
+              noteLabel="Примечание по венам / стопам"
+            >
+              <fieldset className={styles.fieldset}>
+                <legend>Вены нижних конечностей</legend>
+                <YesNo
+                  label="Лимфедема"
+                  name="complications.neuropathy.lymphedema"
+                  register={register}
+                />
+                <Textarea
+                  label="Симптом Ласега (детали)"
+                  {...register("complications.neuropathy.lasegueDetails")}
+                  rows={2}
+                />
+                <Textarea
+                  label="Осмотр стоп, наличие язв в анамнезе"
+                  {...register("complications.neuropathy.footExamNotes")}
+                  rows={3}
+                />
+                <Textarea
+                  label="Когда появилась рана?"
+                  {...register("complications.neuropathy.woundAppearance")}
+                  rows={2}
+                />
+              </fieldset>
+            </Field>
           </div>
         );
 
@@ -2229,66 +2327,48 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         return (
           <div className={styles.section}>
             <h3>Осмотр / общий анамнез</h3>
-            <Textarea
-              label="Сердечно-сосудистые события (ИБС, инсульт), АД"
-              {...register("examination.cardiovascularEvents")}
-              rows={2}
-            />
-            <NoteField
-              noteKey="examination.cardiovascularEvents"
-              register={register}
-              watch={watch}
-            />
-            <Textarea
-              label="Другие хронические заболевания"
-              {...register("examination.otherChronicDiseases")}
-              rows={2}
-            />
-            <NoteField
-              noteKey="examination.otherChronicDiseases"
-              register={register}
-              watch={watch}
-            />
-            <Textarea
-              label="Все текущие лекарства и добавки"
-              {...register("examination.currentMedications")}
-              rows={2}
-            />
-            <NoteField
-              noteKey="examination.currentMedications"
-              register={register}
-              watch={watch}
-            />
-            <Textarea
-              label="Аллергия"
-              {...register("examination.allergies")}
-              rows={2}
-            />
-            <NoteField
-              noteKey="examination.allergies"
-              register={register}
-              watch={watch}
-            />
-            <Textarea
-              label="Госпитализации и операции"
-              {...register("examination.hospitalizations")}
-              rows={2}
-            />
-            <NoteField
-              noteKey="examination.hospitalizations"
-              register={register}
-              watch={watch}
-            />
-            <Textarea
-              label="Вакцинация"
-              {...register("examination.vaccinations")}
-              rows={2}
-            />
-            <NoteField
-              noteKey="examination.vaccinations"
-              register={register}
-              watch={watch}
-            />
+            <Field noteKey="examination.cardiovascularEvents">
+              <Textarea
+                label="Сердечно-сосудистые события (ИБС, инсульт), АД"
+                {...register("examination.cardiovascularEvents")}
+                rows={2}
+              />
+            </Field>
+            <Field noteKey="examination.otherChronicDiseases">
+              <Textarea
+                label="Другие хронические заболевания"
+                {...register("examination.otherChronicDiseases")}
+                rows={2}
+              />
+            </Field>
+            <Field noteKey="examination.currentMedications">
+              <Textarea
+                label="Все текущие лекарства и добавки"
+                {...register("examination.currentMedications")}
+                rows={2}
+              />
+            </Field>
+            <Field noteKey="examination.allergies">
+              <Textarea
+                label="Аллергия"
+                {...register("examination.allergies")}
+                rows={2}
+              />
+            </Field>
+            <Field noteKey="examination.hospitalizations">
+              <Textarea
+                label="Госпитализации и операции"
+                {...register("examination.hospitalizations")}
+                rows={2}
+              />
+            </Field>
+            <Field noteKey="examination.vaccinations">
+              <Textarea
+                label="Вакцинация"
+                {...register("examination.vaccinations")}
+                rows={2}
+              />
+            </Field>
             <YesNo
               label="Заболевания щитовидной железы (аутииммунный тиреоидит)"
               name="examination.thyroidDisease"
@@ -2299,50 +2379,41 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               name="examination.celiacDisease"
               register={register}
             />
-            <Textarea
-              label="Другие аутоиммунные состояния (витилиго, надпочечниковая недостаточность и др.)"
-              {...register("examination.otherAutoimmune")}
-              rows={2}
-            />
-            <NoteField
-              noteKey="examination.otherAutoimmune"
-              register={register}
-              watch={watch}
-            />
-            <Textarea
-              label="Семейный анамнез СД 1 типа или других аутоиммунных заболеваний (родственники 1-й линии)"
-              {...register("examination.familyHistory")}
-              rows={2}
-            />
-            <NoteField
-              noteKey="examination.familyHistory"
-              register={register}
-              watch={watch}
-            />
-
-            <fieldset className={styles.fieldset}>
-              <legend>Репродуктивный анамнез (при необходимости)</legend>
-              <Input
-                label="Беременность"
-                type="number"
-                {...register("examination.pregnancies")}
-              />
-              <Input
-                label="Роды"
-                type="number"
-                {...register("examination.births")}
-              />
+            <Field noteKey="examination.otherAutoimmune">
               <Textarea
-                label="Менструальный цикл"
-                {...register("examination.menstrualCycle")}
+                label="Другие аутоиммунные состояния (витилиго, надпочечниковая недостаточность и др.)"
+                {...register("examination.otherAutoimmune")}
                 rows={2}
               />
-              <NoteField
-                noteKey="examination.reproductive"
-                register={register}
-                watch={watch}
+            </Field>
+            <Field noteKey="examination.familyHistory">
+              <Textarea
+                label="Семейный анамнез СД 1 типа или других аутоиммунных заболеваний (родственники 1-й линии)"
+                {...register("examination.familyHistory")}
+                rows={2}
               />
-            </fieldset>
+            </Field>
+
+            <Field noteKey="examination.reproductive">
+              <fieldset className={styles.fieldset}>
+                <legend>Репродуктивный анамнез (при необходимости)</legend>
+                <Input
+                  label="Беременность"
+                  type="number"
+                  {...register("examination.pregnancies")}
+                />
+                <Input
+                  label="Роды"
+                  type="number"
+                  {...register("examination.births")}
+                />
+                <Textarea
+                  label="Менструальный цикл"
+                  {...register("examination.menstrualCycle")}
+                  rows={2}
+                />
+              </fieldset>
+            </Field>
           </div>
         );
 
@@ -2350,113 +2421,100 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         return (
           <div className={styles.section}>
             <h3>Образ жизни</h3>
-            <fieldset className={styles.fieldset}>
-              <legend>Алкоголь</legend>
-              <Textarea
-                label="Как часто употребляете алкоголь?"
-                {...register("lifestyle.alcoholFrequency")}
-                rows={2}
-              />
-              <Input
-                label="Тип (крепкий / вино / пиво и т.п.)"
-                {...register("lifestyle.alcoholType")}
-              />
-              <NoteField
-                noteKey="lifestyle.alcohol"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="lifestyle.alcohol">
+              <fieldset className={styles.fieldset}>
+                <legend>Алкоголь</legend>
+                <Textarea
+                  label="Как часто употребляете алкоголь?"
+                  {...register("lifestyle.alcoholFrequency")}
+                  rows={2}
+                />
+                <Input
+                  label="Тип (крепкий / вино / пиво и т.п.)"
+                  {...register("lifestyle.alcoholType")}
+                />
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Курение</legend>
-              <YesNo
-                label="Курите?"
-                name="lifestyle.smoking"
-                register={register}
-              />
-              {watch("lifestyle.smoking") === true && (
-                <>
-                  <Input
-                    label="С какого возраста?"
-                    type="number"
-                    suffix="лет"
-                    {...register("lifestyle.smokingStartAge")}
-                  />
-                  <Input
-                    label="Сколько сигарет в день?"
-                    type="number"
-                    suffix="шт."
-                    {...register("lifestyle.cigarettesPerDay")}
-                  />
-                </>
-              )}
-              <NoteField
-                noteKey="lifestyle.smoking"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="lifestyle.smoking">
+              <fieldset className={styles.fieldset}>
+                <legend>Курение</legend>
+                <YesNo
+                  label="Курите?"
+                  name="lifestyle.smoking"
+                  register={register}
+                />
+                {watch("lifestyle.smoking") === true && (
+                  <>
+                    <Input
+                      label="С какого возраста?"
+                      type="number"
+                      suffix="лет"
+                      {...register("lifestyle.smokingStartAge")}
+                    />
+                    <Input
+                      label="Сколько сигарет в день?"
+                      type="number"
+                      suffix="шт."
+                      {...register("lifestyle.cigarettesPerDay")}
+                    />
+                  </>
+                )}
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Питание</legend>
-              <YesNo
-                label="Пищу подсаливаете?"
-                name="lifestyle.saltFood"
-                register={register}
-              />
-              <YesNo
-                label="Много полуфабрикатов (колбаса, сосиски, копчёности, орешки, маринованные овощи, рыбные консервы, соевый соус, кетчуп)"
-                name="lifestyle.processedFood"
-                register={register}
-              />
-              <Input
-                label="Сколько чашек кофе в день?"
-                type="number"
-                suffix="чаш."
-                {...register("lifestyle.coffeeCupsPerDay")}
-              />
-              <YesNo
-                label="Кофе крепкий?"
-                name="lifestyle.strongCoffee"
-                register={register}
-              />
-              <YesNo
-                label="Энергетики"
-                name="lifestyle.energyDrinks"
-                register={register}
-              />
-              <NoteField
-                noteKey="lifestyle.nutrition"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="lifestyle.nutrition">
+              <fieldset className={styles.fieldset}>
+                <legend>Питание</legend>
+                <YesNo
+                  label="Пищу подсаливаете?"
+                  name="lifestyle.saltFood"
+                  register={register}
+                />
+                <YesNo
+                  label="Много полуфабрикатов (колбаса, сосиски, копчёности, орешки, маринованные овощи, рыбные консервы, соевый соус, кетчуп)"
+                  name="lifestyle.processedFood"
+                  register={register}
+                />
+                <Input
+                  label="Сколько чашек кофе в день?"
+                  type="number"
+                  suffix="чаш."
+                  {...register("lifestyle.coffeeCupsPerDay")}
+                />
+                <YesNo
+                  label="Кофе крепкий?"
+                  name="lifestyle.strongCoffee"
+                  register={register}
+                />
+                <YesNo
+                  label="Энергетики"
+                  name="lifestyle.energyDrinks"
+                  register={register}
+                />
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Работа и стресс</legend>
-              <Input
-                label="Кем работаете?"
-                {...register("lifestyle.occupation")}
-              />
-              <YesNo
-                label="Сидячая работа?"
-                name="lifestyle.sedentaryWork"
-                register={register}
-              />
-              <YesNo
-                label="Много стресса?"
-                name="lifestyle.stress"
-                register={register}
-              />
-              <NoteField
-                noteKey="lifestyle.work"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="lifestyle.work">
+              <fieldset className={styles.fieldset}>
+                <legend>Работа и стресс</legend>
+                <Input
+                  label="Кем работаете?"
+                  {...register("lifestyle.occupation")}
+                />
+                <YesNo
+                  label="Сидячая работа?"
+                  name="lifestyle.sedentaryWork"
+                  register={register}
+                />
+                <YesNo
+                  label="Много стресса?"
+                  name="lifestyle.stress"
+                  register={register}
+                />
+              </fieldset>
+            </Field>
 
-            {/* ===== NEW — Хронические заболевания ===== */}
             <fieldset className={styles.fieldset}>
               <legend>Хронические заболевания</legend>
               <Textarea
@@ -2490,7 +2548,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               )}
             </fieldset>
 
-            {/* ===== NEW — ССС блок ===== */}
             <fieldset className={styles.fieldset}>
               <legend>Сердечно-сосудистая система / АД</legend>
 
@@ -2712,103 +2769,97 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         return (
           <div className={styles.section}>
             <h3>Измерения</h3>
-            <fieldset className={styles.fieldset}>
-              <legend>Пульсоксиметр</legend>
-              <div className={styles.row}>
-                <Input
-                  label="Левая рука"
-                  type="number"
-                  suffix="%"
-                  {...register("measurements.pulseOximetry.leftHand")}
-                />
-                <Input
-                  label="Правая рука"
-                  type="number"
-                  suffix="%"
-                  {...register("measurements.pulseOximetry.rightHand")}
-                />
-              </div>
-              <NoteField
-                noteKey="measurements.pulseOximetry"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="measurements.pulseOximetry">
+              <fieldset className={styles.fieldset}>
+                <legend>Пульсоксиметр</legend>
+                <div className={styles.row}>
+                  <Input
+                    label="Левая рука"
+                    type="number"
+                    suffix="%"
+                    {...register("measurements.pulseOximetry.leftHand")}
+                  />
+                  <Input
+                    label="Правая рука"
+                    type="number"
+                    suffix="%"
+                    {...register("measurements.pulseOximetry.rightHand")}
+                  />
+                </div>
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Пальпация пульса</legend>
-              <div className={styles.radioGroup}>
-                <label>На лучевой артерии — ритм:</label>
-                <label>
-                  <input
-                    type="radio"
-                    value="regular"
-                    {...register(
-                      "measurements.pulsePalpation.radialArtery.rhythm",
-                    )}
-                  />{" "}
-                  Регулярный
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    value="irregular"
-                    {...register(
-                      "measurements.pulsePalpation.radialArtery.rhythm",
-                    )}
-                  />{" "}
-                  Нерегулярный
-                </label>
-              </div>
-              <div className={styles.radioGroup}>
-                <label>Симметричность:</label>
-                <label>
-                  <input
-                    type="radio"
-                    value="symmetric"
-                    {...register(
-                      "measurements.pulsePalpation.radialArtery.symmetry",
-                    )}
-                  />{" "}
-                  Симметричный
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    value="asymmetric"
-                    {...register(
-                      "measurements.pulsePalpation.radialArtery.symmetry",
-                    )}
-                  />{" "}
-                  Несимметричный
-                </label>
-              </div>
-              <YesNo
-                label="Задняя большеберцовая артерия слева пальпируется?"
-                name="measurements.pulsePalpation.posteriorTibialArtery.left"
-                register={register}
-              />
-              <YesNo
-                label="Задняя большеберцовая артерия справа пальпируется?"
-                name="measurements.pulsePalpation.posteriorTibialArtery.right"
-                register={register}
-              />
-              <YesNo
-                label="Тыльная артерия стопы слева пальпируется?"
-                name="measurements.pulsePalpation.dorsalisPedisArtery.left"
-                register={register}
-              />
-              <YesNo
-                label="Тыльная артерия стопы справа пальпируется?"
-                name="measurements.pulsePalpation.dorsalisPedisArtery.right"
-                register={register}
-              />
-              <NoteField
-                noteKey="measurements.pulsePalpation"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="measurements.pulsePalpation">
+              <fieldset className={styles.fieldset}>
+                <legend>Пальпация пульса</legend>
+                <div className={styles.radioGroup}>
+                  <label>На лучевой артерии — ритм:</label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="regular"
+                      {...register(
+                        "measurements.pulsePalpation.radialArtery.rhythm",
+                      )}
+                    />{" "}
+                    Регулярный
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="irregular"
+                      {...register(
+                        "measurements.pulsePalpation.radialArtery.rhythm",
+                      )}
+                    />{" "}
+                    Нерегулярный
+                  </label>
+                </div>
+                <div className={styles.radioGroup}>
+                  <label>Симметричность:</label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="symmetric"
+                      {...register(
+                        "measurements.pulsePalpation.radialArtery.symmetry",
+                      )}
+                    />{" "}
+                    Симметричный
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="asymmetric"
+                      {...register(
+                        "measurements.pulsePalpation.radialArtery.symmetry",
+                      )}
+                    />{" "}
+                    Несимметричный
+                  </label>
+                </div>
+                <YesNo
+                  label="Задняя большеберцовая артерия слева пальпируется?"
+                  name="measurements.pulsePalpation.posteriorTibialArtery.left"
+                  register={register}
+                />
+                <YesNo
+                  label="Задняя большеберцовая артерия справа пальпируется?"
+                  name="measurements.pulsePalpation.posteriorTibialArtery.right"
+                  register={register}
+                />
+                <YesNo
+                  label="Тыльная артерия стопы слева пальпируется?"
+                  name="measurements.pulsePalpation.dorsalisPedisArtery.left"
+                  register={register}
+                />
+                <YesNo
+                  label="Тыльная артерия стопы справа пальпируется?"
+                  name="measurements.pulsePalpation.dorsalisPedisArtery.right"
+                  register={register}
+                />
+              </fieldset>
+            </Field>
 
             <YesNo
               label="Условия выполнены (не принимали антигипертензивные за 2 ч, не курили за 1 ч, не пили чай/кофе/алкоголь за 1 ч)"
@@ -2816,166 +2867,154 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               register={register}
             />
 
-            <fieldset className={styles.fieldset}>
-              <legend>АД на двух руках (мм рт. ст.)</legend>
-              <div className={styles.row}>
+            <Field noteKey="measurements.bpArms">
+              <fieldset className={styles.fieldset}>
+                <legend>АД на двух руках (мм рт. ст.)</legend>
+                <div className={styles.row}>
+                  <Input
+                    label="Левая — систолическое"
+                    type="number"
+                    suffix="мм рт. ст."
+                    {...register("measurements.bpArms.leftSystolic")}
+                  />
+                  <Input
+                    label="Левая — диастолическое"
+                    type="number"
+                    suffix="мм рт. ст."
+                    {...register("measurements.bpArms.leftDiastolic")}
+                  />
+                </div>
+                <div className={styles.row}>
+                  <Input
+                    label="Правая — систолическое"
+                    type="number"
+                    suffix="мм рт. ст."
+                    {...register("measurements.bpArms.rightSystolic")}
+                  />
+                  <Input
+                    label="Правая — диастолическое"
+                    type="number"
+                    suffix="мм рт. ст."
+                    {...register("measurements.bpArms.rightDiastolic")}
+                  />
+                </div>
                 <Input
-                  label="Левая — систолическое"
-                  type="number"
+                  label="Пульсовое давление (авторасчёт)"
                   suffix="мм рт. ст."
-                  {...register("measurements.bpArms.leftSystolic")}
-                />
-                <Input
-                  label="Левая — диастолическое"
-                  type="number"
-                  suffix="мм рт. ст."
-                  {...register("measurements.bpArms.leftDiastolic")}
-                />
-              </div>
-              <div className={styles.row}>
-                <Input
-                  label="Правая — систолическое"
-                  type="number"
-                  suffix="мм рт. ст."
-                  {...register("measurements.bpArms.rightSystolic")}
-                />
-                <Input
-                  label="Правая — диастолическое"
-                  type="number"
-                  suffix="мм рт. ст."
-                  {...register("measurements.bpArms.rightDiastolic")}
-                />
-              </div>
-              <Input
-                label="Пульсовое давление (авторасчёт)"
-                suffix="мм рт. ст."
-                {...register("measurements.pulsePressure")}
-                readOnly
-              />
-              <NoteField
-                noteKey="measurements.bpArms"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
-
-            <fieldset className={styles.fieldset}>
-              <legend>АД на двух ногах (мм рт. ст.)</legend>
-              <div className={styles.row}>
-                <Input
-                  label="Левая — систолическое"
-                  type="number"
-                  suffix="мм рт. ст."
-                  {...register("measurements.bpLegs.leftSystolic")}
-                />
-                <Input
-                  label="Левая — диастолическое"
-                  type="number"
-                  suffix="мм рт. ст."
-                  {...register("measurements.bpLegs.leftDiastolic")}
-                />
-              </div>
-              <div className={styles.row}>
-                <Input
-                  label="Правая — систолическое"
-                  type="number"
-                  suffix="мм рт. ст."
-                  {...register("measurements.bpLegs.rightSystolic")}
-                />
-                <Input
-                  label="Правая — диастолическое"
-                  type="number"
-                  suffix="мм рт. ст."
-                  {...register("measurements.bpLegs.rightDiastolic")}
-                />
-              </div>
-              <div className={styles.row}>
-                <Input
-                  label="ЛПИ слева (авторасчёт)"
-                  {...register("measurements.abiIndex.left")}
+                  {...register("measurements.pulsePressure")}
                   readOnly
                 />
-                <Input
-                  label="ЛПИ справа (авторасчёт)"
-                  {...register("measurements.abiIndex.right")}
-                  readOnly
-                />
-              </div>
-              <NoteField
-                noteKey="measurements.bpLegs"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Боли при ходьбе / конечности</legend>
-              <YesNo
-                label="Боли при ходьбе в ногах/икрах"
-                name="measurements.legPainWalking"
-                register={register}
-              />
-              <YesNo
-                label="Проходят ли боли после остановки?"
-                name="measurements.painStopsAfterRest"
-                register={register}
-              />
-              <Input
-                label="Сколько можете пройти без остановки"
-                {...register("measurements.walkingDistance")}
-              />
-              <Input
-                label="Цвет конечностей"
-                {...register("measurements.limbColor")}
-              />
-              <Input
-                label="Температура"
-                {...register("measurements.limbTemperature")}
-              />
-              <Input label="Кожа" {...register("measurements.limbSkin")} />
-              <NoteField
-                noteKey="measurements.limbs"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="measurements.bpLegs">
+              <fieldset className={styles.fieldset}>
+                <legend>АД на двух ногах (мм рт. ст.)</legend>
+                <div className={styles.row}>
+                  <Input
+                    label="Левая — систолическое"
+                    type="number"
+                    suffix="мм рт. ст."
+                    {...register("measurements.bpLegs.leftSystolic")}
+                  />
+                  <Input
+                    label="Левая — диастолическое"
+                    type="number"
+                    suffix="мм рт. ст."
+                    {...register("measurements.bpLegs.leftDiastolic")}
+                  />
+                </div>
+                <div className={styles.row}>
+                  <Input
+                    label="Правая — систолическое"
+                    type="number"
+                    suffix="мм рт. ст."
+                    {...register("measurements.bpLegs.rightSystolic")}
+                  />
+                  <Input
+                    label="Правая — диастолическое"
+                    type="number"
+                    suffix="мм рт. ст."
+                    {...register("measurements.bpLegs.rightDiastolic")}
+                  />
+                </div>
+                <div className={styles.row}>
+                  <Input
+                    label="ЛПИ слева (авторасчёт)"
+                    {...register("measurements.abiIndex.left")}
+                    readOnly
+                  />
+                  <Input
+                    label="ЛПИ справа (авторасчёт)"
+                    {...register("measurements.abiIndex.right")}
+                    readOnly
+                  />
+                </div>
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Повторное измерение АД</legend>
-              <div className={styles.row}>
-                <Input
-                  label="Левая — систолическое"
-                  type="number"
-                  suffix="мм рт. ст."
-                  {...register("measurements.bpRepeat.leftSystolic")}
+            <Field noteKey="measurements.limbs">
+              <fieldset className={styles.fieldset}>
+                <legend>Боли при ходьбе / конечности</legend>
+                <YesNo
+                  label="Боли при ходьбе в ногах/икрах"
+                  name="measurements.legPainWalking"
+                  register={register}
+                />
+                <YesNo
+                  label="Проходят ли боли после остановки?"
+                  name="measurements.painStopsAfterRest"
+                  register={register}
                 />
                 <Input
-                  label="Левая — диастолическое"
-                  type="number"
-                  suffix="мм рт. ст."
-                  {...register("measurements.bpRepeat.leftDiastolic")}
-                />
-              </div>
-              <div className={styles.row}>
-                <Input
-                  label="Правая — систолическое"
-                  type="number"
-                  suffix="мм рт. ст."
-                  {...register("measurements.bpRepeat.rightSystolic")}
+                  label="Сколько можете пройти без остановки"
+                  {...register("measurements.walkingDistance")}
                 />
                 <Input
-                  label="Правая — диастолическое"
-                  type="number"
-                  suffix="мм рт. ст."
-                  {...register("measurements.bpRepeat.rightDiastolic")}
+                  label="Цвет конечностей"
+                  {...register("measurements.limbColor")}
                 />
-              </div>
-              <NoteField
-                noteKey="measurements.bpRepeat"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+                <Input
+                  label="Температура"
+                  {...register("measurements.limbTemperature")}
+                />
+                <Input label="Кожа" {...register("measurements.limbSkin")} />
+              </fieldset>
+            </Field>
+
+            <Field noteKey="measurements.bpRepeat">
+              <fieldset className={styles.fieldset}>
+                <legend>Повторное измерение АД</legend>
+                <div className={styles.row}>
+                  <Input
+                    label="Левая — систолическое"
+                    type="number"
+                    suffix="мм рт. ст."
+                    {...register("measurements.bpRepeat.leftSystolic")}
+                  />
+                  <Input
+                    label="Левая — диастолическое"
+                    type="number"
+                    suffix="мм рт. ст."
+                    {...register("measurements.bpRepeat.leftDiastolic")}
+                  />
+                </div>
+                <div className={styles.row}>
+                  <Input
+                    label="Правая — систолическое"
+                    type="number"
+                    suffix="мм рт. ст."
+                    {...register("measurements.bpRepeat.rightSystolic")}
+                  />
+                  <Input
+                    label="Правая — диастолическое"
+                    type="number"
+                    suffix="мм рт. ст."
+                    {...register("measurements.bpRepeat.rightDiastolic")}
+                  />
+                </div>
+              </fieldset>
+            </Field>
           </div>
         );
 
@@ -2983,65 +3022,53 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         return (
           <div className={styles.section}>
             <h3>Вторичные АГ (исключение)</h3>
-            <Textarea
-              label="Как часто принимаете НПВС и парацетамол?"
-              {...register("secondaryHypertension.nsaidsFrequency")}
-              rows={2}
-            />
-            <NoteField
-              noteKey="secondaryHypertension.nsaids"
-              register={register}
-              watch={watch}
-            />
-            <Textarea
-              label="Как часто принимаете деконгестанты?"
-              {...register("secondaryHypertension.decongestantsFrequency")}
-              rows={2}
-            />
-            <NoteField
-              noteKey="secondaryHypertension.decongestants"
-              register={register}
-              watch={watch}
-            />
-            <Textarea
-              label="Другие препараты (антидепрессанты, ГКС, КОКи, бронхолитики и т.д.)"
-              {...register("secondaryHypertension.otherDrugs")}
-              rows={3}
-            />
-            <NoteField
-              noteKey="secondaryHypertension.otherDrugs"
-              register={register}
-              watch={watch}
-            />
+            <Field noteKey="secondaryHypertension.nsaids">
+              <Textarea
+                label="Как часто принимаете НПВС и парацетамол?"
+                {...register("secondaryHypertension.nsaidsFrequency")}
+                rows={2}
+              />
+            </Field>
+            <Field noteKey="secondaryHypertension.decongestants">
+              <Textarea
+                label="Как часто принимаете деконгестанты?"
+                {...register("secondaryHypertension.decongestantsFrequency")}
+                rows={2}
+              />
+            </Field>
+            <Field noteKey="secondaryHypertension.otherDrugs">
+              <Textarea
+                label="Другие препараты (антидепрессанты, ГКС, КОКи, бронхолитики и т.д.)"
+                {...register("secondaryHypertension.otherDrugs")}
+                rows={3}
+              />
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Гиперальдостеронизм</legend>
-              <YesNo
-                label="Полидипсия / полиурия"
-                name="secondaryHypertension.hyperaldosteronism.polydipsiaPolyuria"
-                register={register}
-              />
-              <YesNo
-                label="Преходящая мышечная слабость"
-                name="secondaryHypertension.hyperaldosteronism.muscleWeakness"
-                register={register}
-              />
-              <YesNo
-                label="Судороги конечностей"
-                name="secondaryHypertension.hyperaldosteronism.limbCramps"
-                register={register}
-              />
-              <YesNo
-                label="Запоры"
-                name="secondaryHypertension.hyperaldosteronism.constipation"
-                register={register}
-              />
-              <NoteField
-                noteKey="secondaryHypertension.hyperaldosteronism"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="secondaryHypertension.hyperaldosteronism">
+              <fieldset className={styles.fieldset}>
+                <legend>Гиперальдостеронизм</legend>
+                <YesNo
+                  label="Полидипсия / полиурия"
+                  name="secondaryHypertension.hyperaldosteronism.polydipsiaPolyuria"
+                  register={register}
+                />
+                <YesNo
+                  label="Преходящая мышечная слабость"
+                  name="secondaryHypertension.hyperaldosteronism.muscleWeakness"
+                  register={register}
+                />
+                <YesNo
+                  label="Судороги конечностей"
+                  name="secondaryHypertension.hyperaldosteronism.limbCramps"
+                  register={register}
+                />
+                <YesNo
+                  label="Запоры"
+                  name="secondaryHypertension.hyperaldosteronism.constipation"
+                  register={register}
+                />
+              </fieldset>
+            </Field>
 
             <YesNo
               label="Частые головные боли"
@@ -3066,164 +3093,152 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               />
             )}
 
-            <fieldset className={styles.fieldset}>
-              <legend>🚩 Феохромоцитома</legend>
-              <div className={styles.radioGroup}>
-                <label>Динамика:</label>
-                <label>
-                  <input
-                    type="radio"
-                    value="stable"
-                    {...register(
-                      "secondaryHypertension.pheochromocytoma.stableOrCrisis",
-                    )}
-                  />{" "}
-                  Стабильно повышено
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    value="crisis"
-                    {...register(
-                      "secondaryHypertension.pheochromocytoma.stableOrCrisis",
-                    )}
-                  />{" "}
-                  Кризовые подъёмы
-                </label>
-              </div>
-              <YesNo
-                label="Профузная потливость в моменты повышения"
-                name="secondaryHypertension.pheochromocytoma.profuseSweating"
-                register={register}
-              />
-              <YesNo
-                label="Зябкость рук и ног"
-                name="secondaryHypertension.pheochromocytoma.coldExtremities"
-                register={register}
-              />
-              <YesNo
-                label="Нарушения ритма"
-                name="secondaryHypertension.pheochromocytoma.arrhythmias"
-                register={register}
-              />
-              <NoteField
-                noteKey="secondaryHypertension.pheochromocytoma"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="secondaryHypertension.pheochromocytoma">
+              <fieldset className={styles.fieldset}>
+                <legend>🚩 Феохромоцитома</legend>
+                <div className={styles.radioGroup}>
+                  <label>Динамика:</label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="stable"
+                      {...register(
+                        "secondaryHypertension.pheochromocytoma.stableOrCrisis",
+                      )}
+                    />{" "}
+                    Стабильно повышено
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="crisis"
+                      {...register(
+                        "secondaryHypertension.pheochromocytoma.stableOrCrisis",
+                      )}
+                    />{" "}
+                    Кризовые подъёмы
+                  </label>
+                </div>
+                <YesNo
+                  label="Профузная потливость в моменты повышения"
+                  name="secondaryHypertension.pheochromocytoma.profuseSweating"
+                  register={register}
+                />
+                <YesNo
+                  label="Зябкость рук и ног"
+                  name="secondaryHypertension.pheochromocytoma.coldExtremities"
+                  register={register}
+                />
+                <YesNo
+                  label="Нарушения ритма"
+                  name="secondaryHypertension.pheochromocytoma.arrhythmias"
+                  register={register}
+                />
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Гиперкортицизм (синдром Кушинга)</legend>
-              <YesNo
-                label="Центральное ожирение"
-                name="secondaryHypertension.hypercortisolism.centralObesity"
-                register={register}
-              />
-              <YesNo
-                label="Лунообразное лицо"
-                name="secondaryHypertension.hypercortisolism.moonFace"
-                register={register}
-              />
-              <YesNo
-                label="Румянец на щеках"
-                name="secondaryHypertension.hypercortisolism.cheekFlush"
-                register={register}
-              />
-              <YesNo
-                label="Горб буйвола"
-                name="secondaryHypertension.hypercortisolism.buffaloHump"
-                register={register}
-              />
-              <YesNo
-                label="Синяки"
-                name="secondaryHypertension.hypercortisolism.bruises"
-                register={register}
-              />
-              <YesNo
-                label="Проксимальная мышечная слабость"
-                name="secondaryHypertension.hypercortisolism.proximalWeakness"
-                register={register}
-              />
-              <YesNo
-                label="Широкие и глубокие стрии"
-                name="secondaryHypertension.hypercortisolism.striae"
-                register={register}
-              />
-              <YesNo
-                label="Вновь начавшийся СД (приём ГКС)"
-                name="secondaryHypertension.hypercortisolism.newDiabetes"
-                register={register}
-              />
-              <YesNo
-                label="Аменорея"
-                name="secondaryHypertension.hypercortisolism.amenorrhea"
-                register={register}
-              />
-              <NoteField
-                noteKey="secondaryHypertension.hypercortisolism"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="secondaryHypertension.hypercortisolism">
+              <fieldset className={styles.fieldset}>
+                <legend>Гиперкортицизм (синдром Кушинга)</legend>
+                <YesNo
+                  label="Центральное ожирение"
+                  name="secondaryHypertension.hypercortisolism.centralObesity"
+                  register={register}
+                />
+                <YesNo
+                  label="Лунообразное лицо"
+                  name="secondaryHypertension.hypercortisolism.moonFace"
+                  register={register}
+                />
+                <YesNo
+                  label="Румянец на щеках"
+                  name="secondaryHypertension.hypercortisolism.cheekFlush"
+                  register={register}
+                />
+                <YesNo
+                  label="Горб буйвола"
+                  name="secondaryHypertension.hypercortisolism.buffaloHump"
+                  register={register}
+                />
+                <YesNo
+                  label="Синяки"
+                  name="secondaryHypertension.hypercortisolism.bruises"
+                  register={register}
+                />
+                <YesNo
+                  label="Проксимальная мышечная слабость"
+                  name="secondaryHypertension.hypercortisolism.proximalWeakness"
+                  register={register}
+                />
+                <YesNo
+                  label="Широкие и глубокие стрии"
+                  name="secondaryHypertension.hypercortisolism.striae"
+                  register={register}
+                />
+                <YesNo
+                  label="Вновь начавшийся СД (приём ГКС)"
+                  name="secondaryHypertension.hypercortisolism.newDiabetes"
+                  register={register}
+                />
+                <YesNo
+                  label="Аменорея"
+                  name="secondaryHypertension.hypercortisolism.amenorrhea"
+                  register={register}
+                />
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Синдром обструктивного апноэ сна</legend>
-              <YesNo
-                label="Ночной храп"
-                name="secondaryHypertension.osas.nightSnoring"
-                register={register}
-              />
-              <YesNo
-                label="Просыпаетесь ли ночью?"
-                name="secondaryHypertension.osas.nightAwakenings"
-                register={register}
-              />
-              <YesNo
-                label="Ночное мочеиспускание"
-                name="secondaryHypertension.osas.nocturia"
-                register={register}
-              />
-              <YesNo
-                label="Дневная сонливость"
-                name="secondaryHypertension.osas.daytimeSleepiness"
-                register={register}
-              />
-              <YesNo
-                label="Ожирение"
-                name="secondaryHypertension.osas.obesity"
-                register={register}
-              />
-              <NoteField
-                noteKey="secondaryHypertension.osas"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="secondaryHypertension.osas">
+              <fieldset className={styles.fieldset}>
+                <legend>Синдром обструктивного апноэ сна</legend>
+                <YesNo
+                  label="Ночной храп"
+                  name="secondaryHypertension.osas.nightSnoring"
+                  register={register}
+                />
+                <YesNo
+                  label="Просыпаетесь ли ночью?"
+                  name="secondaryHypertension.osas.nightAwakenings"
+                  register={register}
+                />
+                <YesNo
+                  label="Ночное мочеиспускание"
+                  name="secondaryHypertension.osas.nocturia"
+                  register={register}
+                />
+                <YesNo
+                  label="Дневная сонливость"
+                  name="secondaryHypertension.osas.daytimeSleepiness"
+                  register={register}
+                />
+                <YesNo
+                  label="Ожирение"
+                  name="secondaryHypertension.osas.obesity"
+                  register={register}
+                />
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Семейный анамнез</legend>
-              <YesNo
-                label="Повышенное давление у родственников"
-                name="secondaryHypertension.familyHistory.hypertension"
-                register={register}
-              />
-              <YesNo
-                label="Инфаркт или инсульт в молодом возрасте (муж <55, жен <65)"
-                name="secondaryHypertension.familyHistory.earlyHeartAttackStroke"
-                register={register}
-              />
-              <YesNo
-                label="Феохромоцитома у родственников"
-                name="secondaryHypertension.familyHistory.pheochromocytoma"
-                register={register}
-              />
-              <NoteField
-                noteKey="secondaryHypertension.familyHistory"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="secondaryHypertension.familyHistory">
+              <fieldset className={styles.fieldset}>
+                <legend>Семейный анамнез</legend>
+                <YesNo
+                  label="Повышенное давление у родственников"
+                  name="secondaryHypertension.familyHistory.hypertension"
+                  register={register}
+                />
+                <YesNo
+                  label="Инфаркт или инсульт в молодом возрасте (муж <55, жен <65)"
+                  name="secondaryHypertension.familyHistory.earlyHeartAttackStroke"
+                  register={register}
+                />
+                <YesNo
+                  label="Феохромоцитома у родственников"
+                  name="secondaryHypertension.familyHistory.pheochromocytoma"
+                  register={register}
+                />
+              </fieldset>
+            </Field>
 
             <YesNo
               label="Женщина: было ли во время беременности повышение давления, преэклампсия или эклампсия?"
@@ -3255,63 +3270,60 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               register={register}
             />
             {watch("heartFailure.chestPain") === true && (
-              <>
-                <div className={styles.radioGroup}>
-                  <label>Провоцирующий фактор:</label>
-                  <label>
-                    <input
-                      type="radio"
-                      value="none"
-                      {...register("heartFailure.chestPainTrigger")}
-                    />{" "}
-                    Отсутствует
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      value="physical"
-                      {...register("heartFailure.chestPainTrigger")}
-                    />{" "}
-                    Физ. нагрузка
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      value="emotional"
-                      {...register("heartFailure.chestPainTrigger")}
-                    />{" "}
-                    Эмоц. стресс
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      value="positional"
-                      {...register("heartFailure.chestPainTrigger")}
-                    />{" "}
-                    Изменение положения тела
-                  </label>
-                </div>
-                <YesNo
-                  label="Иррадиация в левую руку"
-                  name="heartFailure.radiatesToLeftArm"
-                  register={register}
-                />
-                <YesNo
-                  label="Проходят от нитроглицерина / фосфалюгеля"
-                  name="heartFailure.relievesWithNitroglycerin"
-                  register={register}
-                />
-                <YesNo
-                  label="За последние 3 месяца — учащение приступов?"
-                  name="heartFailure.frequentAttacks3Months"
-                  register={register}
-                />
-                <NoteField
-                  noteKey="heartFailure.chestPain"
-                  register={register}
-                  watch={watch}
-                />
-              </>
+              <Field noteKey="heartFailure.chestPain">
+                <>
+                  <div className={styles.radioGroup}>
+                    <label>Провоцирующий фактор:</label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="none"
+                        {...register("heartFailure.chestPainTrigger")}
+                      />{" "}
+                      Отсутствует
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="physical"
+                        {...register("heartFailure.chestPainTrigger")}
+                      />{" "}
+                      Физ. нагрузка
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="emotional"
+                        {...register("heartFailure.chestPainTrigger")}
+                      />{" "}
+                      Эмоц. стресс
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        value="positional"
+                        {...register("heartFailure.chestPainTrigger")}
+                      />{" "}
+                      Изменение положения тела
+                    </label>
+                  </div>
+                  <YesNo
+                    label="Иррадиация в левую руку"
+                    name="heartFailure.radiatesToLeftArm"
+                    register={register}
+                  />
+                  <YesNo
+                    label="Проходят от нитроглицерина / фосфалюгеля"
+                    name="heartFailure.relievesWithNitroglycerin"
+                    register={register}
+                  />
+                  <YesNo
+                    label="За последние 3 месяца — учащение приступов?"
+                    name="heartFailure.frequentAttacks3Months"
+                    register={register}
+                  />
+                </>
+              </Field>
             )}
 
             <YesNo
@@ -3363,324 +3375,313 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               register={register}
             />
 
-            <fieldset className={styles.fieldset}>
-              <legend>Малый круг кровообращения</legend>
-              <YesNo
-                label="Во время сна подкладываете подушки под спину?"
-                name="heartFailure.smallCircle.pillowsForSleep"
-                register={register}
-              />
-              <YesNo
-                label="Усиливается ли одышка ночью? Просыпаетесь ли из-за одышки?"
-                name="heartFailure.smallCircle.nightDyspnea"
-                register={register}
-              />
-              <label>Акроцианоз:</label>
-              <label>
-                <input
-                  type="checkbox"
-                  {...register(
-                    "heartFailure.smallCircle.acrocyanosis.nasolabialTriangle",
-                  )}
-                />{" "}
-                Носогубный треугольник
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  {...register("heartFailure.smallCircle.acrocyanosis.hands")}
-                />{" "}
-                Кисти
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  {...register("heartFailure.smallCircle.acrocyanosis.feet")}
-                />{" "}
-                Стопы
-              </label>
-              <Input
-                label="Сатурация"
-                type="number"
-                suffix="%"
-                {...register("heartFailure.smallCircle.saturation")}
-              />
-              <NoteField
-                noteKey="heartFailure.smallCircle"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="heartFailure.smallCircle">
+              <fieldset className={styles.fieldset}>
+                <legend>Малый круг кровообращения</legend>
+                <YesNo
+                  label="Во время сна подкладываете подушки под спину?"
+                  name="heartFailure.smallCircle.pillowsForSleep"
+                  register={register}
+                />
+                <YesNo
+                  label="Усиливается ли одышка ночью? Просыпаетесь ли из-за одышки?"
+                  name="heartFailure.smallCircle.nightDyspnea"
+                  register={register}
+                />
+                <label>Акроцианоз:</label>
+                <label>
+                  <input
+                    type="checkbox"
+                    {...register(
+                      "heartFailure.smallCircle.acrocyanosis.nasolabialTriangle",
+                    )}
+                  />{" "}
+                  Носогубный треугольник
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    {...register("heartFailure.smallCircle.acrocyanosis.hands")}
+                  />{" "}
+                  Кисти
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    {...register("heartFailure.smallCircle.acrocyanosis.feet")}
+                  />{" "}
+                  Стопы
+                </label>
+                <Input
+                  label="Сатурация"
+                  type="number"
+                  suffix="%"
+                  {...register("heartFailure.smallCircle.saturation")}
+                />
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Большой круг — отёки ног</legend>
-              <YesNo
-                label="Отёки ног"
-                name="heartFailure.bigCircle.legEdema"
-                register={register}
-              />
-              <YesNo
-                label="Теснота обуви к концу дня, след от резинки носков"
-                name="heartFailure.bigCircle.tightShoes"
-                register={register}
-              />
-              <div className={styles.radioGroup}>
-                <label>Давно появились отёки?</label>
-                <label>
-                  <input
-                    type="radio"
-                    value="long"
-                    {...register("heartFailure.bigCircle.edemaOnset")}
-                  />{" "}
-                  Давно
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    value="acute"
-                    {...register("heartFailure.bigCircle.edemaOnset")}
-                  />{" "}
-                  Остро (исключить ТГВ)
-                </label>
-              </div>
-              <YesNo
-                label="Симметричные?"
-                name="heartFailure.bigCircle.symmetric"
-                register={register}
-              />
-              <Input
-                label="Локализация (стопы, голени, крестец, мошонка)"
-                {...register("heartFailure.bigCircle.localization")}
-              />
-              <div className={styles.radioGroup}>
-                <label>Время появления:</label>
-                <label>
-                  <input
-                    type="radio"
-                    value="morning"
-                    {...register("heartFailure.bigCircle.timeOfDay")}
-                  />{" "}
-                  Утро
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    value="evening"
-                    {...register("heartFailure.bigCircle.timeOfDay")}
-                  />{" "}
-                  Вечер
-                </label>
-              </div>
-              <YesNo
-                label="Проходят ли отёки за ночь?"
-                name="heartFailure.bigCircle.edemaImprovesNight"
-                register={register}
-              />
-              <YesNo
-                label="Становится ли лучше при возвышенном положении?"
-                name="heartFailure.bigCircle.edemaImprovesElevation"
-                register={register}
-              />
-
-              <div className={styles.row}>
-                <div>
-                  <label>Температура</label>
-                  <select
-                    {...register("heartFailure.bigCircle.edemaTemperature")}
-                  >
-                    <option value="">—</option>
-                    <option value="cold">Холодная</option>
-                    <option value="hot">Горячая</option>
-                  </select>
+            <Field noteKey="heartFailure.bigCircle">
+              <fieldset className={styles.fieldset}>
+                <legend>Большой круг — отёки ног</legend>
+                <YesNo
+                  label="Отёки ног"
+                  name="heartFailure.bigCircle.legEdema"
+                  register={register}
+                />
+                <YesNo
+                  label="Теснота обуви к концу дня, след от резинки носков"
+                  name="heartFailure.bigCircle.tightShoes"
+                  register={register}
+                />
+                <div className={styles.radioGroup}>
+                  <label>Давно появились отёки?</label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="long"
+                      {...register("heartFailure.bigCircle.edemaOnset")}
+                    />{" "}
+                    Давно
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="acute"
+                      {...register("heartFailure.bigCircle.edemaOnset")}
+                    />{" "}
+                    Остро (исключить ТГВ)
+                  </label>
                 </div>
-                <div>
-                  <label>Цвет</label>
-                  <select {...register("heartFailure.bigCircle.edemaColor")}>
-                    <option value="">—</option>
-                    <option value="pale">Бледный</option>
-                    <option value="cyanotic">Цианотичный</option>
-                    <option value="hyperemic">Гиперемия</option>
-                  </select>
+                <YesNo
+                  label="Симметричные?"
+                  name="heartFailure.bigCircle.symmetric"
+                  register={register}
+                />
+                <Input
+                  label="Локализация (стопы, голени, крестец, мошонка)"
+                  {...register("heartFailure.bigCircle.localization")}
+                />
+                <div className={styles.radioGroup}>
+                  <label>Время появления:</label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="morning"
+                      {...register("heartFailure.bigCircle.timeOfDay")}
+                    />{" "}
+                    Утро
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="evening"
+                      {...register("heartFailure.bigCircle.timeOfDay")}
+                    />{" "}
+                    Вечер
+                  </label>
                 </div>
-              </div>
+                <YesNo
+                  label="Проходят ли отёки за ночь?"
+                  name="heartFailure.bigCircle.edemaImprovesNight"
+                  register={register}
+                />
+                <YesNo
+                  label="Становится ли лучше при возвышенном положении?"
+                  name="heartFailure.bigCircle.edemaImprovesElevation"
+                  register={register}
+                />
 
-              <div className={styles.row}>
-                <div>
-                  <label>Плотность</label>
-                  <select {...register("heartFailure.bigCircle.edemaDensity")}>
-                    <option value="">—</option>
-                    <option value="soft">Мягкие</option>
-                    <option value="dense">Плотные</option>
-                  </select>
+                <div className={styles.row}>
+                  <div>
+                    <label>Температура</label>
+                    <select
+                      {...register("heartFailure.bigCircle.edemaTemperature")}
+                    >
+                      <option value="">—</option>
+                      <option value="cold">Холодная</option>
+                      <option value="hot">Горячая</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label>Цвет</label>
+                    <select {...register("heartFailure.bigCircle.edemaColor")}>
+                      <option value="">—</option>
+                      <option value="pale">Бледный</option>
+                      <option value="cyanotic">Цианотичный</option>
+                      <option value="hyperemic">Гиперемия</option>
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label>Исчезает</label>
-                  <select {...register("heartFailure.bigCircle.edemaResolves")}>
-                    <option value="">—</option>
-                    <option value="immediate">Сразу</option>
-                    <option value="delayed">Спустя время</option>
-                  </select>
+
+                <div className={styles.row}>
+                  <div>
+                    <label>Плотность</label>
+                    <select
+                      {...register("heartFailure.bigCircle.edemaDensity")}
+                    >
+                      <option value="">—</option>
+                      <option value="soft">Мягкие</option>
+                      <option value="dense">Плотные</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label>Исчезает</label>
+                    <select
+                      {...register("heartFailure.bigCircle.edemaResolves")}
+                    >
+                      <option value="">—</option>
+                      <option value="immediate">Сразу</option>
+                      <option value="delayed">Спустя время</option>
+                    </select>
+                  </div>
                 </div>
-              </div>
 
-              <YesNo
-                label="Ямка при нажатии"
-                name="heartFailure.bigCircle.pittingEdema"
-                register={register}
-              />
-              <YesNo
-                label="Болезненность"
-                name="heartFailure.bigCircle.painful"
-                register={register}
-              />
-              <YesNo
-                label="Принимает нифедипин, амлодипин, НПВС"
-                name="heartFailure.bigCircle.takesNifedipineAmlodipineNsaids"
-                register={register}
-              />
-              <NoteField
-                noteKey="heartFailure.bigCircle"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+                <YesNo
+                  label="Ямка при нажатии"
+                  name="heartFailure.bigCircle.pittingEdema"
+                  register={register}
+                />
+                <YesNo
+                  label="Болезненность"
+                  name="heartFailure.bigCircle.painful"
+                  register={register}
+                />
+                <YesNo
+                  label="Принимает нифедипин, амлодипин, НПВС"
+                  name="heartFailure.bigCircle.takesNifedipineAmlodipineNsaids"
+                  register={register}
+                />
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Гепатомегалия</legend>
-              <YesNo
-                label="Чувствуете боли/дискомфорт в правом подреберье?"
-                name="heartFailure.hepatomegaly.rightHypochondriumPain"
-                register={register}
-              />
-              <div className={styles.radioGroup}>
-                <label>Размер печени:</label>
-                <label>
-                  <input
-                    type="radio"
-                    value="enlarged"
-                    {...register("heartFailure.hepatomegaly.liverSize")}
-                  />{" "}
-                  Увеличена
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    value="notPalpable"
-                    {...register("heartFailure.hepatomegaly.liverSize")}
-                  />{" "}
-                  Не пальпируется
-                </label>
-              </div>
-              <div className={styles.radioGroup}>
-                <label>Край:</label>
-                <label>
-                  <input
-                    type="radio"
-                    value="smooth"
-                    {...register("heartFailure.hepatomegaly.liverEdge")}
-                  />{" "}
-                  Гладкий
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    value="bumpy"
-                    {...register("heartFailure.hepatomegaly.liverEdge")}
-                  />{" "}
-                  Бугристый
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    value="notDefined"
-                    {...register("heartFailure.hepatomegaly.liverEdge")}
-                  />{" "}
-                  Не определяется
-                </label>
-              </div>
-              <YesNo
-                label="Болезненность"
-                name="heartFailure.hepatomegaly.liverPainful"
-                register={register}
-              />
-              <YesNo
-                label="Придаточная пульсация"
-                name="heartFailure.hepatomegaly.hepaticPulsation"
-                register={register}
-              />
-              <YesNo
-                label="Гепатоеюнальный рефлюкс"
-                name="heartFailure.hepatomegaly.hepatojugularReflux"
-                register={register}
-              />
-              <NoteField
-                noteKey="heartFailure.hepatomegaly"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="heartFailure.hepatomegaly">
+              <fieldset className={styles.fieldset}>
+                <legend>Гепатомегалия</legend>
+                <YesNo
+                  label="Чувствуете боли/дискомфорт в правом подреберье?"
+                  name="heartFailure.hepatomegaly.rightHypochondriumPain"
+                  register={register}
+                />
+                <div className={styles.radioGroup}>
+                  <label>Размер печени:</label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="enlarged"
+                      {...register("heartFailure.hepatomegaly.liverSize")}
+                    />{" "}
+                    Увеличена
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="notPalpable"
+                      {...register("heartFailure.hepatomegaly.liverSize")}
+                    />{" "}
+                    Не пальпируется
+                  </label>
+                </div>
+                <div className={styles.radioGroup}>
+                  <label>Край:</label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="smooth"
+                      {...register("heartFailure.hepatomegaly.liverEdge")}
+                    />{" "}
+                    Гладкий
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="bumpy"
+                      {...register("heartFailure.hepatomegaly.liverEdge")}
+                    />{" "}
+                    Бугристый
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="notDefined"
+                      {...register("heartFailure.hepatomegaly.liverEdge")}
+                    />{" "}
+                    Не определяется
+                  </label>
+                </div>
+                <YesNo
+                  label="Болезненность"
+                  name="heartFailure.hepatomegaly.liverPainful"
+                  register={register}
+                />
+                <YesNo
+                  label="Придаточная пульсация"
+                  name="heartFailure.hepatomegaly.hepaticPulsation"
+                  register={register}
+                />
+                <YesNo
+                  label="Гепатоеюнальный рефлюкс"
+                  name="heartFailure.hepatomegaly.hepatojugularReflux"
+                  register={register}
+                />
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Набухание яремных вен (голова 45°)</legend>
-              <YesNo
-                label="На вдохе и выдохе"
-                name="heartFailure.jugularVeins.onInspirationAndExpiration"
-                register={register}
-              />
-              <YesNo
-                label="Только на вдохе"
-                name="heartFailure.jugularVeins.onlyOnInspiration"
-                register={register}
-              />
-              <NoteField
-                noteKey="heartFailure.jugularVeins"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="heartFailure.jugularVeins">
+              <fieldset className={styles.fieldset}>
+                <legend>Набухание яремных вен (голова 45°)</legend>
+                <YesNo
+                  label="На вдохе и выдохе"
+                  name="heartFailure.jugularVeins.onInspirationAndExpiration"
+                  register={register}
+                />
+                <YesNo
+                  label="Только на вдохе"
+                  name="heartFailure.jugularVeins.onlyOnInspiration"
+                  register={register}
+                />
+              </fieldset>
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Стадия по NYHA</legend>
-              <div className={styles.radioGroup}>
-                <label>
-                  <input
-                    type="radio"
-                    value="I"
-                    {...register("heartFailure.nyhaClass")}
-                  />{" "}
-                  I — скрытая НК
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    value="IIA"
-                    {...register("heartFailure.nyhaClass")}
-                  />{" "}
-                  IIA — прогрессирующее снижение толерантности
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    value="IIB"
-                    {...register("heartFailure.nyhaClass")}
-                  />{" "}
-                  IIB — выраженные признаки в покое
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    value="III"
-                    {...register("heartFailure.nyhaClass")}
-                  />{" "}
-                  III — конечная
-                </label>
-              </div>
-              <NoteField
-                noteKey="heartFailure.nyhaClass"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="heartFailure.nyhaClass">
+              <fieldset className={styles.fieldset}>
+                <legend>Стадия по NYHA</legend>
+                <div className={styles.radioGroup}>
+                  <label>
+                    <input
+                      type="radio"
+                      value="I"
+                      {...register("heartFailure.nyhaClass")}
+                    />{" "}
+                    I — скрытая НК
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="IIA"
+                      {...register("heartFailure.nyhaClass")}
+                    />{" "}
+                    IIA — прогрессирующее снижение толерантности
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="IIB"
+                      {...register("heartFailure.nyhaClass")}
+                    />{" "}
+                    IIB — выраженные признаки в покое
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="III"
+                      {...register("heartFailure.nyhaClass")}
+                    />{" "}
+                    III — конечная
+                  </label>
+                </div>
+              </fieldset>
+            </Field>
           </div>
         );
 
@@ -3747,12 +3748,9 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               </div>
             </div>
 
-            <NoteField
-              noteKey="h2fpef"
-              register={register}
-              watch={watch}
-              label="Примечание по H2FPEF"
-            />
+            <Field noteKey="h2fpef" noteLabel="Примечание по H2FPEF">
+              <div />
+            </Field>
           </div>
         );
 
@@ -3760,43 +3758,31 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         return (
           <div className={styles.section}>
             <h3>Дополнительный анамнез</h3>
-            <Input
-              label="ИМ от (год)"
-              {...register("additionalHistory.myocardialInfarction")}
-            />
-            <NoteField
-              noteKey="additionalHistory.myocardialInfarction"
-              register={register}
-              watch={watch}
-            />
-            <Input
-              label="Коронароангиография"
-              {...register("additionalHistory.coronaryAngiography")}
-            />
-            <NoteField
-              noteKey="additionalHistory.coronaryAngiography"
-              register={register}
-              watch={watch}
-            />
-            <Input
-              label="Стентирование"
-              {...register("additionalHistory.stenting")}
-            />
-            <NoteField
-              noteKey="additionalHistory.stenting"
-              register={register}
-              watch={watch}
-            />
-            <Textarea
-              label="Операции"
-              {...register("additionalHistory.surgeries")}
-              rows={2}
-            />
-            <NoteField
-              noteKey="additionalHistory.surgeries"
-              register={register}
-              watch={watch}
-            />
+            <Field noteKey="additionalHistory.myocardialInfarction">
+              <Input
+                label="ИМ от (год)"
+                {...register("additionalHistory.myocardialInfarction")}
+              />
+            </Field>
+            <Field noteKey="additionalHistory.coronaryAngiography">
+              <Input
+                label="Коронароангиография"
+                {...register("additionalHistory.coronaryAngiography")}
+              />
+            </Field>
+            <Field noteKey="additionalHistory.stenting">
+              <Input
+                label="Стентирование"
+                {...register("additionalHistory.stenting")}
+              />
+            </Field>
+            <Field noteKey="additionalHistory.surgeries">
+              <Textarea
+                label="Операции"
+                {...register("additionalHistory.surgeries")}
+                rows={2}
+              />
+            </Field>
             <Input
               label="Аппендицит"
               {...register("additionalHistory.appendicitis")}
@@ -3822,37 +3808,34 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               label="Ковид (год)"
               {...register("additionalHistory.covidYear")}
             />
-            <NoteField
+            <Field
               noteKey="additionalHistory.infections"
-              register={register}
-              watch={watch}
-              label="Примечание по инфекциям / операциям"
-            />
+              noteLabel="Примечание по инфекциям / операциям"
+            >
+              <div />
+            </Field>
 
-            <fieldset className={styles.fieldset}>
-              <legend>Аллергии</legend>
-              <Input
-                label="На что?"
-                {...register("additionalHistory.allergies.what")}
-              />
-              <Input
-                label="Как проявляется?"
-                {...register("additionalHistory.allergies.how")}
-              />
-              <YesNo
-                label="Ангионевротический отёк был?"
-                name="additionalHistory.allergies.angioedema"
-                register={register}
-              />
-              {watch("additionalHistory.allergies.angioedema") === true && (
-                <div className={styles.warning}>🚩 Запрет на приём иАПФ</div>
-              )}
-              <NoteField
-                noteKey="additionalHistory.allergies"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="additionalHistory.allergies">
+              <fieldset className={styles.fieldset}>
+                <legend>Аллергии</legend>
+                <Input
+                  label="На что?"
+                  {...register("additionalHistory.allergies.what")}
+                />
+                <Input
+                  label="Как проявляется?"
+                  {...register("additionalHistory.allergies.how")}
+                />
+                <YesNo
+                  label="Ангионевротический отёк был?"
+                  name="additionalHistory.allergies.angioedema"
+                  register={register}
+                />
+                {watch("additionalHistory.allergies.angioedema") === true && (
+                  <div className={styles.warning}>🚩 Запрет на приём иАПФ</div>
+                )}
+              </fieldset>
+            </Field>
 
             <YesNo
               label="За пределы РФ не выезжали?"
@@ -3870,35 +3853,32 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               register={register}
             />
 
-            <fieldset className={styles.fieldset}>
-              <legend>Измерения</legend>
-              <div className={styles.row}>
-                <Input
-                  label="Вес"
-                  type="number"
-                  step="0.1"
-                  suffix="кг"
-                  {...register("additionalHistory.weight")}
-                />
-                <Input
-                  label="Рост"
-                  type="number"
-                  suffix="см"
-                  {...register("additionalHistory.height")}
-                />
-                <Input
-                  label="Окружность живота"
-                  type="number"
-                  suffix="см"
-                  {...register("additionalHistory.abdominalCircumference")}
-                />
-              </div>
-              <NoteField
-                noteKey="additionalHistory.measurements"
-                register={register}
-                watch={watch}
-              />
-            </fieldset>
+            <Field noteKey="additionalHistory.measurements">
+              <fieldset className={styles.fieldset}>
+                <legend>Измерения</legend>
+                <div className={styles.row}>
+                  <Input
+                    label="Вес"
+                    type="number"
+                    step="0.1"
+                    suffix="кг"
+                    {...register("additionalHistory.weight")}
+                  />
+                  <Input
+                    label="Рост"
+                    type="number"
+                    suffix="см"
+                    {...register("additionalHistory.height")}
+                  />
+                  <Input
+                    label="Окружность живота"
+                    type="number"
+                    suffix="см"
+                    {...register("additionalHistory.abdominalCircumference")}
+                  />
+                </div>
+              </fieldset>
+            </Field>
           </div>
         );
 
