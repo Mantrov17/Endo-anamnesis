@@ -20,43 +20,112 @@ export const TherapyTab: React.FC<TabProps> = ({
   return (
     <div className={styles.section}>
       <h3>Терапия</h3>
+
       <Input
         label="Целевой уровень гликированного гемоглобина"
         suffix="%"
         {...register("therapy.targetHba1c")}
         readOnly
       />
+
       {/* ===== Терапия в дебюте — СД 1 типа ===== */}
       {isType1 && type1Data && (
-        <>
-          <Field noteKey="type1Diabetes.initialTherapy">
-            <fieldset className={styles.fieldset}>
-              <legend>Терапия в дебюте</legend>
-              <DrugList
-                control={control}
-                register={register}
-                name="type1Diabetes.initialTherapy"
-                firstField="drugName"
-                nameLabel="Название препарата"
-              />
-            </fieldset>
-          </Field>
+        <fieldset className={styles.fieldset}>
+          <legend>Терапия в дебюте</legend>
+
+          <div className={styles.radioGroup}>
+            <label>Способ введения инсулина:</label>
+            <label>
+              <input
+                type="radio"
+                value="injections"
+                {...register("type1Diabetes.initialTherapy.injectionMethod")}
+              />{" "}
+              Многократные инъекции
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="pump"
+                {...register("type1Diabetes.initialTherapy.injectionMethod")}
+              />{" "}
+              Инсулиновая помпа
+            </label>
+          </div>
+
+          {watch("type1Diabetes.initialTherapy.injectionMethod") ===
+            "injections" && (
+            <div className={styles.radioGroup}>
+              <label>Устройство:</label>
+              <label>
+                <input
+                  type="radio"
+                  value="syringe"
+                  {...register("type1Diabetes.initialTherapy.injectionsDevice")}
+                />{" "}
+                Шприц
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value="pen"
+                  {...register("type1Diabetes.initialTherapy.injectionsDevice")}
+                />{" "}
+                Ручка
+              </label>
+            </div>
+          )}
+
+          {watch("type1Diabetes.initialTherapy.injectionMethod") === "pump" && (
+            <Input
+              label="Модель помпы"
+              {...register("type1Diabetes.initialTherapy.pumpModel")}
+            />
+          )}
+
+          <fieldset className={styles.fieldset}>
+            <legend>Базальный инсулин</legend>
+            <DrugList
+              control={control}
+              register={register}
+              name="type1Diabetes.initialTherapy.basalInsulin"
+              firstField="drugName"
+              nameLabel="Название препарата"
+            />
+          </fieldset>
+
+          <fieldset className={styles.fieldset}>
+            <legend>Болюсный инсулин</legend>
+            <DrugList
+              control={control}
+              register={register}
+              name="type1Diabetes.initialTherapy.bolusInsulin"
+              firstField="drugName"
+              nameLabel="Название препарата"
+            />
+          </fieldset>
 
           <YesNo
-            label="Данную терапию принимаете до сих пор?"
-            name="type1Diabetes.stillTakingInitialTherapy"
+            label="Другие сахаропонижающие препараты"
+            name="type1Diabetes.initialTherapy.otherDrugsTaken"
             register={register}
           />
-          {watch("type1Diabetes.stillTakingInitialTherapy") === false && (
-            <Field noteKey="type1Diabetes.ifNotTakingReason">
-              <Textarea
-                label="Что изменилось?"
-                {...register("type1Diabetes.ifNotTakingReason")}
-                rows={2}
-              />
-            </Field>
+          {watch("type1Diabetes.initialTherapy.otherDrugsTaken") === true && (
+            <Textarea
+              label="Какие препараты"
+              {...register("type1Diabetes.initialTherapy.otherDrugs")}
+              rows={2}
+            />
           )}
-        </>
+
+          <Input
+            label="Привычные цифры глюкозы на терапии"
+            type="number"
+            step="0.1"
+            suffix="ммоль/л"
+            {...register("type1Diabetes.initialTherapy.usualGlucoseOnTherapy")}
+          />
+        </fieldset>
       )}
 
       {/* ===== Терапия в дебюте — СД 2 типа ===== */}
@@ -91,6 +160,8 @@ export const TherapyTab: React.FC<TabProps> = ({
           )}
         </>
       )}
+
+      {/* ===== Актуальная терапия ===== */}
       <fieldset className={styles.fieldset}>
         <legend>Актуальная терапия</legend>
 
@@ -102,6 +173,12 @@ export const TherapyTab: React.FC<TabProps> = ({
 
         {watch("actualTherapy.sameAsInitial") === false && (
           <>
+            <Textarea
+              label="Причина коррекции терапии"
+              {...register("actualTherapy.correctionReason")}
+              rows={2}
+            />
+
             <div className={styles.radioGroup}>
               <label>Способ введения инсулина:</label>
               <label>
@@ -213,11 +290,6 @@ export const TherapyTab: React.FC<TabProps> = ({
             />
 
             <Textarea
-              label="Другие сахаропонижающие препараты"
-              {...register("actualTherapy.otherGlucoseLoweringDrugs")}
-              rows={2}
-            />
-            <Textarea
               label="Места инъекций"
               {...register("actualTherapy.injectionSites")}
               rows={2}
@@ -231,6 +303,7 @@ export const TherapyTab: React.FC<TabProps> = ({
         )}
       </fieldset>
 
+      {/* ===== Общая терапия (старые поля) ===== */}
       <Field noteKey="therapy.currentDrugs">
         <fieldset className={styles.fieldset}>
           <legend>Сахаропонижающие препараты (кроме инсулина)</legend>

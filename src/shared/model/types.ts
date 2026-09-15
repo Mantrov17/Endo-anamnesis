@@ -10,7 +10,6 @@ export interface PrimaryExam {
   reason: string;
   suspectedDiagnosis?: "type1" | "type2";
 
-  // NEW — антропометрия в начале формы
   height: number | null;
   weight: number | null;
   bmi: number | null;
@@ -18,18 +17,19 @@ export interface PrimaryExam {
   weightChange6Months: boolean | null;
   weightIncreasedBy: number | null;
   weightDecreasedBy: number | null;
-  weightChangeReason: "unmotivated" | "stress" | "diet" | "sport" | ""; // NEW
+  weightChangeReason: "unmotivated" | "stress" | "diet" | "sport" | "";
 }
+
 // ==================== СД 1 типа ====================
 export interface Type1Diabetes {
   ageAtDiagnosis: number | null;
   yearOfDiagnosis: string;
-  diseaseDuration: number | null; // NEW
+  diseaseDuration: number | null;
   howDiagnosed:
     | "accidental"
     | "planned"
     | "dispanserization"
-    | "withComplaints" // NEW
+    | "withComplaints"
     | "emergency"
     | "";
   circumstances: string;
@@ -41,15 +41,12 @@ export interface Type1Diabetes {
     weightLoss: boolean;
     weightLossAmount: number | null;
     weightLossUnknown: boolean;
-    // NEW
     nausea: boolean;
     vomiting: boolean;
     abdominalPain: boolean;
     visionBlur: boolean;
     lossOfConsciousness: boolean;
   };
-  stillTakingInitialTherapy: boolean | null;
-  ifNotTakingReason: string;
   autoantibodies: {
     tested: boolean | null;
     GAD: boolean;
@@ -61,12 +58,31 @@ export interface Type1Diabetes {
     IAA: boolean;
     IAAValue: number | null;
   };
-  cPeptide: { value: string; date: string };
-  hba1c: { value: number | null; date: string; unknown?: boolean }; // unknown NEW (опционально)
+  cPeptide: {
+    tested: boolean | null;
+    value: string;
+    date: string;
+    unknown: boolean;
+  };
+  hba1c: {
+    tested: boolean | null;
+    value: number | null;
+    date: string;
+    unknown: boolean;
+  };
   usualGlucose: number | null;
 
-  // NEW
-  initialTherapy: { drugName: string; dose: string }[];
+  initialTherapy: {
+    injectionMethod: "injections" | "pump" | "";
+    injectionsDevice: "syringe" | "pen" | "";
+    pumpModel: string;
+    basalInsulin: { drugName: string; dose: string }[];
+    bolusInsulin: { drugName: string; dose: string }[];
+    otherDrugsTaken: boolean | null;
+    otherDrugs: string;
+    usualGlucoseOnTherapy: number | null;
+  };
+
   investigatedAfterDetection: boolean | null;
   initiallyType2: boolean | null;
 }
@@ -76,7 +92,6 @@ export interface Type2Diabetes {
   firstGlucoseElevationYear: string;
   maxGlucoseValues: string;
 
-  // NEW
   ageAtDiagnosis: number | null;
   yearOfDiagnosis: string;
   howDiagnosed:
@@ -103,26 +118,31 @@ export interface Type2Diabetes {
   missedDosesPerWeek: string;
   missedReasons: string;
   usualGlucoseOnTherapy: number | null;
-  hba1c: { value: number | null; date: string; unknown: boolean };
+  hba1c: {
+    tested: boolean | null;
+    value: number | null;
+    date: string;
+    unknown: boolean;
+  };
   gestationalDiabetes: boolean | null;
 }
 
-// ==================== Актуальная терапия (NEW) ====================
+// ==================== Актуальная терапия ====================
 export interface ActualTherapy {
   sameAsInitial: boolean | null;
+  correctionReason: string;
   injectionMethod: "injections" | "pump" | "";
   injectionsDevice: "syringe" | "pen" | "";
   pumpModel: string;
   basalInsulin: { name: string; dose: string }[];
   bolusInsulin: { name: string; dose: string }[];
-  insulinDoseCoefficient: number | null; // 0.5 / 0.7 / 0.9
-  calculatedDailyInsulinDose: number | null; // авторасчёт
-  otherGlucoseLoweringDrugs: string;
+  insulinDoseCoefficient: number | null;
+  calculatedDailyInsulinDose: number | null;
   injectionSites: string;
   lipohypertrophy: boolean | null;
 }
 
-// ==================== Терапия (старая) ====================
+// ==================== Терапия (общая) ====================
 export interface Therapy {
   targetHba1c: string;
   currentDrugs: { name: string; dose: string }[];
@@ -151,7 +171,6 @@ export interface Hypoglycemia {
   familyTrained: boolean | null;
   nocturnalHypoglycemia: boolean | null;
 
-  // NEW
   severity: "mild" | "severe" | "";
   symptoms: {
     hunger: boolean;
@@ -171,13 +190,9 @@ export interface SelfMonitoring {
   sameTime: boolean | null;
   ifNotSameTimeReason: string;
   diary: boolean | null;
-
-  // NEW (для СД 1)
   needleChangeFrequency: string;
   siteChangeFrequency: string;
   injectionSiteDistance: string;
-
-  // NEW (для СД 1 и 2)
   hasGlucometer: boolean | null;
   calibrationDone: boolean | null;
   lastDoctorVisit: string;
@@ -192,12 +207,10 @@ export interface Complications {
     visionLossDuration: string;
     nightVisionGood: boolean | null;
     lastFundusExamDate: string;
-
-    // NEW
     nyctalopia: boolean | null;
     delayedDarkAdaptation: boolean | null;
     floaters: boolean | null;
-    floatersWhen: string; // "bp" | "glucose" | ""
+    floatersWhen: string;
     visualFieldLoss: boolean | null;
     ophthalmologistFrequency: string;
     lastFundusExamUnknown: boolean;
@@ -215,8 +228,6 @@ export interface Complications {
     abdominalPainAfterEating: boolean | null;
     stoolFrequency: string;
     stoolConsistency: number | null;
-
-    // NEW
     painTriggerFatty: boolean;
     painTriggerAlcohol: boolean;
   };
@@ -297,7 +308,7 @@ export interface Complications {
   };
 }
 
-// ==================== Осмотр (анамнез) ====================
+// ==================== Осмотр ====================
 export interface Examination {
   cardiovascularEvents: string;
   bloodPressure: string;
@@ -331,7 +342,6 @@ export interface Lifestyle {
   sedentaryWork: boolean | null;
   stress: boolean | null;
 
-  // NEW — хронические заболевания
   chronicEyeDiseases: string;
   asthma: boolean | null;
   asthmaDiagnosedWhen: string;
@@ -339,7 +349,6 @@ export interface Lifestyle {
   copd: boolean | null;
   copdMeds: string;
 
-  // NEW — ССС-блок
   knownHypertension: "yes" | "no" | "notMeasured" | "";
   hypertensionFirstDetected: string;
   hypertensionUnderAge35: boolean;
@@ -566,7 +575,7 @@ export interface AnamnesisFormData {
   primaryExam?: PrimaryExam;
   type1Diabetes?: Type1Diabetes | null;
   type2Diabetes?: Type2Diabetes | null;
-  actualTherapy?: ActualTherapy; // NEW
+  actualTherapy?: ActualTherapy;
   therapy?: Therapy;
   hypoglycemia?: Hypoglycemia;
   selfMonitoring?: SelfMonitoring;

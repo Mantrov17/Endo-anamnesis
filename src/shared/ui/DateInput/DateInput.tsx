@@ -9,6 +9,7 @@ interface DateInputProps {
   onChange: (iso: string) => void;
   placeholder?: string;
   error?: string;
+  disabled?: boolean;
 }
 
 // ISO (YYYY-MM-DD) → DD.MM.YYYY
@@ -51,10 +52,10 @@ export const DateInput: React.FC<DateInputProps> = ({
   onChange,
   placeholder = "дд.мм.гггг",
   error,
+  disabled,
 }) => {
   const [display, setDisplay] = useState<string>(isoToDisplay(value));
 
-  // Синхронизация при внешнем изменении value (загрузка, reset и т.п.)
   useEffect(() => {
     setDisplay(isoToDisplay(value));
   }, [value]);
@@ -77,6 +78,7 @@ export const DateInput: React.FC<DateInputProps> = ({
       inputMode="numeric"
       maxLength={10}
       error={error ?? (!isValid ? "Формат: дд.мм.гггг" : undefined)}
+      disabled={disabled}
     />
   );
 };

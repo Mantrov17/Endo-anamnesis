@@ -5,7 +5,7 @@ import type {
   UseFormSetValue,
   UseFormWatch,
 } from "react-hook-form";
-import { DateInput } from "@/shared/ui/DateInput/DateInput";
+import { DateInput } from "./DateInput";
 
 interface DateFieldProps<T extends FieldValues> {
   label: string;
@@ -13,6 +13,7 @@ interface DateFieldProps<T extends FieldValues> {
   watch: UseFormWatch<T>;
   setValue: UseFormSetValue<T>;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 export function DateField<T extends FieldValues>({
@@ -21,6 +22,7 @@ export function DateField<T extends FieldValues>({
   watch,
   setValue,
   placeholder,
+  disabled,
 }: DateFieldProps<T>) {
   const value = (watch(name) as string | undefined) ?? "";
   return (
@@ -31,6 +33,7 @@ export function DateField<T extends FieldValues>({
         setValue(name, iso as PathValue<T, Path<T>>, { shouldDirty: true })
       }
       placeholder={placeholder}
+      disabled={disabled}
     />
   );
 }

@@ -12,6 +12,8 @@ import styles from "./styles.module.scss";
 
 export type DrugArrayPath =
   | "type1Diabetes.initialTherapy"
+  | "type1Diabetes.initialTherapy.basalInsulin" // NEW
+  | "type1Diabetes.initialTherapy.bolusInsulin" // NEW
   | "type2Diabetes.initialTherapy"
   | "therapy.currentDrugs"
   | "therapy.basalInsulin"

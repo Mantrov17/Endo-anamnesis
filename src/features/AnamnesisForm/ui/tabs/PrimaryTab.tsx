@@ -29,6 +29,14 @@ export const PrimaryTab: React.FC<TabProps> = ({
   const znt8Checked = watch("type1Diabetes.autoantibodies.ZnT8");
   const iaaChecked = watch("type1Diabetes.autoantibodies.IAA");
 
+  // Да/Нет для C-пептида и HbA1c (нормализуем строку в boolean)
+  const cPeptideTested = boolFromString(watch("type1Diabetes.cPeptide.tested"));
+  const cPeptideUnknown = watch("type1Diabetes.cPeptide.unknown") === true;
+  const hba1cTestedType1 = boolFromString(watch("type1Diabetes.hba1c.tested"));
+
+  const hba1cTestedType2 = boolFromString(watch("type2Diabetes.hba1c.tested"));
+  const hba1cUnknownType2 = watch("type2Diabetes.hba1c.unknown") === true;
+
   const primaryBmi = watch("primaryExam.bmi");
 
   const bmiCategory = useMemo(() => {
@@ -484,39 +492,78 @@ export const PrimaryTab: React.FC<TabProps> = ({
             )}
           </fieldset>
 
+          {/* ===== C-пептид ===== */}
           <Field noteKey="type1Diabetes.cPeptide">
             <fieldset className={styles.fieldset}>
               <legend>C-пептид</legend>
-              <Input
-                label="Значение"
-                suffix="нг/мл"
-                {...register("type1Diabetes.cPeptide.value")}
+
+              <YesNo
+                label="Определялся C-пептид?"
+                name="type1Diabetes.cPeptide.tested"
+                register={register}
               />
-              <DateField
-                label="Дата"
-                name="type1Diabetes.cPeptide.date"
-                watch={watch}
-                setValue={setValue}
-              />
+
+              {cPeptideTested === true && (
+                <>
+                  <Input
+                    label="Значение"
+                    suffix="нг/мл"
+                    {...register("type1Diabetes.cPeptide.value")}
+                  />
+                  <DateField
+                    label="Дата"
+                    name="type1Diabetes.cPeptide.date"
+                    watch={watch}
+                    setValue={setValue}
+                    disabled={cPeptideUnknown === true}
+                  />
+                  <label className={styles.smallCheckbox}>
+                    <input
+                      type="checkbox"
+                      {...register("type1Diabetes.cPeptide.unknown")}
+                    />{" "}
+                    Затрудняюсь ответить
+                  </label>
+                </>
+              )}
             </fieldset>
           </Field>
 
+          {/* ===== Гликированный гемоглобин ===== */}
           <Field noteKey="type1Diabetes.hba1c">
             <fieldset className={styles.fieldset}>
               <legend>Гликированный гемоглобин</legend>
-              <Input
-                label="Значение"
-                type="number"
-                step="0.1"
-                suffix="%"
-                {...register("type1Diabetes.hba1c.value")}
+
+              <YesNo
+                label="Определялся гликированный гемоглобин?"
+                name="type1Diabetes.hba1c.tested"
+                register={register}
               />
-              <DateField
-                label="Дата"
-                name="type1Diabetes.hba1c.date"
-                watch={watch}
-                setValue={setValue}
-              />
+
+              {hba1cTestedType1 === true && (
+                <>
+                  <Input
+                    label="Значение"
+                    type="number"
+                    step="0.1"
+                    suffix="%"
+                    {...register("type1Diabetes.hba1c.value")}
+                  />
+                  <DateField
+                    label="Дата"
+                    name="type1Diabetes.hba1c.date"
+                    watch={watch}
+                    setValue={setValue}
+                  />
+                  <label className={styles.smallCheckbox}>
+                    <input
+                      type="checkbox"
+                      {...register("type1Diabetes.hba1c.unknown")}
+                    />{" "}
+                    Затрудняюсь ответить
+                  </label>
+                </>
+              )}
             </fieldset>
           </Field>
 
@@ -685,28 +732,41 @@ export const PrimaryTab: React.FC<TabProps> = ({
             {...register("type2Diabetes.usualGlucoseOnTherapy")}
           />
 
+          {/* ===== Гликированный гемоглобин СД2 ===== */}
           <fieldset className={styles.fieldset}>
             <legend>Гликированный гемоглобин</legend>
-            <Input
-              label="Значение"
-              type="number"
-              step="0.1"
-              suffix="%"
-              {...register("type2Diabetes.hba1c.value")}
+
+            <YesNo
+              label="Определялся гликированный гемоглобин?"
+              name="type2Diabetes.hba1c.tested"
+              register={register}
             />
-            <DateField
-              label="Дата"
-              name="type1Diabetes.hba1c.date"
-              watch={watch}
-              setValue={setValue}
-            />
-            <label>
-              <input
-                type="checkbox"
-                {...register("type2Diabetes.hba1c.unknown")}
-              />{" "}
-              Затрудняюсь ответить
-            </label>
+
+            {hba1cTestedType2 === true && (
+              <>
+                <Input
+                  label="Значение"
+                  type="number"
+                  step="0.1"
+                  suffix="%"
+                  {...register("type2Diabetes.hba1c.value")}
+                />
+                <DateField
+                  label="Дата"
+                  name="type2Diabetes.hba1c.date"
+                  watch={watch}
+                  setValue={setValue}
+                  disabled={hba1cUnknownType2 === true}
+                />
+                <label className={styles.smallCheckbox}>
+                  <input
+                    type="checkbox"
+                    {...register("type2Diabetes.hba1c.unknown")}
+                  />{" "}
+                  Затрудняюсь ответить
+                </label>
+              </>
+            )}
           </fieldset>
 
           <YesNo

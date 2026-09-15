@@ -101,6 +101,23 @@ export const useAnamnesisForm = ({
     }
   }, [actualBase, actualBolus, actualCoeff, pHeight, setValue]);
 
+  // Коэффициент СДИ по длительности СД
+  const diseaseDurationForCoefficient = watch("type1Diabetes.diseaseDuration");
+  useEffect(() => {
+    if (
+      diseaseDurationForCoefficient === null ||
+      diseaseDurationForCoefficient === undefined
+    )
+      return;
+    const d = Number(diseaseDurationForCoefficient);
+    if (isNaN(d)) return;
+    let coef: number;
+    if (d < 5) coef = 0.5;
+    else if (d <= 10) coef = 0.7;
+    else coef = 0.9;
+    setValue("actualTherapy.insulinDoseCoefficient", coef);
+  }, [diseaseDurationForCoefficient, setValue]);
+
   // Пульсовое давление — старое
   const leftSys = watch("measurements.bpArms.leftSystolic");
   const leftDia = watch("measurements.bpArms.leftDiastolic");

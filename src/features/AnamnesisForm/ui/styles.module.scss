@@ -337,6 +337,22 @@ select {
   margin: 4px 0 8px;
 }
 
+.smallCheckbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+  cursor: pointer;
+  user-select: none;
+
+  input[type="checkbox"] {
+    width: 12px;
+    height: 12px;
+  }
+}
+
 .noteToggle {
   width: 22px;
   height: 22px;

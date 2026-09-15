@@ -3,18 +3,18 @@ import { useAnamnesisForm } from "../model/useAnamnesisForm";
 import { Button } from "@/shared/ui/Button";
 import { FormFieldContext } from "./FormFieldContext";
 import {
-  PrimaryTab,
-  TherapyTab,
-  HypoglycemiaTab,
-  SelfMonitoringTab,
+  AdditionalTab,
   ComplicationsTab,
   ExaminationTab,
+  H2FPEFTab,
+  HeartFailureTab,
+  HypoglycemiaTab,
   LifestyleTab,
   MeasurementsTab,
+  PrimaryTab,
   SecondaryAHTab,
-  HeartFailureTab,
-  H2FPEFTab,
-  AdditionalTab,
+  SelfMonitoringTab,
+  TherapyTab,
 } from "./tabs";
 import type { AnamnesisFormData } from "@/shared";
 import styles from "./styles.module.scss";
@@ -94,8 +94,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
           visionBlur: false,
           lossOfConsciousness: false,
         },
-        investigatedAfterDetection: null,
-        initiallyType2: null,
         autoantibodies: {
           tested: null,
           GAD: false,
@@ -107,12 +105,21 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
           IAA: false,
           IAAValue: null,
         },
-        cPeptide: { value: "", date: "" },
-        hba1c: { value: null, date: "" },
+        cPeptide: { tested: null, value: "", date: "", unknown: false },
+        hba1c: { tested: null, value: null, date: "", unknown: false },
         usualGlucose: null,
-        initialTherapy: [{ drugName: "", dose: "" }],
-        stillTakingInitialTherapy: null,
-        ifNotTakingReason: "",
+        initialTherapy: {
+          injectionMethod: "",
+          injectionsDevice: "",
+          pumpModel: "",
+          basalInsulin: [{ drugName: "", dose: "" }],
+          bolusInsulin: [{ drugName: "", dose: "" }],
+          otherDrugsTaken: null,
+          otherDrugs: "",
+          usualGlucoseOnTherapy: null,
+        },
+        investigatedAfterDetection: null,
+        initiallyType2: null,
       });
     }
     if (isType2 && !type2Data) {
@@ -140,7 +147,7 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         missedDosesPerWeek: "",
         missedReasons: "",
         usualGlucoseOnTherapy: null,
-        hba1c: { value: null, date: "", unknown: false },
+        hba1c: { tested: null, value: null, date: "", unknown: false },
         gestationalDiabetes: null,
       });
     }
