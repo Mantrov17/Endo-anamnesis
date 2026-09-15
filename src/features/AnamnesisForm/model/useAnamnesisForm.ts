@@ -49,6 +49,29 @@ export const useAnamnesisForm = ({
     }
   }, [pHeight, pWeight, setValue]);
 
+  // Целевой HbA1c в зависимости от возраста пациента
+  const birthDateForTarget = watch("birthDate");
+  useEffect(() => {
+    if (!birthDateForTarget) {
+      setValue("therapy.targetHba1c", "");
+      return;
+    }
+    const birth = new Date(birthDateForTarget);
+    if (isNaN(birth.getTime())) return;
+
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+
+    let value = "";
+    if (age >= 18 && age <= 40) value = "<6,5% или <7%";
+    else if (age >= 41 && age <= 59) value = "<7% или <7,5%";
+    else if (age >= 60 && age <= 74) value = "<7,5% или <8%";
+
+    setValue("therapy.targetHba1c", value, { shouldDirty: false });
+  }, [birthDateForTarget, setValue]);
+
   // NEW — авторасчёт суточной дозы инсулина
   // Идеальная масса (кг) = (рост_см / 100)² × 19
   // Суточная доза = идеальная масса × коэффициент (0.5 / 0.7 / 0.9)

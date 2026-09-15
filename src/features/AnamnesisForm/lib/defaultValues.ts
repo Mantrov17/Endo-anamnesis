@@ -38,6 +38,7 @@ export const getDefaultValues = (): AnamnesisFormData => ({
   },
 
   therapy: {
+    targetHba1c: "",
     currentDrugs: [{ name: "", dose: "" }],
     basalInsulin: [{ name: "", dose: "" }],
     prandialInsulin: [{ name: "", dose: "" }],

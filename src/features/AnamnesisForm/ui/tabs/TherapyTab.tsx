@@ -20,7 +20,12 @@ export const TherapyTab: React.FC<TabProps> = ({
   return (
     <div className={styles.section}>
       <h3>Терапия</h3>
-
+      <Input
+        label="Целевой уровень гликированного гемоглобина"
+        suffix="%"
+        {...register("therapy.targetHba1c")}
+        readOnly
+      />
       {/* ===== Терапия в дебюте — СД 1 типа ===== */}
       {isType1 && type1Data && (
         <>

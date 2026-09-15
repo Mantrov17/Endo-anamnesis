@@ -124,6 +124,7 @@ export interface ActualTherapy {
 
 // ==================== Терапия (старая) ====================
 export interface Therapy {
+  targetHba1c: string;
   currentDrugs: { name: string; dose: string }[];
   basalInsulin: { name: string; dose: string }[];
   prandialInsulin: { name: string; dose: string }[];
