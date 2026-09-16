@@ -40,6 +40,7 @@ export const useAnamnesisForm = ({
   }, [patientId, setValue]);
 
   // NEW — ИМТ для блока антропометрии в начале формы
+  // eslint-disable-next-line react-hooks/incompatible-library
   const pHeight = watch("primaryExam.height");
   const pWeight = watch("primaryExam.weight");
   useEffect(() => {

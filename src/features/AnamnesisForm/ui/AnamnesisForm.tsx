@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAnamnesisForm } from "../model/useAnamnesisForm";
+import { useAnamnesisForm } from "@/features/AnamnesisForm";
 import { Button } from "@/shared/ui/Button";
 import { FormFieldContext } from "./FormFieldContext";
 import {
