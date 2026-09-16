@@ -12,8 +12,8 @@ import styles from "./styles.module.scss";
 
 export type DrugArrayPath =
   | "type1Diabetes.initialTherapy"
-  | "type1Diabetes.initialTherapy.basalInsulin" // NEW
-  | "type1Diabetes.initialTherapy.bolusInsulin" // NEW
+  | "type1Diabetes.initialTherapy.basalInsulin"
+  | "type1Diabetes.initialTherapy.bolusInsulin"
   | "type2Diabetes.initialTherapy"
   | "therapy.currentDrugs"
   | "therapy.basalInsulin"
@@ -27,6 +27,8 @@ interface DrugListProps {
   name: DrugArrayPath;
   firstField: "drugName" | "name";
   nameLabel?: string;
+  /** Показать третье поле — кратность приёма (раз/сутки) */
+  showFrequency?: boolean;
 }
 
 export const DrugList: React.FC<DrugListProps> = ({
@@ -35,6 +37,7 @@ export const DrugList: React.FC<DrugListProps> = ({
   name,
   firstField,
   nameLabel = "Название",
+  showFrequency = false,
 }) => {
   const { fields, append, remove } = useFieldArray({
     control,
@@ -43,7 +46,11 @@ export const DrugList: React.FC<DrugListProps> = ({
 
   const addRow = () => {
     if (firstField === "drugName") {
-      append({ drugName: "", dose: "" } as never);
+      if (showFrequency) {
+        append({ drugName: "", dose: "", frequency: "" } as never);
+      } else {
+        append({ drugName: "", dose: "" } as never);
+      }
     } else {
       append({ name: "", dose: "" } as never);
     }
@@ -55,10 +62,21 @@ export const DrugList: React.FC<DrugListProps> = ({
         const firstPath =
           `${name}.${index}.${firstField}` as Path<AnamnesisFormData>;
         const dosePath = `${name}.${index}.dose` as Path<AnamnesisFormData>;
+        const freqPath =
+          `${name}.${index}.frequency` as Path<AnamnesisFormData>;
+
         return (
           <div key={field.id} className={styles.drugRow}>
             <Input label={nameLabel} {...register(firstPath)} />
             <Input label="Доза" {...register(dosePath)} />
+            {showFrequency && (
+              <Input
+                label="Кратность"
+                type="number"
+                suffix="раз/сутки"
+                {...register(freqPath)}
+              />
+            )}
             {fields.length > 1 && (
               <button
                 type="button"

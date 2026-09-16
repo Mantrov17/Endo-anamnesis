@@ -23,7 +23,6 @@ export const TherapyTab: React.FC<TabProps> = ({
     watch("type1Diabetes.initialTherapy.otherDrugsTaken"),
   );
   const sameAsInitial = boolFromString(watch("actualTherapy.sameAsInitial"));
-  const carbCounting = boolFromString(watch("therapy.carbCounting"));
   const missedSideEffects =
     watch("type2Diabetes.missedReasons.sideEffects") === true;
   const missedOther = watch("type2Diabetes.missedReasons.other") === true;
@@ -150,6 +149,7 @@ export const TherapyTab: React.FC<TabProps> = ({
               name="type2Diabetes.initialTherapy"
               firstField="drugName"
               nameLabel="Название препарата"
+              showFrequency
             />
           </fieldset>
         </Field>
@@ -180,6 +180,140 @@ export const TherapyTab: React.FC<TabProps> = ({
           </>
         )}
       </fieldset>
+
+      {/* ===== Состояние мест инъекций (только СД 1) ===== */}
+      {isType1 && type1Data && (
+        <Field noteKey="type1Diabetes.injectionSitesInfo">
+          <fieldset className={styles.fieldset}>
+            <legend>Место инъекций</legend>
+
+            <label>
+              <input
+                type="checkbox"
+                {...register("type1Diabetes.injectionSitesInfo.sites.abdomen")}
+              />{" "}
+              Живот (околопупочная область)
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                {...register("type1Diabetes.injectionSitesInfo.sites.thighs")}
+              />{" "}
+              Наружная поверхность бедер
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                {...register("type1Diabetes.injectionSitesInfo.sites.buttocks")}
+              />{" "}
+              Верхний наружный квадрант ягодиц
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                {...register(
+                  "type1Diabetes.injectionSitesInfo.sites.shoulders",
+                )}
+              />{" "}
+              Наружная поверхность плеч
+            </label>
+
+            <Input
+              label="Частота смены места инъекции"
+              {...register(
+                "type1Diabetes.injectionSitesInfo.siteChangeFrequency",
+              )}
+            />
+            <Input
+              label="Частота смены игл"
+              {...register(
+                "type1Diabetes.injectionSitesInfo.needleChangeFrequency",
+              )}
+            />
+
+            <fieldset className={styles.fieldset}>
+              <legend>Липодистрофии</legend>
+              <label>
+                <input
+                  type="checkbox"
+                  {...register(
+                    "type1Diabetes.injectionSitesInfo.lipodystrophy.none",
+                  )}
+                />{" "}
+                Отсутствуют
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  {...register(
+                    "type1Diabetes.injectionSitesInfo.lipodystrophy.lipohypertrophy",
+                  )}
+                />{" "}
+                Липогипертрофии
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  {...register(
+                    "type1Diabetes.injectionSitesInfo.lipodystrophy.lipoatrophy",
+                  )}
+                />{" "}
+                Липоатрофии
+              </label>
+            </fieldset>
+
+            <YesNo
+              label="Болезненность при пальпации"
+              name="type1Diabetes.injectionSitesInfo.tenderness"
+              register={register}
+            />
+
+            <div className={styles.radioGroup}>
+              <label>Температура кожи:</label>
+              <label>
+                <input
+                  type="radio"
+                  value="normal"
+                  {...register(
+                    "type1Diabetes.injectionSitesInfo.skinTemperature",
+                  )}
+                />{" "}
+                Нормальная
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value="hyperthermia"
+                  {...register(
+                    "type1Diabetes.injectionSitesInfo.skinTemperature",
+                  )}
+                />{" "}
+                Гипертермия
+              </label>
+            </div>
+
+            <div className={styles.radioGroup}>
+              <label>Инфильтраты:</label>
+              <label>
+                <input
+                  type="radio"
+                  value="none"
+                  {...register("type1Diabetes.injectionSitesInfo.infiltrates")}
+                />{" "}
+                Отсутствуют
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value="present"
+                  {...register("type1Diabetes.injectionSitesInfo.infiltrates")}
+                />{" "}
+                Присутствуют
+              </label>
+            </div>
+          </fieldset>
+        </Field>
+      )}
 
       {/* ===== Приверженность терапии (только СД 2) ===== */}
       {isType2 && (
@@ -253,37 +387,6 @@ export const TherapyTab: React.FC<TabProps> = ({
           </fieldset>
         </>
       )}
-
-      {/* ===== Подсчёт углеводов ===== */}
-      <YesNo
-        label="Использован ли подсчёт показаний?"
-        name="therapy.carbCounting"
-        register={register}
-      />
-      {carbCounting === true && (
-        <Input
-          label="Углеводный коэффициент"
-          {...register("therapy.carbRatio")}
-        />
-      )}
-
-      <Field noteKey="therapy.injectionSites">
-        <Textarea
-          label="Места инъекций"
-          {...register("therapy.injectionSites")}
-          rows={2}
-        />
-      </Field>
-
-      <YesNo
-        label="Наличие липогипертрофии"
-        name="therapy.lipohypertrophy"
-        register={register}
-      />
-
-      <Field noteKey="therapy.general" noteLabel="Примечание по терапии">
-        <div />
-      </Field>
     </div>
   );
 };

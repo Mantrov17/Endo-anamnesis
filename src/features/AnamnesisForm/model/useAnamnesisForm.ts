@@ -40,6 +40,7 @@ export const useAnamnesisForm = ({
   }, [patientId, setValue]);
 
   // NEW — ИМТ для блока антропометрии в начале формы
+  // eslint-disable-next-line react-hooks/incompatible-library
   const pHeight = watch("primaryExam.height");
   const pWeight = watch("primaryExam.weight");
   useEffect(() => {
@@ -71,6 +72,83 @@ export const useAnamnesisForm = ({
 
     setValue("therapy.targetHba1c", value, { shouldDirty: false });
   }, [birthDateForTarget, setValue]);
+
+  // ===== СД 1: год → возраст + длительность =====
+  const t1Year = watch("type1Diabetes.yearOfDiagnosis");
+  const t1Age = watch("type1Diabetes.ageAtDiagnosis");
+  const t1Birth = watch("birthDate");
+  const t2Year = watch("type2Diabetes.yearOfDiagnosis");
+  const t2Age = watch("type2Diabetes.ageAtDiagnosis");
+
+  // Год → возраст и длительность (СД 1)
+  useEffect(() => {
+    const yearStr = String(t1Year ?? "").trim();
+    if (!/^\d{4}$/.test(yearStr)) return;
+
+    const diagYear = Number(yearStr);
+    const nowYear = new Date().getFullYear();
+    if (diagYear < 1900 || diagYear > nowYear) return;
+
+    if (t1Birth) {
+      const birthYear = new Date(t1Birth).getFullYear();
+      if (!isNaN(birthYear) && diagYear >= birthYear) {
+        setValue("type1Diabetes.ageAtDiagnosis", diagYear - birthYear);
+      }
+    }
+    setValue("type1Diabetes.diseaseDuration", nowYear - diagYear);
+  }, [t1Year, t1Birth, setValue]);
+
+  // Возраст → год (СД 1, если год пустой)
+  useEffect(() => {
+    if (!t1Birth) return;
+    if (t1Age === null || t1Age === undefined) return;
+
+    const age = Number(t1Age);
+    if (isNaN(age) || age < 0 || age > 120) return;
+
+    const yearStr = String(t1Year ?? "").trim();
+    if (yearStr) return;
+
+    const birthYear = new Date(t1Birth).getFullYear();
+    if (isNaN(birthYear)) return;
+
+    setValue("type1Diabetes.yearOfDiagnosis", String(birthYear + age));
+  }, [t1Age, t1Birth, t1Year, setValue]);
+
+  // Год → возраст и длительность (СД 2)
+  useEffect(() => {
+    const yearStr = String(t2Year ?? "").trim();
+    if (!/^\d{4}$/.test(yearStr)) return;
+
+    const diagYear = Number(yearStr);
+    const nowYear = new Date().getFullYear();
+    if (diagYear < 1900 || diagYear > nowYear) return;
+
+    if (t1Birth) {
+      const birthYear = new Date(t1Birth).getFullYear();
+      if (!isNaN(birthYear) && diagYear >= birthYear) {
+        setValue("type2Diabetes.ageAtDiagnosis", diagYear - birthYear);
+      }
+    }
+    setValue("type2Diabetes.diseaseDuration", nowYear - diagYear);
+  }, [t2Year, t1Birth, setValue]);
+
+  // Возраст → год (СД 2, если год пустой)
+  useEffect(() => {
+    if (!t1Birth) return;
+    if (t2Age === null || t2Age === undefined) return;
+
+    const age = Number(t2Age);
+    if (isNaN(age) || age < 0 || age > 120) return;
+
+    const yearStr = String(t2Year ?? "").trim();
+    if (yearStr) return;
+
+    const birthYear = new Date(t1Birth).getFullYear();
+    if (isNaN(birthYear)) return;
+
+    setValue("type2Diabetes.yearOfDiagnosis", String(birthYear + age));
+  }, [t2Age, t1Birth, t2Year, setValue]);
 
   // NEW — авторасчёт суточной дозы инсулина
   // Идеальная масса (кг) = (рост_см / 100)² × 19

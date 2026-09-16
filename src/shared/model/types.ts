@@ -80,6 +80,24 @@ export interface Type1Diabetes {
     otherDrugs: string;
     usualGlucoseOnTherapy: number | null;
   };
+  injectionSitesInfo: {
+    sites: {
+      abdomen: boolean; // Живот (околопупочная область)
+      thighs: boolean; // Наружная поверхность бедер
+      buttocks: boolean; // Верхний наружный квадрант ягодиц
+      shoulders: boolean; // Наружная поверхность плеч
+    };
+    siteChangeFrequency: string;
+    needleChangeFrequency: string;
+    lipodystrophy: {
+      none: boolean;
+      lipohypertrophy: boolean;
+      lipoatrophy: boolean;
+    };
+    tenderness: boolean | null;
+    skinTemperature: "normal" | "hyperthermia" | "";
+    infiltrates: "none" | "present" | "";
+  };
 
   investigatedAfterDetection: boolean | null;
   initiallyType2: boolean | null;
@@ -92,6 +110,7 @@ export interface Type2Diabetes {
 
   ageAtDiagnosis: number | null;
   yearOfDiagnosis: string;
+  diseaseDuration: number | null; // NEW — как у СД 1
   howDiagnosed:
     | "accidental"
     | "dispanserization"
@@ -106,7 +125,7 @@ export interface Type2Diabetes {
     visionBlur: boolean;
   };
   investigatedAfterDetection: boolean | null;
-  initialTherapy: { drugName: string; dose: string }[];
+  initialTherapy: { drugName: string; dose: string; frequency: string }[];
 
   // NEW — переехало из PrimaryTab, структура изменилась
   therapyRegularity: boolean | null; // «Приверженность приёма терапии»
@@ -154,10 +173,6 @@ export interface Therapy {
   currentDrugs: { name: string; dose: string }[];
   basalInsulin: { name: string; dose: string }[];
   prandialInsulin: { name: string; dose: string }[];
-  carbCounting: boolean | null;
-  carbRatio: string;
-  injectionSites: string;
-  lipohypertrophy: boolean | null;
 }
 
 // ==================== Гипогликемии ====================

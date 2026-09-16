@@ -554,8 +554,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
       {/* ======================= СД 2 типа ======================= */}
       {isType2 && type2Data && (
         <div className={styles.section}>
-          <h3>СД 2 типа — антропометрия и дебют</h3>
-
+          <h3>Дебют СД 2 типа</h3>
           <Input
             label="Когда впервые замечено повышение глюкозы? (год)"
             {...register("type2Diabetes.firstGlucoseElevationYear")}
@@ -563,14 +562,24 @@ export const PrimaryTab: React.FC<TabProps> = ({
 
           <div className={styles.row}>
             <Input
+              label="Год постановки диагноза"
+              type="text"
+              inputMode="numeric"
+              maxLength={4}
+              placeholder="ГГГГ"
+              {...register("type2Diabetes.yearOfDiagnosis")}
+            />
+            <Input
               label="Возраст постановки диагноза"
               type="number"
               suffix="лет"
               {...register("type2Diabetes.ageAtDiagnosis")}
             />
             <Input
-              label="Год постановки диагноза"
-              {...register("type2Diabetes.yearOfDiagnosis")}
+              label="Длительность заболевания"
+              type="number"
+              suffix="лет"
+              {...register("type2Diabetes.diseaseDuration")}
             />
           </div>
 
@@ -661,28 +670,6 @@ export const PrimaryTab: React.FC<TabProps> = ({
             label="Вы обратились к эндокринологу после обнаружения повышенного результата?"
             name="type2Diabetes.investigatedAfterDetection"
             register={register}
-          />
-
-          <YesNo
-            label="Регулярно ли принимаете терапию?"
-            name="type2Diabetes.therapyRegularity"
-            register={register}
-          />
-          <Input
-            label="Сколько раз в неделю можете пропустить приём таблеток?"
-            {...register("type2Diabetes.missedDosesPerWeek")}
-          />
-          <Textarea
-            label="Что мешает принимать регулярно (побочные эффекты, стоимость, сложность схемы, забывчивость)"
-            {...register("type2Diabetes.missedReasons")}
-            rows={2}
-          />
-          <Input
-            label="Привычные цифры глюкозы на терапии"
-            type="number"
-            step="0.1"
-            suffix="ммоль/л"
-            {...register("type2Diabetes.usualGlucoseOnTherapy")}
           />
 
           {/* ===== Гликированный гемоглобин СД2 ===== */}

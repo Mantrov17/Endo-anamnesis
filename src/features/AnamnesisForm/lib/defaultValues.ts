@@ -43,10 +43,6 @@ export const getDefaultValues = (): AnamnesisFormData => ({
     currentDrugs: [{ name: "", dose: "" }],
     basalInsulin: [{ name: "", dose: "" }],
     prandialInsulin: [{ name: "", dose: "" }],
-    carbCounting: null,
-    carbRatio: "",
-    injectionSites: "",
-    lipohypertrophy: null,
   },
 
   hypoglycemia: {
