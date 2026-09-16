@@ -229,6 +229,11 @@ select {
     flex: 1;
     margin-bottom: 0;
   }
+
+  // Название шире, доза и кратность уже
+  > div:first-child {
+    flex: 2;
+  }
 }
 
 .addDrugButton {
@@ -410,4 +415,16 @@ select {
     color: #a4231b;
     border-color: #f5b8b3;
   }
+}
+
+/* Скрыть стрелки у number-инпутов (spinner) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }

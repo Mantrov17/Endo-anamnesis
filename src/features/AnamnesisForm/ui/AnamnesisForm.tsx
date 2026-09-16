@@ -116,6 +116,24 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
           otherDrugs: "",
           usualGlucoseOnTherapy: null,
         },
+        injectionSitesInfo: {
+          sites: {
+            abdomen: false,
+            thighs: false,
+            buttocks: false,
+            shoulders: false,
+          },
+          siteChangeFrequency: "",
+          needleChangeFrequency: "",
+          lipodystrophy: {
+            none: false,
+            lipohypertrophy: false,
+            lipoatrophy: false,
+          },
+          tenderness: null,
+          skinTemperature: "",
+          infiltrates: "",
+        },
         investigatedAfterDetection: null,
         initiallyType2: null,
       });
@@ -126,6 +144,7 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         maxGlucoseValues: "",
         ageAtDiagnosis: null,
         yearOfDiagnosis: "",
+        diseaseDuration: null,
         howDiagnosed: "",
         classicSymptoms: {
           polyuria: false,
@@ -135,8 +154,7 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
           visionBlur: false,
         },
         investigatedAfterDetection: null,
-        initialTherapy: [{ drugName: "", dose: "" }],
-
+        initialTherapy: [{ drugName: "", dose: "", frequency: "" }],
         // NEW
         therapyRegularity: null,
         missedDosesPerWeek: "",
