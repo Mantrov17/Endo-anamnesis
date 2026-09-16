@@ -33,6 +33,9 @@ export const PrimaryTab: React.FC<TabProps> = ({
   const cPeptideTested = boolFromString(watch("type1Diabetes.cPeptide.tested"));
   const cPeptideUnknown = watch("type1Diabetes.cPeptide.unknown") === true;
   const hba1cTestedType1 = boolFromString(watch("type1Diabetes.hba1c.tested"));
+  const weightChange6Months = boolFromString(
+    watch("primaryExam.weightChange6Months"),
+  );
 
   const hba1cTestedType2 = boolFromString(watch("type2Diabetes.hba1c.tested"));
   const hba1cUnknownType2 = watch("type2Diabetes.hba1c.unknown") === true;
@@ -117,7 +120,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
           />
         </Field>
 
-        {watch("primaryExam.weightChange6Months") === true && (
+        {weightChange6Months === true && (
           <>
             <div className={styles.row}>
               <Input
@@ -333,27 +336,6 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Снижение веса
               </label>
-              {watch("type1Diabetes.classicSymptoms.weightLoss") && (
-                <>
-                  <Input
-                    label="Потеря веса"
-                    type="number"
-                    suffix="кг"
-                    {...register(
-                      "type1Diabetes.classicSymptoms.weightLossAmount",
-                    )}
-                  />
-                  <label>
-                    <input
-                      type="checkbox"
-                      {...register(
-                        "type1Diabetes.classicSymptoms.weightLossUnknown",
-                      )}
-                    />{" "}
-                    Затрудняюсь сказать
-                  </label>
-                </>
-              )}
               <label>
                 <input
                   type="checkbox"
@@ -515,7 +497,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                     name="type1Diabetes.cPeptide.date"
                     watch={watch}
                     setValue={setValue}
-                    disabled={cPeptideUnknown === true}
+                    disabled={cPeptideUnknown}
                   />
                   <label className={styles.smallCheckbox}>
                     <input
@@ -566,14 +548,6 @@ export const PrimaryTab: React.FC<TabProps> = ({
               )}
             </fieldset>
           </Field>
-
-          <Input
-            label="Привычные цифры глюкозы сейчас"
-            type="number"
-            step="0.1"
-            suffix="ммоль/л"
-            {...register("type1Diabetes.usualGlucose")}
-          />
         </div>
       )}
 
@@ -666,27 +640,6 @@ export const PrimaryTab: React.FC<TabProps> = ({
               />{" "}
               Снижение веса
             </label>
-            {watch("type2Diabetes.classicSymptoms.weightLoss") && (
-              <>
-                <Input
-                  label="Потеря веса"
-                  type="number"
-                  suffix="кг"
-                  {...register(
-                    "type2Diabetes.classicSymptoms.weightLossAmount",
-                  )}
-                />
-                <label>
-                  <input
-                    type="checkbox"
-                    {...register(
-                      "type2Diabetes.classicSymptoms.weightLossUnknown",
-                    )}
-                  />{" "}
-                  Затрудняюсь сказать
-                </label>
-              </>
-            )}
             <label>
               <input
                 type="checkbox"
@@ -756,7 +709,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                   name="type2Diabetes.hba1c.date"
                   watch={watch}
                   setValue={setValue}
-                  disabled={hba1cUnknownType2 === true}
+                  disabled={hba1cUnknownType2}
                 />
                 <label className={styles.smallCheckbox}>
                   <input

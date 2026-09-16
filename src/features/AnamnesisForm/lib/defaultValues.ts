@@ -25,6 +25,8 @@ export const getDefaultValues = (): AnamnesisFormData => ({
 
   actualTherapy: {
     sameAsInitial: null,
+    correctionReason: "",
+    correctedTherapy: "", // NEW
     injectionMethod: "",
     injectionsDevice: "",
     pumpModel: "",
@@ -32,7 +34,6 @@ export const getDefaultValues = (): AnamnesisFormData => ({
     bolusInsulin: [{ name: "", dose: "" }],
     insulinDoseCoefficient: null,
     calculatedDailyInsulinDose: null,
-    correctionReason: "",
     injectionSites: "",
     lipohypertrophy: null,
   },

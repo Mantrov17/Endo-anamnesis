@@ -39,7 +39,6 @@ export interface Type1Diabetes {
     polydipsia: boolean;
     weakness: boolean;
     weightLoss: boolean;
-    weightLossAmount: number | null;
     weightLossUnknown: boolean;
     nausea: boolean;
     vomiting: boolean;
@@ -70,7 +69,6 @@ export interface Type1Diabetes {
     date: string;
     unknown: boolean;
   };
-  usualGlucose: number | null;
 
   initialTherapy: {
     injectionMethod: "injections" | "pump" | "";
@@ -105,18 +103,25 @@ export interface Type2Diabetes {
     polydipsia: boolean;
     weakness: boolean;
     weightLoss: boolean;
-    weightLossAmount: number | null;
-    weightLossUnknown: boolean;
     visionBlur: boolean;
   };
   investigatedAfterDetection: boolean | null;
   initialTherapy: { drugName: string; dose: string }[];
-  stillTakingInitialTherapy: boolean | null;
-  ifNotTakingReason: string;
-  currentTherapy: { drugName: string; dose: string }[];
-  therapyRegularity: boolean | null;
-  missedDosesPerWeek: string;
-  missedReasons: string;
+
+  // NEW — переехало из PrimaryTab, структура изменилась
+  therapyRegularity: boolean | null; // «Приверженность приёма терапии»
+  missedDosesPerWeek: string; // сколько раз в неделю может пропустить
+  missedReasons: {
+    // NEW — чекбоксы + уточнения
+    sideEffects: boolean;
+    sideEffectsDetails: string;
+    cost: boolean;
+    complexity: boolean;
+    forgetfulness: boolean;
+    other: boolean;
+    otherDetails: string;
+  };
+
   usualGlucoseOnTherapy: number | null;
   hba1c: {
     tested: boolean | null;
@@ -131,6 +136,7 @@ export interface Type2Diabetes {
 export interface ActualTherapy {
   sameAsInitial: boolean | null;
   correctionReason: string;
+  correctedTherapy: string; // NEW — «Скорректированная терапия»
   injectionMethod: "injections" | "pump" | "";
   injectionsDevice: "syringe" | "pen" | "";
   pumpModel: string;
