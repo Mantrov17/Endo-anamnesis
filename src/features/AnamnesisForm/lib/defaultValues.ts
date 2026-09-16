@@ -32,7 +32,7 @@ export const getDefaultValues = (): AnamnesisFormData => ({
     bolusInsulin: [{ name: "", dose: "" }],
     insulinDoseCoefficient: null,
     calculatedDailyInsulinDose: null,
-    otherGlucoseLoweringDrugs: "",
+    correctionReason: "",
     injectionSites: "",
     lipohypertrophy: null,
   },
