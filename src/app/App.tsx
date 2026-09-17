@@ -1,4 +1,3 @@
-// src/app/App.tsx
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./styles.module.scss";

@@ -1,22 +1,208 @@
 .container {
-  max-width: 1200px;
+  width: min(100%, var(--page-max, 1360px));
   margin: 0 auto;
-  padding: 20px;
+  padding: clamp(24px, 4vw, 48px) var(--page-gutter, 24px) 56px;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  gap: 18px;
+  margin-bottom: 26px;
+
+  h1 {
+    color: var(--text-primary, #17252b);
+    font-size: clamp(30px, 4vw, 42px);
+    font-weight: 730;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+}
+
+.headerButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.searchSection {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.searchBar {
+  position: relative;
+  min-width: 0;
+}
+
+.searchInput {
+  width: 100%;
+  min-height: 50px;
+  padding: 11px 44px 11px 15px;
+  color: var(--text-primary, #17252b);
+  background: var(--bg-surface, #fff);
+  border: 1px solid var(--border-strong, #c8d6da);
+  border-radius: 12px;
+  font-size: 16px;
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(31, 52, 60, 0.05));
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+
+  &::placeholder {
+    color: #91a0a6;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent, #176b6a);
+    box-shadow: 0 0 0 3px var(--focus-ring, rgba(23, 107, 106, 0.18));
+  }
+}
+
+.clearButton {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+  color: var(--text-muted, #7a8b92);
+  background: transparent;
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 16px;
+
+  &:hover {
+    color: var(--text-primary, #17252b);
+    background: #f0f4f5;
+  }
+}
+
+.filterToggleButton {
+  min-width: 124px;
+  white-space: nowrap;
+}
+
+.filterBadge {
+  margin-left: 3px;
+  color: #e39a3f;
+  font-size: 11px;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.8fr) repeat(2, minmax(190px, 1fr)) auto;
+  align-items: end;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 18px;
+  background: var(--bg-surface, #fff);
+  border: 1px solid var(--border, #dce5e8);
+  border-radius: 14px;
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(31, 52, 60, 0.05));
+  animation: reveal 180ms ease-out;
+
+  > button {
+    margin-bottom: 18px;
+  }
+}
+
+.filterGroup {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  > label {
+    color: var(--text-secondary, #52656d);
+    font-size: 13px;
+    font-weight: 650;
+  }
+}
+
+.filterSelect,
+.filterInput {
+  width: 100%;
+  min-height: 46px;
+  padding: 9px 12px;
+  color: var(--text-primary, #17252b);
+  background: var(--bg-surface, #fff);
+  border: 1px solid var(--border-strong, #c8d6da);
+  border-radius: 10px;
+  font-size: 15px;
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent, #176b6a);
+    box-shadow: 0 0 0 3px var(--focus-ring, rgba(23, 107, 106, 0.18));
+  }
+}
+
+.filterSelect {
+  cursor: pointer;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin: 14px 0 18px;
+  padding: 11px 14px;
+  color: var(--text-secondary, #52656d);
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid var(--border, #dce5e8);
+  border-radius: 11px;
+  font-size: 13px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+}
+
+.sortSelector,
+.perPageSelector {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  label {
+    color: var(--text-muted, #7a8b92);
+    font-weight: 600;
+  }
+
+  select {
+    min-height: 34px;
+    padding: 5px 30px 5px 9px;
+    color: var(--text-secondary, #52656d);
+    background: var(--bg-surface, #fff);
+    border: 1px solid var(--border, #dce5e8);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+  }
 }
 
 .empty {
+  padding: clamp(46px, 8vw, 88px) 24px;
+  color: var(--text-muted, #7a8b92);
+  background: var(--bg-surface, #fff);
+  border: 1px dashed var(--border-strong, #c8d6da);
+  border-radius: var(--radius-lg, 18px);
   text-align: center;
-  padding: 40px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  color: #7f8c8d;
+  font-size: 15px;
 }
 
 .list {
@@ -26,87 +212,109 @@
 }
 
 .card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  transition: box-shadow 0.2s;
+  background: var(--bg-surface, #fff);
+  border: 1px solid var(--border, #dce5e8);
+  border-radius: 15px;
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(31, 52, 60, 0.05));
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 
   &:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    border-color: #cadadd;
+    box-shadow: var(--shadow-sm, 0 8px 24px rgba(31, 52, 60, 0.07));
   }
 }
 
-/* Заголовок карточки – кликабельный */
 .cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  gap: 16px;
+  min-height: 78px;
+  padding: 15px 16px;
   cursor: pointer;
-  background: #fafafa;
-  transition: background 0.15s;
+  background: var(--bg-surface, #fff);
+  transition: background-color 150ms ease;
 
   &:hover {
-    background: #f0f0f0;
+    background: #fbfcfc;
   }
 }
 
 .patientSummary {
+  min-width: 0;
   display: flex;
   align-items: center;
-  gap: 12px;
   flex-wrap: wrap;
+  gap: 7px 10px;
 }
 
 .expandIcon {
-  font-size: 14px;
-  color: #888;
-  transition: transform 0.2s;
-  width: 20px;
-  display: inline-block;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 24px;
+  color: var(--accent, #176b6a);
+  background: var(--bg-accent-soft, #edf6f5);
+  border-radius: 7px;
+  font-size: 10px;
 }
 
 .cardHeader h2 {
+  min-width: min(100%, 220px);
   margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #2c3e50;
+  color: var(--text-primary, #17252b);
+  font-size: 17px;
+  font-weight: 690;
+  line-height: 1.3;
+}
+
+.patientMeta,
+.anamnesisCount,
+.createdAtMeta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 27px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.2;
 }
 
 .patientMeta {
-  font-size: 0.85rem;
-  color: #888;
-  background: #f0f0f0;
-  padding: 2px 10px;
-  border-radius: 12px;
+  color: var(--text-secondary, #52656d);
+  background: #f1f5f6;
 }
 
 .anamnesisCount {
-  font-size: 0.8rem;
-  color: #666;
-  background: #e8f4fd;
-  padding: 2px 10px;
-  border-radius: 12px;
+  color: var(--accent, #176b6a);
+  background: var(--bg-accent-soft, #edf6f5);
+}
+
+.createdAtMeta {
+  color: var(--text-muted, #7a8b92);
+  background: transparent;
 }
 
 .patientActions {
   display: flex;
   gap: 8px;
-  flex-shrink: 0;
+  flex: 0 0 auto;
 }
 
-/* Раскрывающаяся секция анамнезов */
 .anamnesesSection {
-  padding: 12px 16px 16px 16px;
-  border-top: 1px solid #eee;
-  animation: slideDown 0.25s ease;
+  padding: 16px;
+  background: #fafcfc;
+  border-top: 1px solid var(--border, #dce5e8);
+  animation: reveal 180ms ease-out;
 }
 
-@keyframes slideDown {
+@keyframes reveal {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-4px);
   }
   to {
     opacity: 1;
@@ -118,21 +326,26 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-}
+  gap: 14px;
+  margin-bottom: 12px;
 
-.anamnesesHeader h3 {
-  margin: 0;
-  font-size: 0.95rem;
-  color: #34495e;
-  font-weight: 500;
+  h3 {
+    margin: 0;
+    color: var(--text-primary, #17252b);
+    font-size: 15px;
+    font-weight: 700;
+  }
 }
 
 .noAnamnesis {
-  color: #999;
-  font-style: italic;
-  font-size: 0.9rem;
   margin: 0;
+  padding: 16px;
+  color: var(--text-muted, #7a8b92);
+  background: var(--bg-surface, #fff);
+  border: 1px dashed var(--border, #dce5e8);
+  border-radius: 10px;
+  font-size: 13px;
+  text-align: center;
 }
 
 .anamnesisList {
@@ -145,275 +358,264 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f9f9f9;
-  padding: 8px 12px;
-  border-radius: 4px;
+  gap: 14px;
+  padding: 12px 13px;
+  background: var(--bg-surface, #fff);
+  border: 1px solid var(--border, #dce5e8);
+  border-radius: 11px;
 }
 
 .anamnesisInfo {
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-}
+  gap: 3px;
 
-.anamnesisInfo strong {
-  font-size: 0.9rem;
-  color: #2c3e50;
-}
+  strong {
+    color: var(--text-primary, #17252b);
+    font-size: 14px;
+    font-weight: 650;
+  }
 
-.anamnesisInfo span {
-  font-size: 0.75rem;
-  color: #888;
+  span {
+    color: var(--text-muted, #7a8b92);
+    font-size: 12px;
+  }
 }
 
 .anamnesisActions {
   display: flex;
-  gap: 6px;
+  gap: 7px;
+  flex: 0 0 auto;
 }
 
-/* Поиск и фильтры */
-.searchSection {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-
-.searchBar {
-  position: relative;
-  flex: 1;
-  min-width: 200px;
-}
-
-.searchInput {
-  width: 100%;
-  padding: 10px 40px 10px 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-  transition: border-color 0.2s;
-
-  &:focus {
-    outline: none;
-    border-color: #3498db;
-  }
-}
-
-.clearButton {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  color: #999;
-  padding: 0 5px;
-
-  &:hover {
-    color: #333;
-  }
-}
-
-.filterToggleButton {
-  white-space: nowrap;
-  position: relative;
-}
-
-.filterBadge {
-  color: #e74c3c;
-  margin-left: 4px;
-  font-size: 12px;
-}
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 15px 20px;
-  margin-bottom: 15px;
-  padding: 15px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  border: 1px solid #eee;
-  animation: slideDown 0.25s ease;
-}
-
-.filterGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.filterGroup label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #555;
-}
-
-.filterSelect,
-.filterInput {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-  min-width: 150px;
-  background: white;
-
-  &:focus {
-    outline: none;
-    border-color: #3498db;
-  }
-}
-
-.filterSelect {
-  cursor: pointer;
-}
-
-/* Статистика + селектор количества записей */
-.stats {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 20px;
-  padding: 8px 12px;
-  background: #f9f9f9;
-  border-radius: 4px;
-}
-
-.perPageSelector {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  label {
-    font-weight: 500;
-  }
-
-  select {
-    padding: 4px 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-    background: white;
-    cursor: pointer;
-
-    &:focus {
-      outline: none;
-      border-color: #3498db;
-    }
-  }
-}
-
-/* Пагинация */
 .pagination {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  margin-top: 30px;
   flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 24px;
 }
 
 .pageButton {
-  padding: 8px 14px;
-  border: 1px solid #ddd;
-  background: white;
-  border-radius: 4px;
+  min-width: 42px;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 11px;
+  color: var(--text-secondary, #52656d);
+  background: var(--bg-surface, #fff);
+  border: 1px solid var(--border, #dce5e8);
+  border-radius: 9px;
   cursor: pointer;
   font-size: 14px;
-  transition: all 0.2s;
+  font-weight: 650;
+  transition: all 150ms ease;
 
   &:hover:not(:disabled) {
-    background: #f0f0f0;
+    color: var(--accent, #176b6a);
+    background: var(--bg-accent-soft, #edf6f5);
+    border-color: #b9d5d2;
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
   }
 
   &.active {
-    background: #3498db;
-    color: white;
-    border-color: #3498db;
-  }
-}
-
-/* Адаптив */
-@media (max-width: 768px) {
-  .searchSection {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .filterToggleButton {
-    width: 100%;
-  }
-  .filters {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .filterGroup {
-    width: 100%;
-  }
-  .filterSelect,
-  .filterInput {
-    width: 100%;
-    min-width: unset;
-  }
-  .cardHeader {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-  .patientSummary {
-    flex-wrap: wrap;
-  }
-  .patientActions {
-    justify-content: flex-start;
-  }
-  .anamnesisItem {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .anamnesisActions {
-    justify-content: flex-end;
-    margin-top: 6px;
-  }
-  .stats {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .perPageSelector {
-    justify-content: flex-start;
+    color: #fff;
+    background: var(--accent, #176b6a);
+    border-color: var(--accent, #176b6a);
   }
 }
 
 .danger {
-  background-color: #dc3545;
-  color: white;
-  &:hover {
-    background-color: #c82333;
+  color: #fff;
+  background: var(--danger, #b84a4a);
+}
+
+@media (max-width: 980px) {
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    > button {
+      width: fit-content;
+      margin-bottom: 0;
+    }
+  }
+
+  .stats {
+    align-items: flex-start;
   }
 }
 
-.filterBadge {
-  margin-left: 4px;
-  color: #ff6b6b;
-  font-size: 12px;
+@media (max-width: 768px) {
+  .header {
+    align-items: flex-start;
+  }
+
+  .headerButtons {
+    max-width: 310px;
+  }
+
+  .cardHeader {
+    align-items: flex-start;
+  }
+
+  .patientActions button {
+    min-width: 92px;
+  }
+
+  .anamnesisItem {
+    align-items: flex-start;
+  }
 }
 
-.filterToggleButton {
-  white-space: nowrap;
+@media (max-width: 640px) {
+  .container {
+    padding-top: 22px;
+    padding-bottom: 34px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 20px;
+
+    h1 {
+      font-size: 32px;
+    }
+  }
+
+  .headerButtons {
+    width: 100%;
+    max-width: none;
+    display: grid;
+    grid-template-columns: 1fr;
+
+    > * {
+      width: 100%;
+    }
+  }
+
+  .searchSection {
+    grid-template-columns: 1fr;
+  }
+
+  .filterToggleButton {
+    width: 100%;
+  }
+
+  .filters {
+    grid-template-columns: 1fr;
+    padding: 14px;
+
+    > button {
+      width: 100%;
+      margin-bottom: 0;
+    }
+  }
+
+  .stats {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 11px;
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .sortSelector,
+  .perPageSelector {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+
+    select {
+      width: 100%;
+      min-height: 42px;
+    }
+  }
+
+  .card {
+    border-radius: 13px;
+  }
+
+  .cardHeader {
+    min-height: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .patientSummary {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+
+    h2 {
+      min-width: 0;
+      font-size: 17px;
+    }
+
+    .patientMeta,
+    .anamnesisCount,
+    .createdAtMeta {
+      grid-column: 2;
+      justify-self: start;
+    }
+  }
+
+  .patientActions {
+    display: grid;
+    grid-template-columns: 1fr;
+
+    > * {
+      width: 100%;
+    }
+  }
+
+  .anamnesesSection {
+    padding: 12px;
+  }
+
+  .anamnesesHeader {
+    flex-direction: column;
+    align-items: stretch;
+
+    > button {
+      width: 100%;
+    }
+  }
+
+  .anamnesisItem {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .anamnesisActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    > * {
+      width: 100%;
+    }
+  }
+
+  .pageButton {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
-.createdAtMeta {
-  font-size: 0.7rem;
-  color: #aaa;
-  margin-left: 8px;
+@media (max-width: 390px) {
+  .anamnesisActions {
+    grid-template-columns: 1fr;
+  }
 }

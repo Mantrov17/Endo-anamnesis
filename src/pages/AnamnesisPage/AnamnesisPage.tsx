@@ -88,12 +88,17 @@ export const AnamnesisPage: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <button onClick={() => navigate("/")} className={styles.backButton}>
-        ← Назад к списку пациентов
-      </button>
-      <h1 className={styles.title}>
-        {anamnesisId ? "Редактирование анамнеза" : "Новый анамнез пациента"}
-      </h1>
+      <div className={styles.pageHeader}>
+        <button onClick={() => navigate("/")} className={styles.backButton}>
+          <span className={styles.backIcon} aria-hidden="true">
+            ←
+          </span>
+          <span className={styles.backText}>К списку пациентов</span>
+        </button>
+        <h1 className={styles.title}>
+          {anamnesisId ? "Редактирование анамнеза" : "Новый анамнез пациента"}
+        </h1>
+      </div>
       <AnamnesisForm
         patientId={patientId}
         initialData={initialData}

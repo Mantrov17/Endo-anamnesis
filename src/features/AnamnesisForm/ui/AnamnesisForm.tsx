@@ -62,6 +62,7 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
   onSuccess,
 }) => {
   const [activeTab, setActiveTab] = useState<TabId>("primary");
+  const [isMobileTabsOpen, setIsMobileTabsOpen] = useState(false);
   const { register, handleSubmit, errors, watch, setValue, control } =
     useAnamnesisForm({ patientId, initialData, anamnesisId, onSuccess });
 
@@ -176,6 +177,13 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
   }, [isType1, isType2, type1Data, type2Data, setValue]);
 
   const tabProps = { register, watch, setValue, control, errors };
+  const activeTabLabel =
+    tabs.find((tab) => tab.id === activeTab)?.label ?? "Разделы";
+
+  const handleTabChange = (tabId: TabId) => {
+    setActiveTab(tabId);
+    setIsMobileTabsOpen(false);
+  };
 
   const renderTab = () => {
     switch (activeTab) {
@@ -211,18 +219,48 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
   return (
     <div className={styles.formContainer}>
       <div className={styles.tabsWrapper}>
-        <div className={styles.tabsList}>
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              className={`${styles.tabButton} ${activeTab === tab.id ? styles.active : ""}`}
-              onClick={() => setActiveTab(tab.id)}
+        <nav className={styles.tabsNav} aria-label="Разделы анамнеза">
+          <button
+            type="button"
+            className={styles.mobileTabsToggle}
+            onClick={() => setIsMobileTabsOpen((isOpen) => !isOpen)}
+            aria-expanded={isMobileTabsOpen}
+            aria-controls="anamnesis-tabs-list"
+          >
+            <span className={styles.burgerIcon} aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </span>
+            <span className={styles.mobileTabsLabel}>{activeTabLabel}</span>
+            <span
+              className={`${styles.mobileTabsChevron} ${
+                isMobileTabsOpen ? styles.open : ""
+              }`}
+              aria-hidden="true"
             >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+              ▾
+            </span>
+          </button>
+
+          <div
+            id="anamnesis-tabs-list"
+            className={`${styles.tabsList} ${
+              isMobileTabsOpen ? styles.mobileOpen : ""
+            }`}
+          >
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`${styles.tabButton} ${activeTab === tab.id ? styles.active : ""}`}
+                onClick={() => handleTabChange(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </nav>
         <div className={styles.tabContent}>
           <form onSubmit={handleSubmit} className={styles.form}>
             <FormFieldContext.Provider value={{ register, watch }}>

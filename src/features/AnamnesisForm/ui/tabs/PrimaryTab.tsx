@@ -46,15 +46,55 @@ export const PrimaryTab: React.FC<TabProps> = ({
     if (primaryBmi === null || primaryBmi === undefined || isNaN(primaryBmi)) {
       return null;
     }
+
     const v = Number(primaryBmi);
-    if (v < 18) return { label: "Дефицит массы тела", tone: "warn" as const };
-    if (v < 25) return { label: "Норма", tone: "ok" as const };
-    if (v < 31)
-      return { label: "Избыточная масса тела", tone: "warn" as const };
-    if (v < 36) return { label: "Ожирение I степени", tone: "bad" as const };
-    if (v < 41) return { label: "Ожирение II степени", tone: "bad" as const };
-    if (v < 46) return { label: "Ожирение III степени", tone: "bad" as const };
-    return { label: "Ожирение IV степени", tone: "bad" as const };
+
+    if (v < 18) {
+      return {
+        label: "Дефицит массы тела",
+        tone: "warn" as const,
+      };
+    }
+
+    if (v < 25) {
+      return {
+        label: "Норма",
+        tone: "ok" as const,
+      };
+    }
+
+    if (v < 31) {
+      return {
+        label: "Избыточная масса тела",
+        tone: "warn" as const,
+      };
+    }
+
+    if (v < 36) {
+      return {
+        label: "Ожирение I степени",
+        tone: "bad" as const,
+      };
+    }
+
+    if (v < 41) {
+      return {
+        label: "Ожирение II степени",
+        tone: "bad" as const,
+      };
+    }
+
+    if (v < 46) {
+      return {
+        label: "Ожирение III степени",
+        tone: "bad" as const,
+      };
+    }
+
+    return {
+      label: "Ожирение IV степени",
+      tone: "bad" as const,
+    };
   }, [primaryBmi]);
 
   return (
@@ -73,6 +113,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
 
       <fieldset className={styles.fieldset}>
         <legend>Антропометрия</legend>
+
         <div className={styles.row}>
           <Input
             label="Рост"
@@ -80,6 +121,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
             suffix="см"
             {...register("primaryExam.height")}
           />
+
           <Input
             label="Вес"
             type="number"
@@ -87,6 +129,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
             suffix="кг"
             {...register("primaryExam.weight")}
           />
+
           <Field hint={BMI_REFERENCE}>
             <Input
               label="ИМТ (авторасчёт)"
@@ -129,6 +172,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 suffix="кг"
                 {...register("primaryExam.weightIncreasedBy")}
               />
+
               <Input
                 label="Уменьшился на"
                 type="number"
@@ -139,6 +183,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
 
             <div className={styles.radioGroup}>
               <label>Причина изменения веса:</label>
+
               <label>
                 <input
                   type="radio"
@@ -147,6 +192,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Немотивируемое
               </label>
+
               <label>
                 <input
                   type="radio"
@@ -155,6 +201,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Стресс
               </label>
+
               <label>
                 <input
                   type="radio"
@@ -163,6 +210,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Диета
               </label>
+
               <label>
                 <input
                   type="radio"
@@ -181,14 +229,11 @@ export const PrimaryTab: React.FC<TabProps> = ({
             </Field>
           </>
         )}
-
-        <Field noteKey="primaryExam.anthropometry">
-          <div />
-        </Field>
       </fieldset>
 
       <div className={styles.radioGroup}>
         <label>Подозрение / утверждение диагноза</label>
+
         <label>
           <input
             type="radio"
@@ -197,6 +242,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
           />{" "}
           СД 1 типа
         </label>
+
         <label>
           <input
             type="radio"
@@ -205,6 +251,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
           />{" "}
           СД 2 типа
         </label>
+
         {errors.primaryExam?.suspectedDiagnosis && (
           <span className={styles.error}>
             {errors.primaryExam.suspectedDiagnosis.message}
@@ -226,12 +273,14 @@ export const PrimaryTab: React.FC<TabProps> = ({
               placeholder="ГГГГ"
               {...register("type1Diabetes.yearOfDiagnosis")}
             />
+
             <Input
               label="Возраст постановки диагноза"
               type="number"
               suffix="лет"
               {...register("type1Diabetes.ageAtDiagnosis")}
             />
+
             <Input
               label="Длительность заболевания"
               type="number"
@@ -243,6 +292,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
           <Field noteKey="type1Diabetes.howDiagnosed">
             <div className={styles.radioGroup}>
               <label>Как был поставлен диагноз?</label>
+
               <label>
                 <input
                   type="radio"
@@ -251,6 +301,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Случайная находка
               </label>
+
               <label>
                 <input
                   type="radio"
@@ -259,6 +310,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Плановый осмотр
               </label>
+
               <label>
                 <input
                   type="radio"
@@ -267,6 +319,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Диспансеризация
               </label>
+
               <label>
                 <input
                   type="radio"
@@ -275,6 +328,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Приём с жалобами
               </label>
+
               <label>
                 <input
                   type="radio"
@@ -308,6 +362,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
           <Field noteKey="type1Diabetes.classicSymptoms">
             <fieldset className={styles.fieldset}>
               <legend>Классические симптомы при дебюте</legend>
+
               <label>
                 <input
                   type="checkbox"
@@ -315,6 +370,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Полиурия
               </label>
+
               <label>
                 <input
                   type="checkbox"
@@ -322,6 +378,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Полидипсия
               </label>
+
               <label>
                 <input
                   type="checkbox"
@@ -329,6 +386,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Слабость
               </label>
+
               <label>
                 <input
                   type="checkbox"
@@ -336,6 +394,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Снижение веса
               </label>
+
               <label>
                 <input
                   type="checkbox"
@@ -343,6 +402,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Тошнота
               </label>
+
               <label>
                 <input
                   type="checkbox"
@@ -350,6 +410,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Рвота
               </label>
+
               <label>
                 <input
                   type="checkbox"
@@ -357,6 +418,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Боли в животе
               </label>
+
               <label>
                 <input
                   type="checkbox"
@@ -364,6 +426,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                 />{" "}
                 Помутнение зрения
               </label>
+
               <label>
                 <input
                   type="checkbox"
@@ -382,6 +445,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
             register={register}
             yesNoLabels={["Было", "Не было"]}
           />
+
           <YesNo
             label="Первично поставлен СД 2 типа?"
             name="type1Diabetes.initiallyType2"
@@ -406,6 +470,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                   />{" "}
                   GAD
                 </label>
+
                 {gadChecked && (
                   <Input
                     label="GAD"
@@ -423,6 +488,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                   />{" "}
                   IA-2
                 </label>
+
                 {ia2Checked && (
                   <Input
                     label="IA-2"
@@ -440,6 +506,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                   />{" "}
                   ZnT8
                 </label>
+
                 {znt8Checked && (
                   <Input
                     label="ZnT8"
@@ -457,6 +524,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                   />{" "}
                   IAA
                 </label>
+
                 {iaaChecked && (
                   <Input
                     label="IAA"
@@ -492,6 +560,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                     suffix="нг/мл"
                     {...register("type1Diabetes.cPeptide.value")}
                   />
+
                   <DateField
                     label="Дата"
                     name="type1Diabetes.cPeptide.date"
@@ -499,6 +568,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                     setValue={setValue}
                     disabled={cPeptideUnknown}
                   />
+
                   <label className={styles.smallCheckbox}>
                     <input
                       type="checkbox"
@@ -531,12 +601,14 @@ export const PrimaryTab: React.FC<TabProps> = ({
                     suffix="%"
                     {...register("type1Diabetes.hba1c.value")}
                   />
+
                   <DateField
                     label="Дата"
                     name="type1Diabetes.hba1c.date"
                     watch={watch}
                     setValue={setValue}
                   />
+
                   <label className={styles.smallCheckbox}>
                     <input
                       type="checkbox"
@@ -555,6 +627,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
       {isType2 && type2Data && (
         <div className={styles.section}>
           <h3>Дебют СД 2 типа</h3>
+
           <Input
             label="Когда впервые замечено повышение глюкозы? (год)"
             {...register("type2Diabetes.firstGlucoseElevationYear")}
@@ -569,12 +642,14 @@ export const PrimaryTab: React.FC<TabProps> = ({
               placeholder="ГГГГ"
               {...register("type2Diabetes.yearOfDiagnosis")}
             />
+
             <Input
               label="Возраст постановки диагноза"
               type="number"
               suffix="лет"
               {...register("type2Diabetes.ageAtDiagnosis")}
             />
+
             <Input
               label="Длительность заболевания"
               type="number"
@@ -585,6 +660,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
 
           <div className={styles.radioGroup}>
             <label>Как был поставлен диагноз?</label>
+
             <label>
               <input
                 type="radio"
@@ -593,6 +669,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
               />{" "}
               Случайная находка
             </label>
+
             <label>
               <input
                 type="radio"
@@ -601,6 +678,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
               />{" "}
               Диспансеризация
             </label>
+
             <label>
               <input
                 type="radio"
@@ -609,6 +687,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
               />{" "}
               Приём с жалобами
             </label>
+
             <label>
               <input
                 type="radio"
@@ -621,6 +700,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
 
           <fieldset className={styles.fieldset}>
             <legend>Симптомы при дебюте</legend>
+
             <label>
               <input
                 type="checkbox"
@@ -628,6 +708,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
               />{" "}
               Полиурия
             </label>
+
             <label>
               <input
                 type="checkbox"
@@ -635,6 +716,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
               />{" "}
               Полидипсия
             </label>
+
             <label>
               <input
                 type="checkbox"
@@ -642,6 +724,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
               />{" "}
               Слабость
             </label>
+
             <label>
               <input
                 type="checkbox"
@@ -649,6 +732,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
               />{" "}
               Снижение веса
             </label>
+
             <label>
               <input
                 type="checkbox"
@@ -691,6 +775,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                   suffix="%"
                   {...register("type2Diabetes.hba1c.value")}
                 />
+
                 <DateField
                   label="Дата"
                   name="type2Diabetes.hba1c.date"
@@ -698,6 +783,7 @@ export const PrimaryTab: React.FC<TabProps> = ({
                   setValue={setValue}
                   disabled={hba1cUnknownType2}
                 />
+
                 <label className={styles.smallCheckbox}>
                   <input
                     type="checkbox"
