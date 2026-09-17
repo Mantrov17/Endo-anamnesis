@@ -1,0 +1,286 @@
+:root {
+  color-scheme: light;
+
+  --bg-app: #f3f6f7;
+  --bg-surface: #ffffff;
+  --bg-surface-soft: #f8fafb;
+  --bg-accent-soft: #edf6f5;
+
+  --text-primary: #17252b;
+  --text-secondary: #52656d;
+  --text-muted: #7a8b92;
+
+  --border: #dce5e8;
+  --border-strong: #c8d6da;
+
+  --accent: #176b6a;
+  --accent-hover: #125b5a;
+  --accent-pressed: #0e4b4a;
+  --accent-contrast: #ffffff;
+
+  --danger: #b84a4a;
+  --danger-hover: #9e3d3d;
+  --danger-soft: #fff1f1;
+
+  --warning: #9a6516;
+  --warning-soft: #fff8e8;
+
+  --success: #28754f;
+  --success-soft: #edf8f2;
+
+  --focus-ring: rgba(23, 107, 106, 0.18);
+
+  --shadow-xs: 0 1px 2px rgba(31, 52, 60, 0.05);
+  --shadow-sm: 0 8px 24px rgba(31, 52, 60, 0.07);
+  --shadow-md: 0 18px 48px rgba(31, 52, 60, 0.11);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  --page-max: 1360px;
+  --page-gutter: clamp(18px, 3vw, 36px);
+  --touch-size: 46px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  margin: 0;
+  padding: 0;
+
+  font-family:
+          Arial,
+          "Helvetica Neue",
+          Helvetica,
+          sans-serif;
+
+  font-size: 16px;
+  line-height: 1.5;
+
+  background: var(--bg-app);
+
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+
+  overflow-x: hidden;
+}
+
+body {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  min-height: 100vh;
+
+  margin: 0;
+  padding: 0;
+
+  color: var(--text-primary);
+
+  font-family:
+          Arial,
+          "Helvetica Neue",
+          Helvetica,
+          sans-serif;
+
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+
+  background:
+          radial-gradient(
+                          circle at 85% 0%,
+                          rgba(23, 107, 106, 0.06),
+                          transparent 28rem
+          ),
+          var(--bg-app);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  text-rendering: optimizeLegibility;
+
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  min-height: 100vh;
+
+  overflow-x: hidden;
+}
+
+/*
+ * Используем dvh только там, где браузер его поддерживает.
+ * Так линтер не считает 100vh перезаписанным свойством.
+ */
+@supports (height: 100dvh) {
+  body,
+  #root {
+    min-height: 100dvh;
+  }
+}
+
+/*
+ * Полностью нейтрализуем браузерную типографику
+ * стандартных заголовков.
+ */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+
+  color: inherit;
+
+  font-family:
+          Arial,
+          "Helvetica Neue",
+          Helvetica,
+          sans-serif;
+
+  font-size: inherit;
+  font-style: normal;
+  font-weight: inherit;
+  line-height: inherit;
+
+  letter-spacing: inherit;
+}
+
+/*
+ * Safari / iOS и другие браузеры часто задают
+ * form controls собственный системный шрифт.
+ */
+button,
+input,
+textarea,
+select,
+option,
+optgroup {
+  font-family:
+          Arial,
+          "Helvetica Neue",
+          Helvetica,
+          sans-serif;
+
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+}
+
+button {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+input,
+textarea,
+select {
+  min-width: 0;
+  max-width: 100%;
+
+  color: inherit;
+}
+
+/*
+ * На iPhone размер меньше 16px может вызывать
+ * автоматический zoom при фокусе.
+ */
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+fieldset {
+  min-width: 0;
+}
+
+img,
+svg,
+canvas,
+video {
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+button,
+label,
+input[type="checkbox"],
+input[type="radio"],
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+::selection {
+  color: var(--text-primary);
+  background: #cfe9e6;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --page-gutter: 16px;
+    --touch-size: 48px;
+  }
+
+  html,
+  body,
+  #root {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  body {
+    background: var(--bg-app);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,68 @@
+.heading {
+  min-width: 0;
+  margin: 0;
+
+  color: var(--text-primary, #17252b);
+
+  /*
+   * Шрифт прописан прямо у компонента.
+   *
+   * Даже если глобальные стили когда-нибудь
+   * сломаются, Heading не превратится в serif.
+   */
+  font-family:
+          Arial,
+          "Helvetica Neue",
+          Helvetica,
+          sans-serif;
+
+  font-style: normal;
+
+  overflow-wrap: anywhere;
+}
+
+.page {
+  font-size: clamp(30px, 4vw, 42px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.section {
+  font-size: clamp(19px, 2.2vw, 23px);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+}
+
+.card {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.008em;
+}
+
+.subsection {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+@media (max-width: 640px) {
+  .page {
+    font-size: 30px;
+    line-height: 1.12;
+  }
+
+  .section {
+    font-size: 19px;
+  }
+
+  .card {
+    font-size: 17px;
+  }
+
+  .subsection {
+    font-size: 15px;
+  }
+}
