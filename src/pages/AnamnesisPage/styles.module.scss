@@ -1,42 +1,61 @@
 .container {
-  width: min(100%, var(--page-max, 1360px));
-  margin: 0 auto;
+  width: 100%;
+  max-width: var(--page-max, 1360px);
+
+  min-width: 0;
+
+  margin-inline: auto;
+
   padding: 22px var(--page-gutter, 24px) 56px;
+
+  overflow-x: clip;
 }
 
 .pageHeader {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   align-items: center;
+
   gap: 18px;
+
   margin-bottom: 24px;
 }
 
 .title {
   min-width: 0;
-  flex: 1;
-  margin: 0;
-  color: var(--text-primary, #17252b);
-  font-size: clamp(27px, 3.5vw, 38px);
-  font-weight: 720;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
+
+  flex: 1 1 auto;
 }
 
 .backButton {
   min-height: 44px;
+
   flex: 0 0 auto;
+
   display: inline-flex;
   align-items: center;
+
   gap: 9px;
+
   padding: 8px 13px 8px 9px;
+
   color: var(--accent, #176b6a);
+
   background: var(--bg-surface, #fff);
+
   border: 1px solid #c9dfdc;
+
   border-radius: 12px;
+
   box-shadow: 0 3px 10px rgba(31, 52, 60, 0.05);
+
   cursor: pointer;
+
   font-size: 14px;
-  font-weight: 680;
+  font-weight: 600;
+
   transition: color 160ms ease,
   background-color 160ms ease,
   border-color 160ms ease,
@@ -44,16 +63,40 @@
   transform 160ms ease;
 
   &:hover {
-    color: var(--accent-hover, #125b5a);
-    background: var(--bg-accent-soft, #edf6f5);
+    color: var(
+                    --accent-hover,
+                    #125b5a
+    );
+
+    background: var(
+                    --bg-accent-soft,
+                    #edf6f5
+    );
+
     border-color: #a9ceca;
-    box-shadow: 0 5px 14px rgba(31, 52, 60, 0.08);
+
+    box-shadow: 0 5px 14px rgba(
+                    31,
+                    52,
+                    60,
+                    0.08
+    );
+
     transform: translateY(-1px);
   }
 
   &:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px var(--focus-ring, rgba(23, 107, 106, 0.18));
+
+    box-shadow: 0 0 0 3px var(
+                    --focus-ring,
+                    rgba(
+                                    23,
+                                    107,
+                                    106,
+                                    0.18
+                    )
+    );
   }
 
   &:active {
@@ -64,14 +107,23 @@
 .backIcon {
   width: 28px;
   height: 28px;
+
+  flex: 0 0 28px;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 28px;
-  background: var(--bg-accent-soft, #edf6f5);
+
+  background: var(
+                  --bg-accent-soft,
+                  #edf6f5
+  );
+
   border-radius: 8px;
+
   font-size: 18px;
   line-height: 1;
+
   transition: transform 160ms ease;
 
   .backButton:hover & {
@@ -85,24 +137,30 @@
 
 .error {
   margin-bottom: 18px;
+
   padding: 16px 18px;
+
   color: #8d3434;
-  background: var(--danger-soft, #fff1f1);
+
+  background: var(
+                  --danger-soft,
+                  #fff1f1
+  );
+
   border: 1px solid #efc9c9;
+
   border-radius: 12px;
+
   font-size: 14px;
   font-weight: 600;
 }
 
 .recordsBlock {
   margin-top: 30px;
-  padding-top: 22px;
-  border-top: 1px solid var(--border, #dce5e8);
 
-  h3 {
-    margin-bottom: 15px;
-    color: var(--text-primary, #17252b);
-  }
+  padding-top: 22px;
+
+  border-top: 1px solid var(--border, #dce5e8);
 }
 
 @media (max-width: 900px) {
@@ -116,7 +174,9 @@
 
   .backText {
     max-width: 120px;
+
     overflow: hidden;
+
     text-overflow: ellipsis;
   }
 }
@@ -130,28 +190,50 @@
   .pageHeader {
     margin-bottom: 18px;
   }
-
-  .title {
-    font-size: clamp(24px, 5.2vw, 30px);
-  }
 }
 
 @media (max-width: 640px) {
   .container {
-    padding-inline: 10px;
+    width: 100%;
+    max-width: 100%;
+
+    padding-top: 14px;
+
+    padding-left: max(
+            12px,
+            env(
+                            safe-area-inset-left,
+                            0px
+            )
+    );
+
+    padding-right: max(
+            12px,
+            env(
+                            safe-area-inset-right,
+                            0px
+            )
+    );
   }
 
   .pageHeader {
+    width: 100%;
+    min-width: 0;
+
     gap: 9px;
-    padding-inline: 4px;
+
+    margin-bottom: 16px;
   }
 
   .backButton {
     width: 44px;
     min-width: 44px;
     height: 44px;
+
     padding: 7px;
+
     justify-content: center;
+
     border-radius: 11px;
   }
 
@@ -162,18 +244,29 @@
 
   .backText {
     position: absolute;
+
     width: 1px;
     height: 1px;
+
     margin: -1px;
     padding: 0;
+
     overflow: hidden;
+
     clip: rect(0 0 0 0);
+
     white-space: nowrap;
+
     border: 0;
   }
 
   .title {
+    min-width: 0;
+
     font-size: 23px;
+
     line-height: 1.18;
+
+    overflow-wrap: anywhere;
   }
 }
