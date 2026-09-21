@@ -11,5 +11,5 @@ export default defineConfig({
     },
   },
   // NEW — важно для GitHub Pages
-  base: "/Endo-anamnesis/",
+  base: "/Endo-anamnesis",
 });

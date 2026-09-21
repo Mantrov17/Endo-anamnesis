@@ -5,9 +5,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AnamnesisForm } from "@/features/AnamnesisForm";
 
 import {
+  type AnamnesisFormData,
   getAnamnesisById,
   getPatientById,
-  type AnamnesisFormData,
 } from "@/shared";
 
 import { Button } from "@/shared/ui/Button";
@@ -15,6 +15,7 @@ import { Heading } from "@/shared/ui/Heading";
 import { SuccessMessage } from "@/shared/ui/SuccessMessage";
 
 import styles from "./styles.module.scss";
+import { normalizeAnamnesisFormData } from "@/features/AnamnesisForm/lib/normalizeAnamnesis.ts";
 
 export const AnamnesisPage: React.FC = () => {
   const navigate = useNavigate();
@@ -55,19 +56,7 @@ export const AnamnesisPage: React.FC = () => {
       const anamnesis = getAnamnesisById(patientId, anamnesisId);
 
       if (anamnesis) {
-        const formData: AnamnesisFormData = {
-          primaryExam: anamnesis.primaryExam,
-
-          type1Diabetes: anamnesis.type1Diabetes,
-
-          therapy: anamnesis.therapy,
-
-          hypoglycemia: anamnesis.hypoglycemia,
-
-          lifestyle: anamnesis.lifestyle,
-
-          notes: anamnesis.notes,
-        };
+        const formData = normalizeAnamnesisFormData(anamnesis);
 
         setInitialData(formData);
       } else {
