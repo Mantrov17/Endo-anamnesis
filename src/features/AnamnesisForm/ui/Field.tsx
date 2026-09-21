@@ -1,6 +1,6 @@
 import React from "react";
+
 import { HintedField } from "./HintedField";
-import { useFormFieldContext } from "./FormFieldContext";
 
 interface FieldProps {
   hint?: string;
@@ -15,15 +15,8 @@ export const Field: React.FC<FieldProps> = ({
   noteLabel,
   children,
 }) => {
-  const { register, watch } = useFormFieldContext();
   return (
-    <HintedField
-      hint={hint}
-      noteKey={noteKey}
-      noteLabel={noteLabel}
-      register={register}
-      watch={watch}
-    >
+    <HintedField hint={hint} noteKey={noteKey} noteLabel={noteLabel}>
       {children}
     </HintedField>
   );

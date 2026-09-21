@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { FormProvider } from "react-hook-form";
 
 import { useAnamnesisForm } from "@/features/AnamnesisForm";
-
 import type { AnamnesisFormData } from "@/shared";
 import { Button } from "@/shared/ui/Button";
 
@@ -9,11 +9,7 @@ import {
   createType1DiabetesDefaults,
   createType2DiabetesDefaults,
 } from "../lib/diabetesDefaults";
-
 import { tabs, type TabId } from "../lib/tabs";
-
-import { FormFieldContext } from "./FormFieldContext";
-
 import {
   AdditionalTab,
   ComplicationsTab,
@@ -28,7 +24,6 @@ import {
   SelfMonitoringTab,
   TherapyTab,
 } from "./tabs";
-
 import styles from "./styles.module.scss";
 
 interface AnamnesisFormProps {
@@ -45,25 +40,21 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
   onSuccess,
 }) => {
   const [activeTab, setActiveTab] = useState<TabId>("primary");
-
   const [isMobileTabsOpen, setIsMobileTabsOpen] = useState(false);
 
-  const { register, handleSubmit, errors, watch, setValue, control } =
-    useAnamnesisForm({
-      patientId,
-      initialData,
-      anamnesisId,
-      onSuccess,
-    });
+  const { formMethods, submitForm } = useAnamnesisForm({
+    patientId,
+    initialData,
+    anamnesisId,
+    onSuccess,
+  });
+
+  const { watch, setValue } = formMethods;
 
   const suspectedDiagnosis = watch("primaryExam.suspectedDiagnosis");
-
   const isType1 = suspectedDiagnosis === "type1";
-
   const isType2 = suspectedDiagnosis === "type2";
-
   const type1Data = watch("type1Diabetes");
-
   const type2Data = watch("type2Diabetes");
 
   useEffect(() => {
@@ -76,14 +67,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
     }
   }, [isType1, isType2, type1Data, type2Data, setValue]);
 
-  const tabProps = {
-    register,
-    watch,
-    setValue,
-    control,
-    errors,
-  };
-
   const activeTabLabel =
     tabs.find((tab) => tab.id === activeTab)?.label ?? "Разделы";
 
@@ -95,40 +78,29 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
   const renderTab = () => {
     switch (activeTab) {
       case "primary":
-        return <PrimaryTab {...tabProps} />;
-
+        return <PrimaryTab />;
       case "therapy":
-        return <TherapyTab {...tabProps} />;
-
+        return <TherapyTab />;
       case "hypoglycemia":
-        return <HypoglycemiaTab {...tabProps} />;
-
+        return <HypoglycemiaTab />;
       case "selfMonitoring":
-        return <SelfMonitoringTab {...tabProps} />;
-
+        return <SelfMonitoringTab />;
       case "complications":
-        return <ComplicationsTab {...tabProps} />;
-
+        return <ComplicationsTab />;
       case "examination":
-        return <ExaminationTab {...tabProps} />;
-
+        return <ExaminationTab />;
       case "lifestyle":
-        return <LifestyleTab {...tabProps} />;
-
+        return <LifestyleTab />;
       case "measurements":
-        return <MeasurementsTab {...tabProps} />;
-
+        return <MeasurementsTab />;
       case "secondaryAH":
-        return <SecondaryAHTab {...tabProps} />;
-
+        return <SecondaryAHTab />;
       case "heartFailure":
-        return <HeartFailureTab {...tabProps} />;
-
+        return <HeartFailureTab />;
       case "h2fpef":
-        return <H2FPEFTab {...tabProps} />;
-
+        return <H2FPEFTab />;
       case "additional":
-        return <AdditionalTab {...tabProps} />;
+        return <AdditionalTab />;
     }
   };
 
@@ -148,9 +120,7 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               <span />
               <span />
             </span>
-
             <span className={styles.mobileTabsLabel}>{activeTabLabel}</span>
-
             <span
               className={`${styles.mobileTabsChevron} ${
                 isMobileTabsOpen ? styles.open : ""
@@ -183,22 +153,17 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         </nav>
 
         <div className={styles.tabContent}>
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <FormFieldContext.Provider
-              value={{
-                register,
-                watch,
-              }}
-            >
+          <FormProvider {...formMethods}>
+            <form onSubmit={submitForm} className={styles.form}>
               {renderTab()}
-            </FormFieldContext.Provider>
 
-            <div className={styles.actions}>
-              <Button type="submit" variant="primary">
-                {anamnesisId ? "Редактировать" : "Сохранить"}
-              </Button>
-            </div>
-          </form>
+              <div className={styles.actions}>
+                <Button type="submit" variant="primary">
+                  {anamnesisId ? "Редактировать" : "Сохранить"}
+                </Button>
+              </div>
+            </form>
+          </FormProvider>
         </div>
       </div>
     </div>

@@ -1,10 +1,12 @@
 import React from "react";
+import { useFormContext } from "react-hook-form";
+import type { AnamnesisFormData } from "@/shared";
 import { Input } from "@/shared/ui/Input";
 import { Field } from "../Field";
-import type { TabProps } from "./types";
 import styles from "../styles.module.scss";
 
-export const H2FPEFTab: React.FC<TabProps> = ({ register, watch }) => {
+export const H2FPEFTab: React.FC = () => {
+  const { register, watch } = useFormContext<AnamnesisFormData>();
   const totalScore = watch("h2fpef.totalScore") ?? 0;
 
   return (

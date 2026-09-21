@@ -36,17 +36,11 @@ export const useAnamnesisForm = ({
   anamnesisId,
   onSuccess,
 }: UseAnamnesisFormProps) => {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-    watch,
-    setValue,
-    control,
-  } = useForm<AnamnesisFormData>({
+  const formMethods = useForm<AnamnesisFormData>({
     defaultValues: mergeAnamnesisWithDefaults(initialData ?? {}),
   });
+
+  const { handleSubmit, reset, watch, setValue } = formMethods;
 
   // ==================== Данные пациента ====================
 
@@ -72,12 +66,6 @@ export const useAnamnesisForm = ({
   useEffect(() => {
     const bmi = calculateBmi(pHeight, pWeight);
 
-    /*
-     * Важно записывать и null.
-     *
-     * Если пользователь очистил рост или вес,
-     * старое рассчитанное значение BMI должно исчезнуть.
-     */
     setValue("primaryExam.bmi", bmi);
   }, [pHeight, pWeight, setValue]);
 
@@ -88,10 +76,6 @@ export const useAnamnesisForm = ({
   useEffect(() => {
     const age = calculateAge(birthDateForTarget);
 
-    /*
-     * Если дата рождения отсутствует или некорректна,
-     * рассчитанное целевое значение очищаем.
-     */
     if (age === null) {
       setValue("therapy.targetHba1c", "", {
         shouldDirty: false,
@@ -115,24 +99,9 @@ export const useAnamnesisForm = ({
 
   const birthDate = watch("birthDate");
 
-  /*
-   * Год постановки диагноза
-   * →
-   * возраст на момент постановки
-   * +
-   * длительность заболевания
-   */
   useEffect(() => {
     const diagnosisYear = parseDiagnosisYear(t1Year);
 
-    /*
-     * Если год удалили или он перестал быть корректным,
-     * длительность заболевания больше нельзя считать.
-     *
-     * ageAtDiagnosis здесь специально не очищаем:
-     * пользователь может вводить возраст вручную,
-     * а из него ниже автоматически восстановится год.
-     */
     if (diagnosisYear === null) {
       setValue("type1Diabetes.diseaseDuration", null);
 
@@ -151,12 +120,6 @@ export const useAnamnesisForm = ({
     );
   }, [t1Year, birthDate, setValue]);
 
-  /*
-   * Возраст постановки диагноза
-   * →
-   * год постановки диагноза,
-   * если год ещё не заполнен.
-   */
   useEffect(() => {
     if (!birthDate) {
       return;
@@ -183,13 +146,6 @@ export const useAnamnesisForm = ({
 
   const t2Age = watch("type2Diabetes.ageAtDiagnosis");
 
-  /*
-   * Год постановки диагноза
-   * →
-   * возраст на момент постановки
-   * +
-   * длительность заболевания
-   */
   useEffect(() => {
     const diagnosisYear = parseDiagnosisYear(t2Year);
 
@@ -211,11 +167,6 @@ export const useAnamnesisForm = ({
     );
   }, [t2Year, birthDate, setValue]);
 
-  /*
-   * Возраст постановки диагноза
-   * →
-   * год постановки диагноза.
-   */
   useEffect(() => {
     if (!birthDate) {
       return;
@@ -252,11 +203,6 @@ export const useAnamnesisForm = ({
       actualCoefficient,
     );
 
-    /*
-     * Если пользователь удалил дозы,
-     * рост или необходимые данные,
-     * старую рассчитанную дозу также очищаем.
-     */
     setValue("actualTherapy.calculatedDailyInsulinDose", dailyDose);
   }, [actualBase, actualBolus, actualCoefficient, pHeight, setValue]);
 
@@ -269,10 +215,6 @@ export const useAnamnesisForm = ({
       diseaseDurationForCoefficient,
     );
 
-    /*
-     * Если длительность СД больше неизвестна,
-     * старый коэффициент тоже не должен сохраняться.
-     */
     setValue("actualTherapy.insulinDoseCoefficient", coefficient);
   }, [diseaseDurationForCoefficient, setValue]);
 
@@ -285,10 +227,6 @@ export const useAnamnesisForm = ({
   useEffect(() => {
     const pulsePressure = calculatePulsePressure(leftSystolic, leftDiastolic);
 
-    /*
-     * Если одно из двух АД удалено,
-     * пульсовое давление становится null.
-     */
     setValue("measurements.pulsePressure", pulsePressure);
   }, [leftSystolic, leftDiastolic, setValue]);
 
@@ -307,13 +245,6 @@ export const useAnamnesisForm = ({
 
     const rightAbi = calculateAbi(legRight, armRight);
 
-    /*
-     * Левая и правая стороны независимы.
-     *
-     * Если данные удалили только справа,
-     * правый ЛПИ очистится,
-     * а левый останется рассчитанным.
-     */
     setValue("measurements.abiIndex.left", leftAbi);
 
     setValue("measurements.abiIndex.right", rightAbi);
@@ -375,14 +306,8 @@ export const useAnamnesisForm = ({
   };
 
   return {
-    register,
+    formMethods,
 
-    handleSubmit: handleSubmit(onSubmit),
-
-    errors,
-    watch,
-    setValue,
-    control,
-    reset,
+    submitForm: handleSubmit(onSubmit),
   };
 };

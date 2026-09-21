@@ -1,18 +1,16 @@
 import React from "react";
+import { useFormContext } from "react-hook-form";
+import type { AnamnesisFormData } from "@/shared";
 import { Input } from "@/shared/ui/Input";
 import { Textarea } from "@/shared/ui/Textarea";
 import { Field } from "../Field";
 import { YesNo } from "../YesNo";
 import { DrugList } from "../DrugList";
-import type { TabProps } from "./types";
 import styles from "../styles.module.scss";
 import { boolFromString } from "@/shared/lib/boolFromString.ts";
 
-export const TherapyTab: React.FC<TabProps> = ({
-  register,
-  watch,
-  control,
-}) => {
+export const TherapyTab: React.FC = () => {
+  const { register, watch, control } = useFormContext<AnamnesisFormData>();
   const isType1 = watch("primaryExam.suspectedDiagnosis") === "type1";
   const isType2 = watch("primaryExam.suspectedDiagnosis") === "type2";
   const type1Data = watch("type1Diabetes");
