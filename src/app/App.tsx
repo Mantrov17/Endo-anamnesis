@@ -1,15 +1,18 @@
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+import { HashRouter, Route, Routes } from "react-router-dom";
 
 import "./styles.scss";
 
-import { PatientsListPage } from "@/pages/PatientsListPage";
 import { AnamnesisPage } from "@/pages/AnamnesisPage";
+
 import { PatientFormPage } from "@/pages/PatientFormPage";
+
+import { PatientsListPage } from "@/pages/PatientsListPage";
 
 export const App: React.FC = () => {
   return (
-    <BrowserRouter basename="/Endo-anamnesis">
+    <HashRouter>
       <Routes>
         <Route path="/" element={<PatientsListPage />} />
 
@@ -27,6 +30,6 @@ export const App: React.FC = () => {
           element={<AnamnesisPage />}
         />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
