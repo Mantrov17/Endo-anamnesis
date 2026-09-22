@@ -2,120 +2,125 @@ import type { AnamnesisFormData, AnamnesisRecord } from "@/shared";
 
 import { getDefaultValues } from "./defaultValues";
 
-type UnknownRecord = Record<string, unknown>;
+import {
+  createType1DiabetesDefaults,
+  createType2DiabetesDefaults,
+} from "./diabetesDefaults";
 
-const isPlainObject = (value: unknown): value is UnknownRecord =>
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
 /**
- * Рекурсивно объединяет актуальные defaultValues
- * с существующими данными анамнеза.
+ * Поддержка старых записей.
  *
- * Правила:
+ * Ранее некоторые boolean-поля могли оказаться
+ * сохранены как строки "true" / "false".
  *
- * 1. Если значения в source нет (undefined),
- *    используется значение из defaults.
+ * Преобразование выполняем только в тех местах,
+ * где default имеет boolean/null-семантику.
  *
- * 2. Вложенные объекты объединяются рекурсивно.
- *
- * 3. Массивы не объединяются поэлементно.
- *    Сохранённый массив полностью заменяет массив из defaults.
- *
- * 4. false, 0, "", null считаются реальными значениями
- *    и не заменяются default-значениями.
- *
- * 5. Если в source есть неизвестное новое/старое поле,
- *    оно сохраняется.
+ * Благодаря этому обычные текстовые поля со строками
+ * не затрагиваются.
  */
+const normalizeBooleanString = (
+  defaultValue: unknown,
+  sourceValue: unknown,
+): unknown => {
+  const canBeBoolean =
+    defaultValue === null || typeof defaultValue === "boolean";
+
+  if (!canBeBoolean) {
+    return sourceValue;
+  }
+
+  if (sourceValue === "true") {
+    return true;
+  }
+
+  if (sourceValue === "false") {
+    return false;
+  }
+
+  return sourceValue;
+};
+
 const deepMergeWithDefaults = <T>(defaults: T, source: unknown): T => {
-  if (source === undefined) {
-    return defaults;
-  }
+  const normalizedSource = normalizeBooleanString(defaults, source);
 
-  /*
-   * Массивы специально НЕ deep merge'им.
-   *
-   * Например:
-   *
-   * currentDrugs: [
-   *   { name: "Метформин", dose: "1000" },
-   *   { name: "..." }
-   * ]
-   *
-   * Попытка рекурсивно объединять массивы по индексам
-   * могла бы создать повреждённый список препаратов.
-   */
   if (Array.isArray(defaults)) {
-    return (Array.isArray(source) ? source : defaults) as T;
+    return (Array.isArray(normalizedSource) ? normalizedSource : defaults) as T;
   }
 
-  /*
-   * Если default представляет объект,
-   * объединяем его поля рекурсивно.
-   */
   if (isPlainObject(defaults)) {
-    /*
-     * Если старые данные содержат некорректное значение
-     * вместо ожидаемого объекта, например:
-     *
-     * complications: null
-     *
-     * безопаснее восстановить структуру из defaults.
-     */
-    if (!isPlainObject(source)) {
+    if (!isPlainObject(normalizedSource)) {
       return defaults;
     }
 
-    const result: UnknownRecord = {
+    const result: Record<string, unknown> = {
       ...defaults,
     };
 
-    Object.entries(source).forEach(([key, sourceValue]) => {
-      const defaultValue = result[key];
+    for (const key of Object.keys(defaults)) {
+      result[key] = deepMergeWithDefaults(defaults[key], normalizedSource[key]);
+    }
 
-      /*
-       * Поля, которых пока нет в defaults,
-       * не удаляем.
-       */
-      if (defaultValue === undefined) {
-        result[key] = sourceValue;
-        return;
+    /**
+     * Не выбрасываем неизвестные старые/новые поля.
+     *
+     * Это важно для обратной совместимости:
+     * если схема изменилась, но поле ещё отсутствует
+     * в defaults текущей версии, данные пользователя
+     * всё равно сохраняются.
+     */
+    for (const key of Object.keys(normalizedSource)) {
+      if (!(key in defaults)) {
+        result[key] = normalizedSource[key];
       }
-
-      result[key] = deepMergeWithDefaults(defaultValue, sourceValue);
-    });
+    }
 
     return result as T;
   }
 
-  /*
-   * Для обычных значений:
-   * string, number, boolean, null и т. д.
-   *
-   * сохранённое значение имеет приоритет.
-   */
-  return source as T;
+  return (normalizedSource !== undefined ? normalizedSource : defaults) as T;
 };
 
 /**
- * Достраивает AnamnesisFormData до актуальной структуры формы.
+ * Создаём defaults с учётом выбранных типов диабета.
  *
- * Используется:
- * - перед передачей данных в useForm;
- * - перед сохранением формы.
+ * В основном getDefaultValues():
+ *
+ * type1Diabetes = null
+ * type2Diabetes = null
+ *
+ * Это правильно для новой формы, но недостаточно
+ * для deep merge уже существующего анамнеза.
+ *
+ * Если в записи существует объект СД1/СД2,
+ * подставляем полноценную структуру соответствующего
+ * типа и уже с ней выполняем deep merge.
  */
+const getDefaultsForData = (data: AnamnesisFormData): AnamnesisFormData => {
+  const defaults = getDefaultValues();
+
+  if (data.type1Diabetes) {
+    defaults.type1Diabetes = createType1DiabetesDefaults();
+  }
+
+  if (data.type2Diabetes) {
+    defaults.type2Diabetes = createType2DiabetesDefaults();
+  }
+
+  return defaults;
+};
+
 export const mergeAnamnesisWithDefaults = (
   data: AnamnesisFormData,
-): AnamnesisFormData => deepMergeWithDefaults(getDefaultValues(), data);
+): AnamnesisFormData => {
+  const defaults = getDefaultsForData(data);
 
-/**
- * Преобразует сохранённый AnamnesisRecord
- * в данные формы.
- *
- * id и savedAt относятся к записи в localStorage,
- * а не непосредственно к значениям формы,
- * поэтому в useForm они не передаются.
- */
+  return deepMergeWithDefaults(defaults, data);
+};
+
 export const normalizeAnamnesisFormData = (
   record: AnamnesisRecord,
 ): AnamnesisFormData => {

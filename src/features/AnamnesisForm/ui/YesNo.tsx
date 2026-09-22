@@ -1,14 +1,12 @@
 import React from "react";
+
 import type { Path, UseFormRegister } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
+
 import type { AnamnesisFormData } from "@/shared";
-import styles from "./styles.module.scss";
 import { Hint } from "@/shared/ui/Hint";
 
-const boolFromString = (v: unknown): boolean | null => {
-  if (v === true || v === "true") return true;
-  if (v === false || v === "false") return false;
-  return null;
-};
+import styles from "./styles.module.scss";
 
 interface YesNoProps {
   label: string;
@@ -19,6 +17,18 @@ interface YesNoProps {
   yesNoLabels?: [string, string];
 }
 
+const boolFromString = (value: unknown): boolean | null => {
+  if (value === true || value === "true") {
+    return true;
+  }
+
+  if (value === false || value === "false") {
+    return false;
+  }
+
+  return null;
+};
+
 export const YesNo: React.FC<YesNoProps> = ({
   label,
   hint,
@@ -26,26 +36,40 @@ export const YesNo: React.FC<YesNoProps> = ({
   register,
   blue,
   yesNoLabels = ["Да", "Нет"],
-}) => (
-  <div className={styles.radioGroup}>
-    <label className={blue ? styles.blueLabel : undefined}>
-      {label} {hint && <Hint text={hint} />}
-    </label>
-    <label>
-      <input
-        type="radio"
-        value="true"
-        {...register(name, { setValueAs: boolFromString })}
-      />{" "}
-      {yesNoLabels[0]}
-    </label>
-    <label>
-      <input
-        type="radio"
-        value="false"
-        {...register(name, { setValueAs: boolFromString })}
-      />{" "}
-      {yesNoLabels[1]}
-    </label>
-  </div>
-);
+}) => {
+  const { watch } = useFormContext<AnamnesisFormData>();
+
+  const currentValue = boolFromString(watch(name));
+
+  return (
+    <div className={styles.radioGroup}>
+      <label className={blue ? styles.blueLabel : undefined}>
+        {label} {hint && <Hint text={hint} />}
+      </label>
+
+      <label>
+        <input
+          type="radio"
+          value="true"
+          checked={currentValue === true}
+          {...register(name, {
+            setValueAs: boolFromString,
+          })}
+        />{" "}
+        {yesNoLabels[0]}
+      </label>
+
+      <label>
+        <input
+          type="radio"
+          value="false"
+          checked={currentValue === false}
+          {...register(name, {
+            setValueAs: boolFromString,
+          })}
+        />{" "}
+        {yesNoLabels[1]}
+      </label>
+    </div>
+  );
+};
