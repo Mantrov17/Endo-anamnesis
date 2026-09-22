@@ -1,0 +1,169 @@
+.card {
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+
+  background: var(
+                  --bg-surface,
+                  #fff
+  );
+
+  border: 1px solid
+  var(
+                  --border,
+                  #dce5e8
+  );
+
+  border-radius: 15px;
+
+  box-shadow: var(
+                  --shadow-xs,
+                  0 1px 2px rgba(31, 52, 60, 0.05)
+  );
+
+  transition:
+          border-color 160ms ease,
+          box-shadow 160ms ease,
+          transform 160ms ease;
+
+  &:hover {
+    border-color: #cadadd;
+
+    box-shadow: var(
+                    --shadow-sm,
+                    0 8px 24px rgba(31, 52, 60, 0.07)
+    );
+  }
+}
+
+.cardHeader {
+  width: 100%;
+  min-width: 0;
+  min-height: 78px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 16px;
+
+  padding: 15px 16px;
+
+  cursor: pointer;
+
+  background: var(
+                  --bg-surface,
+                  #fff
+  );
+
+  transition:
+          background-color 150ms ease;
+
+  &:hover {
+    background: #fbfcfc;
+  }
+}
+
+.patientSummary {
+  min-width: 0;
+
+  flex: 1 1 auto;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 7px 10px;
+}
+
+.expandIcon {
+  width: 24px;
+  height: 24px;
+
+  flex: 0 0 24px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(
+                  --accent,
+                  #176b6a
+  );
+
+  background: var(
+                  --bg-accent-soft,
+                  #edf6f5
+  );
+
+  border-radius: 7px;
+
+  font-size: 10px;
+}
+
+.patientName {
+  min-width: min(
+          100%,
+          220px
+  );
+
+  overflow-wrap: anywhere;
+}
+
+.patientMeta,
+.anamnesisCount,
+.createdAtMeta {
+  max-width: 100%;
+  min-height: 27px;
+
+  display: inline-flex;
+  align-items: center;
+
+  padding: 4px 9px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  line-height: 1.2;
+
+  white-space: normal;
+}
+
+.patientMeta {
+  color: var(
+                  --text-secondary,
+                  #52656d
+  );
+
+  background: #f1f5f6;
+}
+
+.anamnesisCount {
+  color: var(
+                  --accent,
+                  #176b6a
+  );
+
+  background: var(
+                  --bg-accent-soft,
+                  #edf6f5
+  );
+}
+
+.createdAtMeta {
+  color: var(
+                  --text-muted,
+                  #7a8b92
+  );
+
+  background: transparent;
+}
+
+.patientActions {
+  flex: 0 0 auto;
+
+  display: flex;
+
+  gap: 8px;
+}

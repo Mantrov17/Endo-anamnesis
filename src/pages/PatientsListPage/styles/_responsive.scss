@@ -1,0 +1,310 @@
+@media (max-width: 980px) {
+  .filters {
+    grid-template-columns:
+      repeat(
+        2,
+                      minmax(0, 1fr)
+      );
+
+    > button {
+      width: fit-content;
+      max-width: 100%;
+
+      margin-bottom: 0;
+    }
+  }
+
+  .stats {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    align-items: flex-start;
+  }
+
+  .headerButtons {
+    max-width: 310px;
+  }
+
+  .cardHeader {
+    align-items: flex-start;
+  }
+
+  .patientActions button {
+    min-width: 92px;
+  }
+
+  .anamnesisItem {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    width: 100%;
+    max-width: 100%;
+
+    padding-top: 24px;
+
+    padding-bottom: calc(
+            34px +
+            env(
+                    safe-area-inset-bottom,
+                    0px
+            )
+    );
+
+    padding-left: max(
+            16px,
+            env(
+                            safe-area-inset-left,
+                            0px
+            )
+    );
+
+    padding-right: max(
+            16px,
+            env(
+                            safe-area-inset-right,
+                            0px
+            )
+    );
+  }
+
+  .header {
+    width: 100%;
+
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 16px;
+
+    margin-bottom: 20px;
+  }
+
+  .pageTitle {
+    width: 100%;
+  }
+
+  .headerButtons {
+    width: 100%;
+    max-width: none;
+
+    display: grid;
+    grid-template-columns: 1fr;
+
+    > * {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .searchSection {
+    width: 100%;
+
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+  }
+
+  .filterToggleButton {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filters {
+    width: 100%;
+
+    grid-template-columns: 1fr;
+
+    padding: 14px;
+
+    > button {
+      width: 100%;
+      max-width: 100%;
+
+      margin-bottom: 0;
+    }
+  }
+
+  .stats {
+    width: 100%;
+
+    flex-direction: column;
+    align-items: stretch;
+
+    padding: 12px;
+  }
+
+  .controls {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+  }
+
+  .sortSelector,
+  .perPageSelector {
+    width: 100%;
+    min-width: 0;
+
+    display: grid;
+
+    grid-template-columns:
+      minmax(90px, auto)
+      minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 8px;
+
+    select {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      min-height: 44px;
+    }
+  }
+
+  .card {
+    width: 100%;
+
+    border-radius: 13px;
+  }
+
+  .cardHeader {
+    width: 100%;
+    min-height: 0;
+
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 12px;
+
+    padding: 14px;
+  }
+
+  .patientSummary {
+    width: 100%;
+    min-width: 0;
+
+    display: grid;
+
+    grid-template-columns:
+      26px
+      minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 8px;
+  }
+
+  .patientName {
+    min-width: 0;
+    max-width: 100%;
+
+    overflow-wrap: anywhere;
+  }
+
+  .patientMeta,
+  .anamnesisCount,
+  .createdAtMeta {
+    grid-column: 2;
+
+    max-width: 100%;
+
+    justify-self: start;
+
+    white-space: normal;
+  }
+
+  .patientActions {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr;
+
+    > * {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .anamnesesSection {
+    padding: 12px;
+  }
+
+  .anamnesesHeader {
+    flex-direction: column;
+    align-items: stretch;
+
+    > button {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .anamnesisItem {
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 10px;
+  }
+
+  .anamnesisActions {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1fr);
+
+    > * {
+      width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .pageButton {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 390px) {
+  .container {
+    padding-left: max(
+            12px,
+            env(
+                            safe-area-inset-left,
+                            0px
+            )
+    );
+
+    padding-right: max(
+            12px,
+            env(
+                            safe-area-inset-right,
+                            0px
+            )
+    );
+  }
+
+  .sortSelector,
+  .perPageSelector {
+    grid-template-columns: 1fr;
+
+    label {
+      margin-bottom: -2px;
+    }
+  }
+
+  .anamnesisActions {
+    grid-template-columns: 1fr;
+  }
+}
