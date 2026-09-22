@@ -1,4 +1,7 @@
 .container {
+  --anamnesis-page-header-height: 82px;
+  --anamnesis-fixed-gap: 12px;
+
   width: 100%;
   max-width: var(--page-max, 1360px);
 
@@ -6,21 +9,92 @@
 
   margin-inline: auto;
 
-  padding: 22px var(--page-gutter, 24px) 56px;
+  /*
+   * Верх страницы зарезервирован под
+   * постоянно закреплённую шапку.
+   */
+  padding-top: calc(
+          var(--anamnesis-page-header-height) +
+          var(--anamnesis-fixed-gap)
+  );
+
+  padding-right: var(--page-gutter, 24px);
+  padding-bottom: 56px;
+  padding-left: var(--page-gutter, 24px);
 
   overflow-x: clip;
 }
 
 .pageHeader {
-  width: 100%;
+  position: fixed;
+
+  z-index: 100;
+
+  top: 0;
+
+  /*
+   * Выравниваем fixed-шапку точно
+   * по основному контейнеру страницы.
+   */
+  left: max(
+          var(--page-gutter, 24px),
+          calc(
+                  (
+                  100vw -
+                  var(--page-max, 1360px)
+                  ) / 2 +
+                  var(--page-gutter, 24px)
+          )
+  );
+
+  right: max(
+          var(--page-gutter, 24px),
+          calc(
+                  (
+                  100vw -
+                  var(--page-max, 1360px)
+                  ) / 2 +
+                  var(--page-gutter, 24px)
+          )
+  );
+
+  height: var(
+                  --anamnesis-page-header-height
+  );
+
   min-width: 0;
+
+  box-sizing: border-box;
 
   display: flex;
   align-items: center;
 
   gap: 18px;
 
-  margin-bottom: 24px;
+  margin: 0;
+
+  padding: 12px 0;
+
+  background: rgba(
+                  255,
+                  255,
+                  255,
+                  0.96
+  );
+
+  border-bottom: 1px solid
+  var(--border, #dce5e8);
+
+  box-shadow:
+          0 6px 18px
+          rgba(
+                          31,
+                          52,
+                          60,
+                          0.06
+          );
+
+  backdrop-filter: blur(14px);
 }
 
 .title {
@@ -39,28 +113,49 @@
 
   gap: 9px;
 
-  padding: 8px 13px 8px 9px;
+  padding:
+          8px
+          13px
+          8px
+          9px;
 
-  color: var(--accent, #176b6a);
+  color: var(
+                  --accent,
+                  #176b6a
+  );
 
-  background: var(--bg-surface, #fff);
+  background: var(
+                  --bg-surface,
+                  #fff
+  );
 
-  border: 1px solid #c9dfdc;
+  border: 1px solid
+  #c9dfdc;
 
   border-radius: 12px;
 
-  box-shadow: 0 3px 10px rgba(31, 52, 60, 0.05);
+  box-shadow:
+          0
+          3px
+          10px
+          rgba(
+                          31,
+                          52,
+                          60,
+                          0.05
+          );
 
   cursor: pointer;
 
   font-size: 14px;
   font-weight: 600;
 
-  transition: color 160ms ease,
-  background-color 160ms ease,
-  border-color 160ms ease,
-  box-shadow 160ms ease,
-  transform 160ms ease;
+  transition:
+          color 160ms ease,
+          background-color 160ms ease,
+          border-color 160ms ease,
+          box-shadow 160ms ease,
+          transform 160ms ease;
 
   &:hover {
     color: var(
@@ -75,32 +170,43 @@
 
     border-color: #a9ceca;
 
-    box-shadow: 0 5px 14px rgba(
-                    31,
-                    52,
-                    60,
-                    0.08
-    );
+    box-shadow:
+            0
+            5px
+            14px
+            rgba(
+                            31,
+                            52,
+                            60,
+                            0.08
+            );
 
-    transform: translateY(-1px);
+    transform:
+            translateY(-1px);
   }
 
   &:focus-visible {
     outline: none;
 
-    box-shadow: 0 0 0 3px var(
-                    --focus-ring,
-                    rgba(
-                                    23,
-                                    107,
-                                    106,
-                                    0.18
-                    )
-    );
+    box-shadow:
+            0
+            0
+            0
+            3px
+            var(
+                            --focus-ring,
+                            rgba(
+                                            23,
+                                            107,
+                                            106,
+                                            0.18
+                            )
+            );
   }
 
   &:active {
-    transform: translateY(0);
+    transform:
+            translateY(0);
   }
 }
 
@@ -124,10 +230,14 @@
   font-size: 18px;
   line-height: 1;
 
-  transition: transform 160ms ease;
+  transition:
+          transform
+          160ms
+          ease;
 
   .backButton:hover & {
-    transform: translateX(-2px);
+    transform:
+            translateX(-2px);
   }
 }
 
@@ -147,7 +257,8 @@
                   #fff1f1
   );
 
-  border: 1px solid #efc9c9;
+  border: 1px solid
+  #efc9c9;
 
   border-radius: 12px;
 
@@ -160,7 +271,8 @@
 
   padding-top: 22px;
 
-  border-top: 1px solid var(--border, #dce5e8);
+  border-top: 1px solid
+  var(--border, #dce5e8);
 }
 
 @media (max-width: 900px) {
@@ -183,21 +295,22 @@
 
 @media (max-width: 768px) {
   .container {
-    padding-top: 16px;
     padding-bottom: 36px;
-  }
-
-  .pageHeader {
-    margin-bottom: 18px;
   }
 }
 
 @media (max-width: 640px) {
   .container {
+    --anamnesis-page-header-height: 76px;
+    --anamnesis-fixed-gap: 8px;
+
     width: 100%;
     max-width: 100%;
 
-    padding-top: 14px;
+    padding-top: calc(
+            var(--anamnesis-page-header-height) +
+            var(--anamnesis-fixed-gap)
+    );
 
     padding-left: max(
             12px,
@@ -217,18 +330,35 @@
   }
 
   .pageHeader {
-    width: 100%;
-    min-width: 0;
+    left: max(
+            12px,
+            env(
+                            safe-area-inset-left,
+                            0px
+            )
+    );
+
+    right: max(
+            12px,
+            env(
+                            safe-area-inset-right,
+                            0px
+            )
+    );
+
+    height: var(
+                    --anamnesis-page-header-height
+    );
 
     gap: 9px;
 
-    margin-bottom: 16px;
+    padding: 8px 0;
   }
 
   .backButton {
-    width: 44px;
-    min-width: 44px;
-    height: 44px;
+    width: 46px;
+    min-width: 46px;
+    height: 46px;
 
     padding: 7px;
 
@@ -253,7 +383,12 @@
 
     overflow: hidden;
 
-    clip: rect(0 0 0 0);
+    clip: rect(
+                    0
+                    0
+                    0
+                    0
+    );
 
     white-space: nowrap;
 

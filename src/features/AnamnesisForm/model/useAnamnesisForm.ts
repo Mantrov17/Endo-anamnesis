@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { type SubmitHandler, useForm } from "react-hook-form";
 
@@ -27,7 +27,7 @@ interface UseAnamnesisFormProps {
   patientId: string;
   initialData?: AnamnesisFormData;
   anamnesisId?: string;
-  onSuccess?: () => void;
+  onSuccess?: (anamnesisId: string) => void;
 }
 
 export const useAnamnesisForm = ({
@@ -36,11 +36,15 @@ export const useAnamnesisForm = ({
   anamnesisId,
   onSuccess,
 }: UseAnamnesisFormProps) => {
+  const [currentAnamnesisId, setCurrentAnamnesisId] = useState<
+    string | undefined
+  >(anamnesisId);
+
   const formMethods = useForm<AnamnesisFormData>({
     defaultValues: mergeAnamnesisWithDefaults(initialData ?? {}),
   });
 
-  const { handleSubmit, reset, watch, setValue } = formMethods;
+  const { handleSubmit, watch, setValue } = formMethods;
 
   // ==================== Данные пациента ====================
 
@@ -52,7 +56,9 @@ export const useAnamnesisForm = ({
     }
 
     setValue("birthDate", patient.birthDate);
+
     setValue("fullName", patient.fullName);
+
     setValue("gender", patient.gender);
   }, [patientId, setValue]);
 
@@ -271,6 +277,7 @@ export const useAnamnesisForm = ({
 
     if (!patient) {
       alert("Пациент не найден");
+
       return;
     }
 
@@ -278,16 +285,17 @@ export const useAnamnesisForm = ({
       ...data,
 
       fullName: patient.fullName,
+
       birthDate: patient.birthDate,
+
       gender: patient.gender,
     });
 
-    if (anamnesisId) {
-      const success = updateAnamnesis(patientId, anamnesisId, payload);
+    if (currentAnamnesisId) {
+      const success = updateAnamnesis(patientId, currentAnamnesisId, payload);
 
       if (success) {
-        onSuccess?.();
-        reset();
+        onSuccess?.(currentAnamnesisId);
       } else {
         alert("Не удалось обновить анамнез");
       }
@@ -297,17 +305,22 @@ export const useAnamnesisForm = ({
 
     const newRecord = addAnamnesis(patientId, payload);
 
-    if (newRecord) {
-      onSuccess?.();
-      reset();
-    } else {
+    if (!newRecord) {
       alert("Пациент не найден");
+
+      return;
     }
+
+    setCurrentAnamnesisId(newRecord.id);
+
+    onSuccess?.(newRecord.id);
   };
 
   return {
     formMethods,
 
     submitForm: handleSubmit(onSubmit),
+
+    currentAnamnesisId,
   };
 };

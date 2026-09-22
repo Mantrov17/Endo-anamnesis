@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+
 import { FormProvider } from "react-hook-form";
 
 import { useAnamnesisForm } from "@/features/AnamnesisForm";
+
 import type { AnamnesisFormData } from "@/shared";
+
 import { Button } from "@/shared/ui/Button";
 
 import {
   createType1DiabetesDefaults,
   createType2DiabetesDefaults,
 } from "../lib/diabetesDefaults";
+
 import { tabs, type TabId } from "../lib/tabs";
+
 import {
   AdditionalTab,
   ComplicationsTab,
@@ -24,13 +29,15 @@ import {
   SelfMonitoringTab,
   TherapyTab,
 } from "./tabs";
+
 import styles from "./styles.module.scss";
 
 interface AnamnesisFormProps {
   patientId: string;
   initialData?: AnamnesisFormData;
   anamnesisId?: string;
-  onSuccess?: () => void;
+
+  onSuccess?: (anamnesisId: string) => void;
 }
 
 export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
@@ -40,21 +47,48 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
   onSuccess,
 }) => {
   const [activeTab, setActiveTab] = useState<TabId>("primary");
+
   const [isMobileTabsOpen, setIsMobileTabsOpen] = useState(false);
 
-  const { formMethods, submitForm } = useAnamnesisForm({
+  const [isSaveConfirmed, setIsSaveConfirmed] = useState(false);
+
+  const tabsListRef = useRef<HTMLDivElement | null>(null);
+
+  const saveFeedbackTimeoutRef = useRef<number | null>(null);
+
+  const handleSaveSuccess = (savedAnamnesisId: string) => {
+    setIsSaveConfirmed(true);
+
+    if (saveFeedbackTimeoutRef.current !== null) {
+      window.clearTimeout(saveFeedbackTimeoutRef.current);
+    }
+
+    saveFeedbackTimeoutRef.current = window.setTimeout(() => {
+      setIsSaveConfirmed(false);
+
+      saveFeedbackTimeoutRef.current = null;
+    }, 2000);
+
+    onSuccess?.(savedAnamnesisId);
+  };
+
+  const { formMethods, submitForm, currentAnamnesisId } = useAnamnesisForm({
     patientId,
     initialData,
     anamnesisId,
-    onSuccess,
+    onSuccess: handleSaveSuccess,
   });
 
   const { watch, setValue } = formMethods;
 
   const suspectedDiagnosis = watch("primaryExam.suspectedDiagnosis");
+
   const isType1 = suspectedDiagnosis === "type1";
+
   const isType2 = suspectedDiagnosis === "type2";
+
   const type1Data = watch("type1Diabetes");
+
   const type2Data = watch("type2Diabetes");
 
   useEffect(() => {
@@ -67,11 +101,79 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
     }
   }, [isType1, isType2, type1Data, type2Data, setValue]);
 
+  useEffect(() => {
+    const tabsList = tabsListRef.current;
+
+    if (!tabsList) {
+      return;
+    }
+
+    const handleWheel = (event: WheelEvent) => {
+      const isMediumScreen = window.matchMedia(
+        "(min-width: 641px) and (max-width: 1100px)",
+      ).matches;
+
+      if (!isMediumScreen) {
+        return;
+      }
+
+      const maxScrollLeft = tabsList.scrollWidth - tabsList.clientWidth;
+
+      if (maxScrollLeft <= 0) {
+        return;
+      }
+
+      const horizontalWheel = Math.abs(event.deltaX);
+
+      const verticalWheel = Math.abs(event.deltaY);
+
+      const scrollAmount =
+        horizontalWheel > verticalWheel ? event.deltaX : event.deltaY;
+
+      if (scrollAmount === 0) {
+        return;
+      }
+
+      const nextScrollLeft = Math.min(
+        maxScrollLeft,
+        Math.max(0, tabsList.scrollLeft + scrollAmount),
+      );
+
+      if (nextScrollLeft === tabsList.scrollLeft) {
+        return;
+      }
+
+      event.preventDefault();
+
+      tabsList.scrollTo({
+        left: nextScrollLeft,
+        behavior: "auto",
+      });
+    };
+
+    tabsList.addEventListener("wheel", handleWheel, {
+      passive: false,
+    });
+
+    return () => {
+      tabsList.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (saveFeedbackTimeoutRef.current !== null) {
+        window.clearTimeout(saveFeedbackTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const activeTabLabel =
     tabs.find((tab) => tab.id === activeTab)?.label ?? "Разделы";
 
   const handleTabChange = (tabId: TabId) => {
     setActiveTab(tabId);
+
     setIsMobileTabsOpen(false);
   };
 
@@ -79,30 +181,47 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
     switch (activeTab) {
       case "primary":
         return <PrimaryTab />;
+
       case "therapy":
         return <TherapyTab />;
+
       case "hypoglycemia":
         return <HypoglycemiaTab />;
+
       case "selfMonitoring":
         return <SelfMonitoringTab />;
+
       case "complications":
         return <ComplicationsTab />;
+
       case "examination":
         return <ExaminationTab />;
+
       case "lifestyle":
         return <LifestyleTab />;
+
       case "measurements":
         return <MeasurementsTab />;
+
       case "secondaryAH":
         return <SecondaryAHTab />;
+
       case "heartFailure":
         return <HeartFailureTab />;
+
       case "h2fpef":
         return <H2FPEFTab />;
+
       case "additional":
         return <AdditionalTab />;
     }
   };
+
+  const submitButtonText = isSaveConfirmed
+    ? "✓ Сохранено"
+    : currentAnamnesisId
+      ? "Редактировать"
+      : "Сохранить";
 
   return (
     <div className={styles.formContainer}>
@@ -120,7 +239,9 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
               <span />
               <span />
             </span>
+
             <span className={styles.mobileTabsLabel}>{activeTabLabel}</span>
+
             <span
               className={`${styles.mobileTabsChevron} ${
                 isMobileTabsOpen ? styles.open : ""
@@ -132,6 +253,7 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
           </button>
 
           <div
+            ref={tabsListRef}
             id="anamnesis-tabs-list"
             className={`${styles.tabsList} ${
               isMobileTabsOpen ? styles.mobileOpen : ""
@@ -159,7 +281,7 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
 
               <div className={styles.actions}>
                 <Button type="submit" variant="primary">
-                  {anamnesisId ? "Редактировать" : "Сохранить"}
+                  <span aria-live="polite">{submitButtonText}</span>
                 </Button>
               </div>
             </form>

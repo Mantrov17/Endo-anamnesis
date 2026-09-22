@@ -11,11 +11,14 @@ import {
 } from "@/shared";
 
 import { Button } from "@/shared/ui/Button";
+
 import { Heading } from "@/shared/ui/Heading";
+
 import { SuccessMessage } from "@/shared/ui/SuccessMessage";
 
-import styles from "./styles.module.scss";
 import { normalizeAnamnesisFormData } from "@/features/AnamnesisForm/lib/normalizeAnamnesis.ts";
+
+import styles from "./styles.module.scss";
 
 export const AnamnesisPage: React.FC = () => {
   const navigate = useNavigate();
@@ -38,6 +41,7 @@ export const AnamnesisPage: React.FC = () => {
   useEffect(() => {
     if (!patientId) {
       navigate("/");
+
       return;
     }
 
@@ -68,12 +72,16 @@ export const AnamnesisPage: React.FC = () => {
     setLoading(false);
   }, [patientId, anamnesisId, navigate]);
 
-  const handleFormSuccess = () => {
+  const handleFormSuccess = (savedAnamnesisId: string) => {
     setIsSaved(true);
 
-    setTimeout(() => setIsSaved(false), 3000);
+    window.setTimeout(() => setIsSaved(false), 3000);
 
-    setTimeout(() => navigate("/"), 1500);
+    if (!anamnesisId && patientId) {
+      navigate(`/patient/${patientId}/anamnesis/${savedAnamnesisId}`, {
+        replace: true,
+      });
+    }
   };
 
   if (loading) {

@@ -2,16 +2,43 @@
   .tabsWrapper {
     grid-template-columns: 1fr;
 
+    padding-top: 68px;
+
     overflow: visible;
   }
 
   .tabsNav {
-    top: 0;
+    position: fixed;
 
-    width: 100%;
+    z-index: 90;
+
+    top: calc(
+            var(--anamnesis-page-header-height,
+                    82px) +
+            var(--anamnesis-fixed-gap,
+                    12px)
+    );
+
+    right: var(
+                    --page-gutter,
+                    24px
+    );
+
+    bottom: auto;
+
+    left: var(
+                    --page-gutter,
+                    24px
+    );
+
+    width: auto;
+    height: auto;
   }
 
   .tabsList {
+    width: 100%;
+    height: auto;
+
     max-height: none;
 
     flex-direction: row;
@@ -19,39 +46,62 @@
 
     gap: 6px;
 
-    padding: 10px 12px;
+    padding: 10px 12px 12px;
 
     overflow-x: auto;
     overflow-y: hidden;
+
+    overscroll-behavior-x: contain;
+
+    scroll-behavior: smooth;
+
+    scrollbar-width: thin;
+
+    scrollbar-color: #aebfc4 #edf2f3;
 
     background: rgba(
                     247,
                     250,
                     249,
-                    0.96
+                    0.97
     );
 
-    border-right: none;
+    border: 1px solid var(
+                    --border,
+                    #dce5e8
+    );
 
-    border-bottom: 1px solid
-    var(--border, #dce5e8);
+    border-radius: 14px;
 
-    border-radius:
-            var(--radius-lg, 18px)
-            var(--radius-lg, 18px)
-            0
-            0;
+    box-shadow: 0 6px 20px rgba(
+                    31,
+                    52,
+                    60,
+                    0.1
+    );
 
-    box-shadow:
-            0 4px 12px
-            rgba(31, 52, 60, 0.04);
-
-    backdrop-filter: blur(10px);
-
-    scrollbar-width: none;
+    backdrop-filter: blur(12px);
 
     &::-webkit-scrollbar {
-      display: none;
+      display: block;
+
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #edf2f3;
+
+      border-radius: 999px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #aebfc4;
+
+      border-radius: 999px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: #8fa5aa;
     }
   }
 
@@ -59,11 +109,19 @@
     width: auto;
 
     min-width: max-content;
-    min-height: 40px;
+    min-height: 42px;
 
-    padding-inline: 12px;
+    flex: 0 0 auto;
+
+    padding-inline: 13px;
+
+    font-size: 15px;
 
     white-space: nowrap;
+  }
+
+  .tabContent {
+    grid-column: 1;
   }
 }
 
@@ -76,7 +134,9 @@
     flex-wrap: wrap;
 
     > div {
-      flex-basis: calc(50% - 6px);
+      flex-basis: calc(
+              50% - 6px
+      );
     }
 
     > div:first-child {
@@ -87,13 +147,43 @@
 
 @media (max-width: 640px) {
   .tabsWrapper {
+    padding-top: 70px;
+
     border-radius: 14px;
   }
 
   .tabsNav {
-    top: 0;
+    position: fixed;
 
-    z-index: 30;
+    z-index: 90;
+
+    top: calc(
+            var(--anamnesis-page-header-height,
+                    76px) +
+            var(--anamnesis-fixed-gap,
+                    8px)
+    );
+
+    right: max(
+            12px,
+            env(
+                            safe-area-inset-right,
+                            0px
+            )
+    );
+
+    bottom: auto;
+
+    left: max(
+            12px,
+            env(
+                            safe-area-inset-left,
+                            0px
+            )
+    );
+
+    width: auto;
+    height: auto;
 
     padding: 8px;
 
@@ -104,14 +194,19 @@
                     0.97
     );
 
-    border-bottom: 1px solid
-    var(--border, #dce5e8);
+    border: 1px solid var(
+                    --border,
+                    #dce5e8
+    );
 
-    border-radius: 14px 14px 0 0;
+    border-radius: 14px;
 
-    box-shadow:
-            0 4px 14px
-            rgba(31, 52, 60, 0.06);
+    box-shadow: 0 6px 20px rgba(
+                    31,
+                    52,
+                    60,
+                    0.1
+    );
 
     backdrop-filter: blur(12px);
   }
@@ -119,7 +214,7 @@
   .mobileTabsToggle {
     width: 100%;
 
-    min-height: 48px;
+    min-height: 50px;
 
     display: grid;
 
@@ -134,18 +229,29 @@
 
     padding: 9px 12px;
 
-    color: var(--text-primary, #17252b);
+    color: var(
+                    --text-primary,
+                    #17252b
+    );
 
-    background: var(--bg-surface, #fff);
+    background: var(
+                    --bg-surface,
+                    #fff
+    );
 
-    border: 1px solid
-    var(--border-strong, #c8d6da);
+    border: 1px solid var(
+                    --border-strong,
+                    #c8d6da
+    );
 
     border-radius: 11px;
 
-    box-shadow:
-            0 2px 8px
-            rgba(31, 52, 60, 0.05);
+    box-shadow: 0 2px 8px rgba(
+                    31,
+                    52,
+                    60,
+                    0.05
+    );
 
     cursor: pointer;
 
@@ -182,7 +288,7 @@
 
     overflow: hidden;
 
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 700;
 
     text-overflow: ellipsis;
@@ -193,9 +299,12 @@
   .mobileTabsChevron {
     justify-self: end;
 
-    color: var(--text-muted, #7a8b92);
+    color: var(
+                    --text-muted,
+                    #7a8b92
+    );
 
-    font-size: 17px;
+    font-size: 18px;
     line-height: 1;
 
     transition: transform 160ms ease;
@@ -208,15 +317,24 @@
   .tabsList {
     position: absolute;
 
-    top: calc(100% + 6px);
-    right: 8px;
-    left: 8px;
+    top: calc(
+            100% + 6px
+    );
 
-    max-height: min(68vh, 520px);
+    right: 0;
+    left: 0;
+
+    width: auto;
+
+    max-height: min(
+            62vh,
+            480px
+    );
 
     display: none;
 
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
 
     gap: 5px;
 
@@ -225,18 +343,33 @@
     overflow-x: hidden;
     overflow-y: auto;
 
-    background: var(--bg-surface, #fff);
+    background: var(
+                    --bg-surface,
+                    #fff
+    );
 
-    border: 1px solid
-    var(--border, #dce5e8);
+    border: 1px solid var(
+                    --border,
+                    #dce5e8
+    );
 
     border-radius: 12px;
 
-    box-shadow:
-            0 18px 46px
-            rgba(31, 52, 60, 0.18);
+    box-shadow: 0 18px 46px rgba(
+                    31,
+                    52,
+                    60,
+                    0.18
+    );
 
     backdrop-filter: none;
+
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
 
     &.mobileOpen {
       display: grid;
@@ -247,13 +380,13 @@
     width: 100%;
 
     min-width: 0;
-    min-height: 46px;
+    min-height: 48px;
 
     justify-content: flex-start;
 
     padding: 10px 12px;
 
-    font-size: 14px;
+    font-size: 16px;
 
     border-radius: 9px;
 
@@ -261,11 +394,15 @@
   }
 
   .tabContent {
+    grid-column: 1;
+
     padding: 18px 12px 12px;
   }
 
   .form {
     gap: 15px;
+
+    padding-bottom: 98px;
   }
 
   .section h3 {
@@ -280,7 +417,8 @@
   .drugGroup {
     display: grid;
 
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
 
     gap: 0;
 
@@ -295,7 +433,9 @@
   .radioGroup {
     display: grid;
 
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns:
+      1fr
+      1fr;
 
     gap: 7px;
 
@@ -303,14 +443,16 @@
       grid-column: 1 / -1;
     }
 
-    > label:not(:first-child) {
-      min-height: 48px;
+    > label:not(
+      :first-child
+    ) {
+      min-height: 50px;
 
       justify-content: flex-start;
 
-      padding: 8px 11px;
+      padding: 9px 11px;
 
-      font-size: 15px;
+      font-size: 16px;
     }
   }
 
@@ -319,10 +461,16 @@
 
     border-radius: 12px;
 
+    legend {
+      font-size: 16px;
+    }
+
     > label {
-      min-height: 46px;
+      min-height: 48px;
 
       margin-right: 8px;
+
+      font-size: 16px;
     }
   }
 
@@ -330,10 +478,14 @@
     min-height: 50px;
 
     border-radius: 11px;
+
+    font-size: 16px;
   }
 
   .tableRow {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns:
+      1fr
+      1fr;
 
     padding: 10px;
 
@@ -345,7 +497,8 @@
   .drugRow {
     display: grid;
 
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
 
     padding: 11px;
 
@@ -360,12 +513,14 @@
   .addDrugButton {
     width: 100%;
 
-    min-height: 46px;
+    min-height: 48px;
+
+    font-size: 15px;
   }
 
   .removeDrugButton {
     width: 100%;
-    height: 44px;
+    height: 46px;
 
     margin-bottom: 0;
   }
@@ -384,10 +539,12 @@
     position: fixed;
 
     right: 12px;
-    bottom: max(
-            14px,
+
+    bottom: calc(
+            84px +
             env(safe-area-inset-bottom)
     );
+
     top: auto;
     left: 12px;
 
@@ -403,22 +560,30 @@
   }
 
   .actions {
-    bottom: 0;
+    right: 12px;
 
-    margin: 8px -12px -12px;
+    bottom: max(
+            10px,
+            env(
+                            safe-area-inset-bottom
+            )
+    );
 
-    padding:
-            20px
-            12px
-            calc(
-                    12px +
-                    env(safe-area-inset-bottom)
-            );
+    left: 12px;
+
+    margin: 0;
+
+    padding: 8px;
+
+    border-radius: 14px;
 
     > button {
       width: 100%;
 
       min-width: 0;
+      min-height: 52px;
+
+      font-size: 16px;
     }
   }
 }
