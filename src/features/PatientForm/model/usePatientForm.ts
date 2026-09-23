@@ -6,6 +6,8 @@ import {
   updatePatient,
 } from "@/entities/patient";
 
+import { getStorageWriteErrorMessage } from "@/shared/lib/storage/jsonStorage";
+
 interface UsePatientFormProps {
   patientId?: string;
 
@@ -37,7 +39,6 @@ export const usePatientForm = ({
 
   const updateField = <K extends keyof PatientFormData>(
     name: K,
-
     value: PatientFormData[K],
   ) => {
     setFormData((previous) => ({
@@ -57,15 +58,19 @@ export const usePatientForm = ({
         const success = updatePatient(patientId, formData);
 
         if (!success) {
-          throw new Error("Patient not found");
+          window.alert("Пациент не найден. Возможно, он был удалён.");
+
+          return;
         }
       } else {
         createPatient(formData);
       }
 
       onSuccess?.();
-    } catch (_error) {
-      window.alert("Ошибка сохранения");
+    } catch (error) {
+      console.error("Ошибка сохранения пациента:", error);
+
+      window.alert(getStorageWriteErrorMessage(error));
     } finally {
       setLoading(false);
     }

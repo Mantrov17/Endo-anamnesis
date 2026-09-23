@@ -10,6 +10,8 @@ import {
 
 import { getPatientById } from "@/entities/patient";
 
+import { getStorageWriteErrorMessage } from "@/shared/lib/storage/jsonStorage";
+
 import {
   calculateAbi,
   calculateAge,
@@ -49,6 +51,12 @@ export const useAnamnesisForm = ({
 
   const formMethods = useForm<AnamnesisFormData>({
     defaultValues: mergeAnamnesisWithDefaults(initialData ?? {}),
+
+    /*
+     * Поля всех вкладок являются
+     * частью одной формы.
+     */
+    shouldUnregister: false,
   });
 
   const { handleSubmit, watch, setValue } = formMethods;
@@ -324,47 +332,55 @@ export const useAnamnesisForm = ({
   // ====================
 
   const onSubmit: SubmitHandler<AnamnesisFormData> = (data) => {
-    const patient = getPatientById(patientId);
+    try {
+      const patient = getPatientById(patientId);
 
-    if (!patient) {
-      window.alert("Пациент не найден");
+      if (!patient) {
+        window.alert("Пациент не найден");
 
-      return;
-    }
-
-    const payload = mergeAnamnesisWithDefaults({
-      ...data,
-
-      fullName: patient.fullName,
-
-      birthDate: patient.birthDate,
-
-      gender: patient.gender,
-    });
-
-    if (currentAnamnesisId) {
-      const success = updateAnamnesis(patientId, currentAnamnesisId, payload);
-
-      if (success) {
-        onSuccess?.(currentAnamnesisId);
-      } else {
-        window.alert("Не удалось обновить анамнез");
+        return;
       }
 
-      return;
+      const payload = mergeAnamnesisWithDefaults({
+        ...data,
+
+        fullName: patient.fullName,
+
+        birthDate: patient.birthDate,
+
+        gender: patient.gender,
+      });
+
+      if (currentAnamnesisId) {
+        const success = updateAnamnesis(patientId, currentAnamnesisId, payload);
+
+        if (!success) {
+          window.alert("Анамнез не найден. Возможно, он был удалён.");
+
+          return;
+        }
+
+        onSuccess?.(currentAnamnesisId);
+
+        return;
+      }
+
+      const newRecord = addAnamnesis(patientId, payload);
+
+      if (!newRecord) {
+        window.alert("Пациент не найден");
+
+        return;
+      }
+
+      setCurrentAnamnesisId(newRecord.id);
+
+      onSuccess?.(newRecord.id);
+    } catch (error) {
+      console.error("Ошибка сохранения анамнеза:", error);
+
+      window.alert(getStorageWriteErrorMessage(error));
     }
-
-    const newRecord = addAnamnesis(patientId, payload);
-
-    if (!newRecord) {
-      window.alert("Пациент не найден");
-
-      return;
-    }
-
-    setCurrentAnamnesisId(newRecord.id);
-
-    onSuccess?.(newRecord.id);
   };
 
   return {

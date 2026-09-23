@@ -4,8 +4,6 @@ import { FormProvider } from "react-hook-form";
 
 import type { AnamnesisFormData } from "@/entities/anamnesis";
 
-import { useAnamnesisForm } from "@/features/AnamnesisForm";
-
 import { Button } from "@/shared/ui/Button";
 
 import {
@@ -14,6 +12,8 @@ import {
 } from "../lib/diabetesDefaults";
 
 import { tabs, type TabId } from "../lib/tabs";
+
+import { useAnamnesisForm } from "../model/useAnamnesisForm";
 
 import {
   AdditionalTab,
@@ -192,46 +192,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
     setIsMobileTabsOpen(false);
   };
 
-  const renderTab = () => {
-    switch (activeTab) {
-      case "primary":
-        return <PrimaryTab />;
-
-      case "therapy":
-        return <TherapyTab />;
-
-      case "hypoglycemia":
-        return <HypoglycemiaTab />;
-
-      case "selfMonitoring":
-        return <SelfMonitoringTab />;
-
-      case "complications":
-        return <ComplicationsTab />;
-
-      case "examination":
-        return <ExaminationTab />;
-
-      case "lifestyle":
-        return <LifestyleTab />;
-
-      case "measurements":
-        return <MeasurementsTab />;
-
-      case "secondaryAH":
-        return <SecondaryAHTab />;
-
-      case "heartFailure":
-        return <HeartFailureTab />;
-
-      case "h2fpef":
-        return <H2FPEFTab />;
-
-      case "additional":
-        return <AdditionalTab />;
-    }
-  };
-
   const submitButtonText = isSaveConfirmed
     ? "✓ Сохранено"
     : currentAnamnesisId
@@ -304,7 +264,101 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         <div className={styles.tabContent}>
           <FormProvider {...formMethods}>
             <form onSubmit={submitForm} className={styles.form}>
-              {renderTab()}
+              <div
+                id="anamnesis-tab-primary"
+                role="tabpanel"
+                hidden={activeTab !== "primary"}
+              >
+                <PrimaryTab />
+              </div>
+
+              <div
+                id="anamnesis-tab-therapy"
+                role="tabpanel"
+                hidden={activeTab !== "therapy"}
+              >
+                <TherapyTab />
+              </div>
+
+              <div
+                id="anamnesis-tab-hypoglycemia"
+                role="tabpanel"
+                hidden={activeTab !== "hypoglycemia"}
+              >
+                <HypoglycemiaTab />
+              </div>
+
+              <div
+                id="anamnesis-tab-self-monitoring"
+                role="tabpanel"
+                hidden={activeTab !== "selfMonitoring"}
+              >
+                <SelfMonitoringTab />
+              </div>
+
+              <div
+                id="anamnesis-tab-complications"
+                role="tabpanel"
+                hidden={activeTab !== "complications"}
+              >
+                <ComplicationsTab />
+              </div>
+
+              <div
+                id="anamnesis-tab-examination"
+                role="tabpanel"
+                hidden={activeTab !== "examination"}
+              >
+                <ExaminationTab />
+              </div>
+
+              <div
+                id="anamnesis-tab-lifestyle"
+                role="tabpanel"
+                hidden={activeTab !== "lifestyle"}
+              >
+                <LifestyleTab />
+              </div>
+
+              <div
+                id="anamnesis-tab-measurements"
+                role="tabpanel"
+                hidden={activeTab !== "measurements"}
+              >
+                <MeasurementsTab />
+              </div>
+
+              <div
+                id="anamnesis-tab-secondary-ah"
+                role="tabpanel"
+                hidden={activeTab !== "secondaryAH"}
+              >
+                <SecondaryAHTab />
+              </div>
+
+              <div
+                id="anamnesis-tab-heart-failure"
+                role="tabpanel"
+                hidden={activeTab !== "heartFailure"}
+              >
+                <HeartFailureTab />
+              </div>
+
+              <div
+                id="anamnesis-tab-h2fpef"
+                role="tabpanel"
+                hidden={activeTab !== "h2fpef"}
+              >
+                <H2FPEFTab />
+              </div>
+
+              <div
+                id="anamnesis-tab-additional"
+                role="tabpanel"
+                hidden={activeTab !== "additional"}
+              >
+                <AdditionalTab />
+              </div>
 
               <div className={styles.actions}>
                 <Button type="submit" variant="primary">

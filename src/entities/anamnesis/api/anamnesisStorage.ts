@@ -1,34 +1,15 @@
-import type { Patient } from "@/entities/patient/@x/anamnesis";
-
-import { PATIENTS_STORAGE_KEY } from "@/shared/config/storage";
-
 import {
-  readJsonStorage,
-  writeJsonStorage,
-} from "@/shared/lib/storage/jsonStorage";
+  readPatientsStorage,
+  writePatientsStorage,
+} from "@/entities/patient/@x/anamnesis";
 
 import type { AnamnesisFormData, AnamnesisRecord } from "../model";
 
-const getPatients = (): Patient[] => {
-  const patients = readJsonStorage<Patient[]>(PATIENTS_STORAGE_KEY, []);
-
-  return patients.map((patient) => ({
-    ...patient,
-
-    createdAt: patient.createdAt || new Date().toISOString(),
-  }));
-};
-
-const savePatients = (patients: Patient[]): void => {
-  writeJsonStorage(PATIENTS_STORAGE_KEY, patients);
-};
-
 export const addAnamnesis = (
   patientId: string,
-
   data: AnamnesisFormData,
 ): AnamnesisRecord | null => {
-  const patients = getPatients();
+  const patients = readPatientsStorage();
 
   const patient = patients.find((item) => item.id === patientId);
 
@@ -46,7 +27,7 @@ export const addAnamnesis = (
 
   patient.anamneses.push(newAnamnesis);
 
-  savePatients(patients);
+  writePatientsStorage(patients);
 
   return newAnamnesis;
 };
@@ -55,7 +36,7 @@ export const getAnamnesisById = (
   patientId: string,
   anamnesisId: string,
 ): AnamnesisRecord | undefined => {
-  const patients = getPatients();
+  const patients = readPatientsStorage();
 
   const patient = patients.find((item) => item.id === patientId);
 
@@ -69,10 +50,9 @@ export const getAnamnesisById = (
 export const updateAnamnesis = (
   patientId: string,
   anamnesisId: string,
-
   data: Partial<AnamnesisFormData>,
 ): boolean => {
-  const patients = getPatients();
+  const patients = readPatientsStorage();
 
   const patient = patients.find((item) => item.id === patientId);
 
@@ -94,7 +74,7 @@ export const updateAnamnesis = (
     ...data,
   };
 
-  savePatients(patients);
+  writePatientsStorage(patients);
 
   return true;
 };
@@ -103,7 +83,7 @@ export const deleteAnamnesis = (
   patientId: string,
   anamnesisId: string,
 ): boolean => {
-  const patients = getPatients();
+  const patients = readPatientsStorage();
 
   const patient = patients.find((item) => item.id === patientId);
 
@@ -121,7 +101,7 @@ export const deleteAnamnesis = (
     return false;
   }
 
-  savePatients(patients);
+  writePatientsStorage(patients);
 
   return true;
 };

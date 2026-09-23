@@ -6,9 +6,10 @@ import { getAnamnesisById, type AnamnesisFormData } from "@/entities/anamnesis";
 
 import { getPatientById } from "@/entities/patient";
 
-import { AnamnesisForm } from "@/features/AnamnesisForm";
-
-import { normalizeAnamnesisFormData } from "@/features/AnamnesisForm/lib/normalizeAnamnesis";
+import {
+  AnamnesisForm,
+  normalizeAnamnesisFormData,
+} from "@/features/AnamnesisForm";
 
 import { Button } from "@/shared/ui/Button";
 

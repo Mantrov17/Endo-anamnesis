@@ -1,45 +1,22 @@
 import type { Patient, PatientFormData } from "../model/types";
 
-import { PATIENTS_STORAGE_KEY } from "@/shared/config/storage";
-
 import {
-  readJsonStorage,
-  writeJsonStorage,
-} from "@/shared/lib/storage/jsonStorage";
-
-const getPatients = (): Patient[] => {
-  const patients = readJsonStorage<Patient[]>(PATIENTS_STORAGE_KEY, []);
-
-  /*
-   * Поддержка старых записей,
-   * созданных до появления createdAt.
-   *
-   * Поведение сохраняем таким же,
-   * как было в старом localStorageApi.
-   */
-  return patients.map((patient) => ({
-    ...patient,
-
-    createdAt: patient.createdAt || new Date().toISOString(),
-  }));
-};
-
-const savePatients = (patients: Patient[]): void => {
-  writeJsonStorage(PATIENTS_STORAGE_KEY, patients);
-};
+  readPatientsStorage,
+  writePatientsStorage,
+} from "./patientsRepository";
 
 export const getAllPatients = (): Patient[] => {
-  return getPatients();
+  return readPatientsStorage();
 };
 
 export const getPatientById = (id: string): Patient | undefined => {
-  const patients = getPatients();
+  const patients = readPatientsStorage();
 
   return patients.find((patient) => patient.id === id);
 };
 
 export const createPatient = (data: PatientFormData): Patient => {
-  const patients = getPatients();
+  const patients = readPatientsStorage();
 
   const newPatient: Patient = {
     ...data,
@@ -53,7 +30,7 @@ export const createPatient = (data: PatientFormData): Patient => {
 
   patients.push(newPatient);
 
-  savePatients(patients);
+  writePatientsStorage(patients);
 
   return newPatient;
 };
@@ -62,7 +39,7 @@ export const updatePatient = (
   id: string,
   data: Partial<PatientFormData>,
 ): boolean => {
-  const patients = getPatients();
+  const patients = readPatientsStorage();
 
   const index = patients.findIndex((patient) => patient.id === id);
 
@@ -72,16 +49,17 @@ export const updatePatient = (
 
   patients[index] = {
     ...patients[index],
+
     ...data,
   };
 
-  savePatients(patients);
+  writePatientsStorage(patients);
 
   return true;
 };
 
 export const deletePatient = (id: string): boolean => {
-  const patients = getPatients();
+  const patients = readPatientsStorage();
 
   const filtered = patients.filter((patient) => patient.id !== id);
 
@@ -89,7 +67,7 @@ export const deletePatient = (id: string): boolean => {
     return false;
   }
 
-  savePatients(filtered);
+  writePatientsStorage(filtered);
 
   return true;
 };

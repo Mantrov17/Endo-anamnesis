@@ -2,13 +2,15 @@ import { useMemo, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
+import { deleteAnamnesis } from "@/entities/anamnesis";
+
 import {
   deletePatient,
   getAllPatients,
   type Patient,
 } from "@/entities/patient";
 
-import { deleteAnamnesis } from "@/entities/anamnesis";
+import { getStorageWriteErrorMessage } from "@/shared/lib/storage/jsonStorage";
 
 import {
   filterAndSortPatients,
@@ -99,10 +101,20 @@ export const usePatientsList = () => {
       return;
     }
 
-    const success = deletePatient(patientId);
+    try {
+      const success = deletePatient(patientId);
 
-    if (success) {
+      if (!success) {
+        window.alert("Пациент не найден. Возможно, он уже был удалён.");
+
+        return;
+      }
+
       refreshPatients();
+    } catch (error) {
+      console.error("Ошибка удаления пациента:", error);
+
+      window.alert(getStorageWriteErrorMessage(error));
     }
   };
 
@@ -110,29 +122,31 @@ export const usePatientsList = () => {
     navigate(`/patient/${patientId}/anamnesis`);
   };
 
-  const handleEditAnamnesis = (
-    patientId: string,
-
-    anamnesisId: string,
-  ) => {
+  const handleEditAnamnesis = (patientId: string, anamnesisId: string) => {
     navigate(`/patient/${patientId}/anamnesis/${anamnesisId}`);
   };
 
-  const handleDeleteAnamnesis = (
-    patientId: string,
-
-    anamnesisId: string,
-  ) => {
+  const handleDeleteAnamnesis = (patientId: string, anamnesisId: string) => {
     const confirmed = window.confirm("Удалить этот анамнез?");
 
     if (!confirmed) {
       return;
     }
 
-    const success = deleteAnamnesis(patientId, anamnesisId);
+    try {
+      const success = deleteAnamnesis(patientId, anamnesisId);
 
-    if (success) {
+      if (!success) {
+        window.alert("Анамнез не найден. Возможно, он уже был удалён.");
+
+        return;
+      }
+
       refreshPatients();
+    } catch (error) {
+      console.error("Ошибка удаления анамнеза:", error);
+
+      window.alert(getStorageWriteErrorMessage(error));
     }
   };
 
@@ -168,8 +182,11 @@ export const usePatientsList = () => {
 
   const resetFilters = () => {
     setGenderFilter("");
+
     setDateFrom("");
+
     setDateTo("");
+
     setSearchTerm("");
 
     setCurrentPage(1);
