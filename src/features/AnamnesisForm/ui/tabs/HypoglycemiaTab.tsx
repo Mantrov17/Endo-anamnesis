@@ -1,10 +1,17 @@
 import React from "react";
+
 import { useFormContext } from "react-hook-form";
-import type { AnamnesisFormData } from "@/shared";
+
+import type { AnamnesisFormData } from "@/entities/anamnesis";
+
 import { Input } from "@/shared/ui/Input";
+
 import { Textarea } from "@/shared/ui/Textarea";
+
 import { Field } from "../Field";
+
 import { YesNo } from "../YesNo";
+
 import styles from "../styles.module.scss";
 
 export const HypoglycemiaTab: React.FC = () => {
@@ -13,17 +20,20 @@ export const HypoglycemiaTab: React.FC = () => {
   return (
     <div className={styles.section}>
       <h3>Гипогликемии</h3>
+
       <Input
         label="Частота гипогликемий"
         type="number"
         suffix="эпиз./нед."
         {...register("hypoglycemia.frequencyPerWeek")}
       />
+
       <YesNo
         label="Были ли тяжёлые эпизоды?"
         name="hypoglycemia.severeEpisodes"
         register={register}
       />
+
       {watch("hypoglycemia.severeEpisodes") === true && (
         <Field noteKey="hypoglycemia.severeEpisodes">
           <>
@@ -33,10 +43,12 @@ export const HypoglycemiaTab: React.FC = () => {
               suffix="эпиз."
               {...register("hypoglycemia.severeEpisodesCount")}
             />
+
             <Input
               label="Когда (дата)"
               {...register("hypoglycemia.severeEpisodesWhen")}
             />
+
             <Textarea
               label="Клиника"
               {...register("hypoglycemia.severeEpisodesClinic")}
@@ -45,6 +57,7 @@ export const HypoglycemiaTab: React.FC = () => {
           </>
         </Field>
       )}
+
       <YesNo
         label="Сохранено ли распознавание гипогликемии?"
         name="hypoglycemia.awarenessPreserved"
@@ -53,6 +66,7 @@ export const HypoglycemiaTab: React.FC = () => {
 
       <div className={styles.radioGroup}>
         <label>Тяжесть гипогликемий:</label>
+
         <label>
           <input
             type="radio"
@@ -61,6 +75,7 @@ export const HypoglycemiaTab: React.FC = () => {
           />{" "}
           Лёгкие
         </label>
+
         <label>
           <input
             type="radio"
@@ -73,6 +88,7 @@ export const HypoglycemiaTab: React.FC = () => {
 
       <fieldset className={styles.fieldset}>
         <legend>Симптомы гипогликемии</legend>
+
         <label>
           <input
             type="checkbox"
@@ -80,6 +96,7 @@ export const HypoglycemiaTab: React.FC = () => {
           />{" "}
           Волчий голод
         </label>
+
         <label>
           <input
             type="checkbox"
@@ -87,6 +104,7 @@ export const HypoglycemiaTab: React.FC = () => {
           />{" "}
           Тремор
         </label>
+
         <label>
           <input
             type="checkbox"
@@ -94,6 +112,7 @@ export const HypoglycemiaTab: React.FC = () => {
           />{" "}
           Потливость (холодный пот)
         </label>
+
         <label>
           <input
             type="checkbox"
@@ -101,6 +120,7 @@ export const HypoglycemiaTab: React.FC = () => {
           />{" "}
           Тахикардия
         </label>
+
         <label>
           <input
             type="checkbox"
@@ -108,6 +128,7 @@ export const HypoglycemiaTab: React.FC = () => {
           />{" "}
           Тревожность
         </label>
+
         <label>
           <input
             type="checkbox"
@@ -115,6 +136,7 @@ export const HypoglycemiaTab: React.FC = () => {
           />{" "}
           Слабость
         </label>
+
         <label>
           <input
             type="checkbox"
@@ -122,6 +144,7 @@ export const HypoglycemiaTab: React.FC = () => {
           />{" "}
           Диплопия (двоение в глазах)
         </label>
+
         <label>
           <input
             type="checkbox"
@@ -134,6 +157,7 @@ export const HypoglycemiaTab: React.FC = () => {
       <Field noteKey="hypoglycemia.provokingFactors">
         <fieldset className={styles.fieldset}>
           <legend>Типичные провоцирующие факторы</legend>
+
           <label>
             <input
               type="checkbox"
@@ -141,6 +165,7 @@ export const HypoglycemiaTab: React.FC = () => {
             />{" "}
             Физическая нагрузка
           </label>
+
           <label>
             <input
               type="checkbox"
@@ -148,6 +173,7 @@ export const HypoglycemiaTab: React.FC = () => {
             />{" "}
             Пропуск еды
           </label>
+
           <label>
             <input
               type="checkbox"
@@ -163,16 +189,19 @@ export const HypoglycemiaTab: React.FC = () => {
         name="hypoglycemia.hasGlucagon"
         register={register}
       />
+
       <YesNo
         label="Обучены ли близкие введению глюкагона?"
         name="hypoglycemia.familyTrained"
         register={register}
       />
+
       <YesNo
         label="Ночные гипогликемии"
         name="hypoglycemia.nocturnalHypoglycemia"
         register={register}
       />
+
       <Field
         noteKey="hypoglycemia.general"
         noteLabel="Примечание по гипогликемиям"

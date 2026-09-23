@@ -3,11 +3,12 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
-  deleteAnamnesis,
   deletePatient,
   getAllPatients,
   type Patient,
-} from "@/shared";
+} from "@/entities/patient";
+
+import { deleteAnamnesis } from "@/entities/anamnesis";
 
 import {
   filterAndSortPatients,
@@ -40,8 +41,6 @@ export const usePatientsList = () => {
 
   const [sortBy, setSortBy] = useState<PatientsSortBy>("createdAt");
 
-  // ==================== Фильтрация / сортировка ====================
-
   const filteredPatients = useMemo(
     () =>
       filterAndSortPatients({
@@ -52,31 +51,28 @@ export const usePatientsList = () => {
         dateTo,
         sortBy,
       }),
+
     [patients, searchTerm, genderFilter, dateFrom, dateTo, sortBy],
   );
-
-  // ==================== Пагинация ====================
 
   const totalPages = Math.ceil(filteredPatients.length / itemsPerPage);
 
   const paginatedPatients = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
 
-    return filteredPatients.slice(start, start + itemsPerPage);
-  }, [filteredPatients, currentPage, itemsPerPage]);
+    return filteredPatients.slice(
+      start,
 
-  // ==================== Состояние фильтров ====================
+      start + itemsPerPage,
+    );
+  }, [filteredPatients, currentPage, itemsPerPage]);
 
   const hasActiveFilters =
     genderFilter !== "" || dateFrom !== "" || dateTo !== "";
 
-  // ==================== Обновление данных ====================
-
   const refreshPatients = () => {
     setPatients(getAllPatients());
   };
-
-  // ==================== Раскрытие карточек ====================
 
   const togglePatientExpand = (patientId: string) => {
     setExpandedPatients((previous) => {
@@ -91,8 +87,6 @@ export const usePatientsList = () => {
       return next;
     });
   };
-
-  // ==================== Пациенты ====================
 
   const handleAddPatient = () => {
     navigate("/patient/new");
@@ -112,17 +106,23 @@ export const usePatientsList = () => {
     }
   };
 
-  // ==================== Анамнезы ====================
-
   const handleAddAnamnesis = (patientId: string) => {
     navigate(`/patient/${patientId}/anamnesis`);
   };
 
-  const handleEditAnamnesis = (patientId: string, anamnesisId: string) => {
+  const handleEditAnamnesis = (
+    patientId: string,
+
+    anamnesisId: string,
+  ) => {
     navigate(`/patient/${patientId}/anamnesis/${anamnesisId}`);
   };
 
-  const handleDeleteAnamnesis = (patientId: string, anamnesisId: string) => {
+  const handleDeleteAnamnesis = (
+    patientId: string,
+
+    anamnesisId: string,
+  ) => {
     const confirmed = window.confirm("Удалить этот анамнез?");
 
     if (!confirmed) {
@@ -136,32 +136,33 @@ export const usePatientsList = () => {
     }
   };
 
-  // ==================== Поиск ====================
-
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
+
     setCurrentPage(1);
   };
 
   const clearSearch = () => {
     setSearchTerm("");
+
     setCurrentPage(1);
   };
 
-  // ==================== Фильтры ====================
-
   const handleGenderFilterChange = (value: GenderFilter) => {
     setGenderFilter(value);
+
     setCurrentPage(1);
   };
 
   const handleDateFromChange = (value: string) => {
     setDateFrom(value);
+
     setCurrentPage(1);
   };
 
   const handleDateToChange = (value: string) => {
     setDateTo(value);
+
     setCurrentPage(1);
   };
 
@@ -170,6 +171,7 @@ export const usePatientsList = () => {
     setDateFrom("");
     setDateTo("");
     setSearchTerm("");
+
     setCurrentPage(1);
   };
 
@@ -177,21 +179,17 @@ export const usePatientsList = () => {
     setShowFilters((previous) => !previous);
   };
 
-  // ==================== Сортировка ====================
-
   const handleSortChange = (value: PatientsSortBy) => {
     setSortBy(value);
+
     setCurrentPage(1);
   };
-
-  // ==================== Количество элементов ====================
 
   const handleItemsPerPageChange = (value: number) => {
     setItemsPerPage(value);
+
     setCurrentPage(1);
   };
-
-  // ==================== Навигация по страницам ====================
 
   const goToPage = (page: number) => {
     if (page < 1 || page > totalPages) {
@@ -200,8 +198,6 @@ export const usePatientsList = () => {
 
     setCurrentPage(page);
   };
-
-  // ==================== Backup ====================
 
   const handleDownloadBackup = () => {
     const data = getAllPatients();
@@ -230,12 +226,10 @@ export const usePatientsList = () => {
   };
 
   return {
-    // Данные
     patients,
     filteredPatients,
     paginatedPatients,
 
-    // Поиск / фильтры
     searchTerm,
     genderFilter,
     dateFrom,
@@ -243,44 +237,35 @@ export const usePatientsList = () => {
     showFilters,
     hasActiveFilters,
 
-    // Сортировка / пагинация
     sortBy,
     itemsPerPage,
     currentPage,
     totalPages,
 
-    // Раскрытые карточки
     expandedPatients,
 
-    // Пациенты
     handleAddPatient,
     handleDeletePatient,
 
-    // Анамнезы
     handleAddAnamnesis,
     handleEditAnamnesis,
     handleDeleteAnamnesis,
 
-    // Поиск
     handleSearchChange,
     clearSearch,
 
-    // Фильтры
     handleGenderFilterChange,
     handleDateFromChange,
     handleDateToChange,
     resetFilters,
     toggleFilters,
 
-    // Сортировка / пагинация
     handleSortChange,
     handleItemsPerPageChange,
     goToPage,
 
-    // UI
     togglePatientExpand,
 
-    // Backup
     handleDownloadBackup,
   };
 };

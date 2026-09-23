@@ -1,19 +1,28 @@
 import React from "react";
 
-import type { Path, UseFormRegister } from "react-hook-form";
-import { useFormContext } from "react-hook-form";
+import {
+  type Path,
+  type UseFormRegister,
+  useFormContext,
+} from "react-hook-form";
 
-import type { AnamnesisFormData } from "@/shared";
+import type { AnamnesisFormData } from "@/entities/anamnesis";
+
 import { Hint } from "@/shared/ui/Hint";
 
 import styles from "./styles.module.scss";
 
 interface YesNoProps {
   label: string;
+
   hint?: string;
+
   name: Path<AnamnesisFormData>;
+
   register: UseFormRegister<AnamnesisFormData>;
+
   blue?: boolean;
+
   yesNoLabels?: [string, string];
 }
 

@@ -2,7 +2,8 @@ import React from "react";
 
 import { useFormContext } from "react-hook-form";
 
-import type { AnamnesisFormData } from "@/shared";
+import type { AnamnesisFormData } from "@/entities/anamnesis";
+
 import { Textarea } from "@/shared/ui/Textarea";
 
 import { Field } from "../../Field";

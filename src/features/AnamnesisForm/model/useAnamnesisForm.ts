@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 
 import { type SubmitHandler, useForm } from "react-hook-form";
 
-import { type AnamnesisFormData, getPatientById } from "@/shared";
+import {
+  addAnamnesis,
+  type AnamnesisFormData,
+  updateAnamnesis,
+} from "@/entities/anamnesis";
 
-import { addAnamnesis, updateAnamnesis } from "@/shared/api/localStorageApi";
+import { getPatientById } from "@/entities/patient";
 
 import {
   calculateAbi,
@@ -25,8 +29,11 @@ import { mergeAnamnesisWithDefaults } from "../lib/normalizeAnamnesis";
 
 interface UseAnamnesisFormProps {
   patientId: string;
+
   initialData?: AnamnesisFormData;
+
   anamnesisId?: string;
+
   onSuccess?: (anamnesisId: string) => void;
 }
 
@@ -46,7 +53,15 @@ export const useAnamnesisForm = ({
 
   const { handleSubmit, watch, setValue } = formMethods;
 
-  // ==================== Данные пациента ====================
+  useEffect(() => {
+    if (anamnesisId) {
+      setCurrentAnamnesisId(anamnesisId);
+    }
+  }, [anamnesisId]);
+
+  // ====================
+  // Данные пациента
+  // ====================
 
   useEffect(() => {
     const patient = getPatientById(patientId);
@@ -62,7 +77,9 @@ export const useAnamnesisForm = ({
     setValue("gender", patient.gender);
   }, [patientId, setValue]);
 
-  // ==================== ИМТ ====================
+  // ====================
+  // ИМТ
+  // ====================
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const pHeight = watch("primaryExam.height");
@@ -75,7 +92,9 @@ export const useAnamnesisForm = ({
     setValue("primaryExam.bmi", bmi);
   }, [pHeight, pWeight, setValue]);
 
-  // ==================== Целевой HbA1c ====================
+  // ====================
+  // Целевой HbA1c
+  // ====================
 
   const birthDateForTarget = watch("birthDate");
 
@@ -90,14 +109,20 @@ export const useAnamnesisForm = ({
       return;
     }
 
-    const target = calculateTargetHba1c(age);
+    setValue(
+      "therapy.targetHba1c",
 
-    setValue("therapy.targetHba1c", target, {
-      shouldDirty: false,
-    });
+      calculateTargetHba1c(age),
+
+      {
+        shouldDirty: false,
+      },
+    );
   }, [birthDateForTarget, setValue]);
 
-  // ==================== СД 1 ====================
+  // ====================
+  // СД 1
+  // ====================
 
   const t1Year = watch("type1Diabetes.yearOfDiagnosis");
 
@@ -122,6 +147,7 @@ export const useAnamnesisForm = ({
 
     setValue(
       "type1Diabetes.diseaseDuration",
+
       calculateDiseaseDuration(diagnosisYear),
     );
   }, [t1Year, birthDate, setValue]);
@@ -146,7 +172,9 @@ export const useAnamnesisForm = ({
     setValue("type1Diabetes.yearOfDiagnosis", diagnosisYear);
   }, [t1Age, birthDate, t1Year, setValue]);
 
-  // ==================== СД 2 ====================
+  // ====================
+  // СД 2
+  // ====================
 
   const t2Year = watch("type2Diabetes.yearOfDiagnosis");
 
@@ -169,6 +197,7 @@ export const useAnamnesisForm = ({
 
     setValue(
       "type2Diabetes.diseaseDuration",
+
       calculateDiseaseDuration(diagnosisYear),
     );
   }, [t2Year, birthDate, setValue]);
@@ -193,7 +222,9 @@ export const useAnamnesisForm = ({
     setValue("type2Diabetes.yearOfDiagnosis", diagnosisYear);
   }, [t2Age, birthDate, t2Year, setValue]);
 
-  // ==================== Суточная доза инсулина ====================
+  // ====================
+  // Суточная доза инсулина
+  // ====================
 
   const actualBase = watch("actualTherapy.basalInsulin");
 
@@ -202,41 +233,51 @@ export const useAnamnesisForm = ({
   const actualCoefficient = watch("actualTherapy.insulinDoseCoefficient");
 
   useEffect(() => {
-    const dailyDose = calculateDailyInsulinDose(
-      actualBase,
-      actualBolus,
-      pHeight,
-      actualCoefficient,
-    );
+    setValue(
+      "actualTherapy.calculatedDailyInsulinDose",
 
-    setValue("actualTherapy.calculatedDailyInsulinDose", dailyDose);
+      calculateDailyInsulinDose(
+        actualBase,
+        actualBolus,
+        pHeight,
+        actualCoefficient,
+      ),
+    );
   }, [actualBase, actualBolus, actualCoefficient, pHeight, setValue]);
 
-  // ==================== Коэффициент СДИ ====================
+  // ====================
+  // Коэффициент СДИ
+  // ====================
 
   const diseaseDurationForCoefficient = watch("type1Diabetes.diseaseDuration");
 
   useEffect(() => {
-    const coefficient = calculateInsulinDoseCoefficient(
-      diseaseDurationForCoefficient,
-    );
+    setValue(
+      "actualTherapy.insulinDoseCoefficient",
 
-    setValue("actualTherapy.insulinDoseCoefficient", coefficient);
+      calculateInsulinDoseCoefficient(diseaseDurationForCoefficient),
+    );
   }, [diseaseDurationForCoefficient, setValue]);
 
-  // ==================== Пульсовое давление ====================
+  // ====================
+  // Пульсовое давление
+  // ====================
 
   const leftSystolic = watch("measurements.bpArms.leftSystolic");
 
   const leftDiastolic = watch("measurements.bpArms.leftDiastolic");
 
   useEffect(() => {
-    const pulsePressure = calculatePulsePressure(leftSystolic, leftDiastolic);
+    setValue(
+      "measurements.pulsePressure",
 
-    setValue("measurements.pulsePressure", pulsePressure);
+      calculatePulsePressure(leftSystolic, leftDiastolic),
+    );
   }, [leftSystolic, leftDiastolic, setValue]);
 
-  // ==================== ЛПИ ====================
+  // ====================
+  // ЛПИ
+  // ====================
 
   const legLeft = watch("measurements.bpLegs.leftSystolic");
 
@@ -247,16 +288,22 @@ export const useAnamnesisForm = ({
   const armRight = watch("measurements.bpArms.rightSystolic");
 
   useEffect(() => {
-    const leftAbi = calculateAbi(legLeft, armLeft);
+    setValue(
+      "measurements.abiIndex.left",
 
-    const rightAbi = calculateAbi(legRight, armRight);
+      calculateAbi(legLeft, armLeft),
+    );
 
-    setValue("measurements.abiIndex.left", leftAbi);
+    setValue(
+      "measurements.abiIndex.right",
 
-    setValue("measurements.abiIndex.right", rightAbi);
+      calculateAbi(legRight, armRight),
+    );
   }, [legLeft, legRight, armLeft, armRight, setValue]);
 
-  // ==================== H2FPEF ====================
+  // ====================
+  // H2FPEF
+  // ====================
 
   const h2fpef = watch("h2fpef");
 
@@ -265,18 +312,22 @@ export const useAnamnesisForm = ({
       return;
     }
 
-    const score = calculateH2FPEFScore(h2fpef);
+    setValue(
+      "h2fpef.totalScore",
 
-    setValue("h2fpef.totalScore", score);
+      calculateH2FPEFScore(h2fpef),
+    );
   }, [h2fpef, setValue]);
 
-  // ==================== Сохранение ====================
+  // ====================
+  // Сохранение
+  // ====================
 
   const onSubmit: SubmitHandler<AnamnesisFormData> = (data) => {
     const patient = getPatientById(patientId);
 
     if (!patient) {
-      alert("Пациент не найден");
+      window.alert("Пациент не найден");
 
       return;
     }
@@ -297,7 +348,7 @@ export const useAnamnesisForm = ({
       if (success) {
         onSuccess?.(currentAnamnesisId);
       } else {
-        alert("Не удалось обновить анамнез");
+        window.alert("Не удалось обновить анамнез");
       }
 
       return;
@@ -306,7 +357,7 @@ export const useAnamnesisForm = ({
     const newRecord = addAnamnesis(patientId, payload);
 
     if (!newRecord) {
-      alert("Пациент не найден");
+      window.alert("Пациент не найден");
 
       return;
     }

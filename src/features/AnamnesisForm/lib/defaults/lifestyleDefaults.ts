@@ -1,4 +1,4 @@
-import type { AnamnesisFormData } from "@/shared";
+import type { AnamnesisFormData } from "@/entities/anamnesis";
 
 type LifestyleDefaults = NonNullable<AnamnesisFormData["lifestyle"]>;
 

@@ -1,6 +1,6 @@
 import React from "react";
 
-import type { PatientFormData } from "@/shared";
+import type { PatientFormData } from "@/entities/patient";
 
 import { Button } from "@/shared/ui/Button";
 
@@ -44,7 +44,13 @@ export const PatientForm: React.FC<PatientFormProps> = ({
         label="ФИО"
         name="fullName"
         value={formData.fullName}
-        onChange={(event) => updateField("fullName", event.target.value)}
+        onChange={(event) =>
+          updateField(
+            "fullName",
+
+            event.target.value,
+          )
+        }
         required
       />
 
@@ -59,7 +65,11 @@ export const PatientForm: React.FC<PatientFormProps> = ({
         name="gender"
         value={gender}
         onChange={(value) =>
-          updateField("gender", value === "female" ? "female" : "male")
+          updateField(
+            "gender",
+
+            value === "female" ? "female" : "male",
+          )
         }
         options={[
           {

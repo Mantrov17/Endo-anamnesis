@@ -2,21 +2,19 @@ import React, { useEffect, useState } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
 
+import { getAnamnesisById, type AnamnesisFormData } from "@/entities/anamnesis";
+
+import { getPatientById } from "@/entities/patient";
+
 import { AnamnesisForm } from "@/features/AnamnesisForm";
 
-import {
-  type AnamnesisFormData,
-  getAnamnesisById,
-  getPatientById,
-} from "@/shared";
+import { normalizeAnamnesisFormData } from "@/features/AnamnesisForm/lib/normalizeAnamnesis";
 
 import { Button } from "@/shared/ui/Button";
 
 import { Heading } from "@/shared/ui/Heading";
 
 import { SuccessMessage } from "@/shared/ui/SuccessMessage";
-
-import { normalizeAnamnesisFormData } from "@/features/AnamnesisForm/lib/normalizeAnamnesis.ts";
 
 import styles from "./styles.module.scss";
 
@@ -40,7 +38,9 @@ export const AnamnesisPage: React.FC = () => {
 
   useEffect(() => {
     if (!patientId) {
-      navigate("/");
+      navigate("/", {
+        replace: true,
+      });
 
       return;
     }
@@ -75,8 +75,21 @@ export const AnamnesisPage: React.FC = () => {
   const handleFormSuccess = (savedAnamnesisId: string) => {
     setIsSaved(true);
 
-    window.setTimeout(() => setIsSaved(false), 3000);
+    window.setTimeout(() => {
+      setIsSaved(false);
+    }, 3000);
 
+    /*
+     * После первого сохранения
+     * переводим страницу с route
+     * "новый анамнез" на route
+     * созданной записи.
+     *
+     * replace нужен, чтобы кнопка
+     * "Назад" не возвращала нас
+     * на уже неактуальную форму
+     * создания.
+     */
     if (!anamnesisId && patientId) {
       navigate(`/patient/${patientId}/anamnesis/${savedAnamnesisId}`, {
         replace: true,

@@ -2,20 +2,27 @@ import React, { useMemo } from "react";
 
 import { useFormContext } from "react-hook-form";
 
-import type { AnamnesisFormData } from "@/shared";
+import type { AnamnesisFormData } from "@/entities/anamnesis";
+
 import { boolFromString } from "@/shared/lib/boolFromString";
+
 import { Input } from "@/shared/ui/Input";
+
 import { Textarea } from "@/shared/ui/Textarea";
 
 import { BMI_REFERENCE } from "../../../lib/constants";
+
 import { Field } from "../../Field";
+
 import { YesNo } from "../../YesNo";
+
 import styles from "../../styles.module.scss";
 
 export const PrimaryOverviewSection: React.FC = () => {
   const {
     register,
     watch,
+
     formState: { errors },
   } = useFormContext<AnamnesisFormData>();
 
@@ -35,6 +42,7 @@ export const PrimaryOverviewSection: React.FC = () => {
     if (value < 18) {
       return {
         label: "Дефицит массы тела",
+
         tone: "warn" as const,
       };
     }
@@ -42,6 +50,7 @@ export const PrimaryOverviewSection: React.FC = () => {
     if (value < 25) {
       return {
         label: "Норма",
+
         tone: "ok" as const,
       };
     }
@@ -49,6 +58,7 @@ export const PrimaryOverviewSection: React.FC = () => {
     if (value < 31) {
       return {
         label: "Избыточная масса тела",
+
         tone: "warn" as const,
       };
     }
@@ -56,6 +66,7 @@ export const PrimaryOverviewSection: React.FC = () => {
     if (value < 36) {
       return {
         label: "Ожирение I степени",
+
         tone: "bad" as const,
       };
     }
@@ -63,6 +74,7 @@ export const PrimaryOverviewSection: React.FC = () => {
     if (value < 41) {
       return {
         label: "Ожирение II степени",
+
         tone: "bad" as const,
       };
     }
@@ -70,12 +82,14 @@ export const PrimaryOverviewSection: React.FC = () => {
     if (value < 46) {
       return {
         label: "Ожирение III степени",
+
         tone: "bad" as const,
       };
     }
 
     return {
       label: "Ожирение IV степени",
+
       tone: "bad" as const,
     };
   }, [primaryBmi]);

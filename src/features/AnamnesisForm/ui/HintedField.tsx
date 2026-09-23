@@ -2,15 +2,19 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { type Path, useFormContext } from "react-hook-form";
 
-import type { AnamnesisFormData } from "@/shared";
+import type { AnamnesisFormData } from "@/entities/anamnesis";
+
 import { Textarea } from "@/shared/ui/Textarea";
 
 import styles from "./styles.module.scss";
 
 interface HintedFieldProps {
   hint?: string;
+
   noteKey?: string;
+
   noteLabel?: string;
+
   children: React.ReactNode;
 }
 
@@ -40,10 +44,6 @@ export const HintedField: React.FC<HintedFieldProps> = ({
 
   const hasHint = Boolean(hint);
 
-  /*
-   * register/watch теперь гарантированно
-   * существуют благодаря FormProvider.
-   */
   const hasNote = Boolean(noteKey);
 
   useEffect(() => {
@@ -93,6 +93,7 @@ export const HintedField: React.FC<HintedFieldProps> = ({
             className={styles.fieldIcon}
             onClick={(event) => {
               event.preventDefault();
+
               event.stopPropagation();
 
               setHintOpen((value) => !value);
@@ -110,6 +111,7 @@ export const HintedField: React.FC<HintedFieldProps> = ({
             className={styles.fieldIcon}
             onClick={(event) => {
               event.preventDefault();
+
               event.stopPropagation();
 
               setNoteOpen((value) => !value);

@@ -1,10 +1,17 @@
 import React from "react";
+
 import { useFormContext } from "react-hook-form";
-import type { AnamnesisFormData } from "@/shared";
+
+import type { AnamnesisFormData } from "@/entities/anamnesis";
+
 import { Input } from "@/shared/ui/Input";
+
 import { Textarea } from "@/shared/ui/Textarea";
+
 import { Field } from "../Field";
+
 import { YesNo } from "../YesNo";
+
 import styles from "../styles.module.scss";
 
 export const AdditionalTab: React.FC = () => {
@@ -13,24 +20,28 @@ export const AdditionalTab: React.FC = () => {
   return (
     <div className={styles.section}>
       <h3>Дополнительный анамнез</h3>
+
       <Field noteKey="additionalHistory.myocardialInfarction">
         <Input
           label="ИМ от (год)"
           {...register("additionalHistory.myocardialInfarction")}
         />
       </Field>
+
       <Field noteKey="additionalHistory.coronaryAngiography">
         <Input
           label="Коронароангиография"
           {...register("additionalHistory.coronaryAngiography")}
         />
       </Field>
+
       <Field noteKey="additionalHistory.stenting">
         <Input
           label="Стентирование"
           {...register("additionalHistory.stenting")}
         />
       </Field>
+
       <Field noteKey="additionalHistory.surgeries">
         <Textarea
           label="Операции"
@@ -38,22 +49,30 @@ export const AdditionalTab: React.FC = () => {
           rows={2}
         />
       </Field>
+
       <Input
         label="Аппендицит"
         {...register("additionalHistory.appendicitis")}
       />
+
       <Input
         label="Холецистит"
         {...register("additionalHistory.cholecystitis")}
       />
+
       <Input
         label="Туберкулёз"
         {...register("additionalHistory.tuberculosis")}
       />
+
       <Input label="ВИЧ" {...register("additionalHistory.hiv")} />
+
       <Input label="Гепатит" {...register("additionalHistory.hepatitis")} />
+
       <Input label="Сифилис" {...register("additionalHistory.syphilis")} />
+
       <Input label="Ковид (год)" {...register("additionalHistory.covidYear")} />
+
       <Field
         noteKey="additionalHistory.infections"
         noteLabel="Примечание по инфекциям / операциям"
@@ -64,19 +83,23 @@ export const AdditionalTab: React.FC = () => {
       <Field noteKey="additionalHistory.allergies">
         <fieldset className={styles.fieldset}>
           <legend>Аллергии</legend>
+
           <Input
             label="На что?"
             {...register("additionalHistory.allergies.what")}
           />
+
           <Input
             label="Как проявляется?"
             {...register("additionalHistory.allergies.how")}
           />
+
           <YesNo
             label="Ангионевротический отёк был?"
             name="additionalHistory.allergies.angioedema"
             register={register}
           />
+
           {watch("additionalHistory.allergies.angioedema") === true && (
             <div className={styles.warning}>🚩 Запрет на приём иАПФ</div>
           )}
@@ -88,11 +111,13 @@ export const AdditionalTab: React.FC = () => {
         name="additionalHistory.travelOutsideRF"
         register={register}
       />
+
       <YesNo
         label="Контакт с больными?"
         name="additionalHistory.contactWithPatients"
         register={register}
       />
+
       <YesNo
         label="Укусы насекомых, животных"
         name="additionalHistory.insectAnimalBites"
@@ -102,6 +127,7 @@ export const AdditionalTab: React.FC = () => {
       <Field noteKey="additionalHistory.measurements">
         <fieldset className={styles.fieldset}>
           <legend>Измерения</legend>
+
           <div className={styles.row}>
             <Input
               label="Вес"
@@ -110,12 +136,14 @@ export const AdditionalTab: React.FC = () => {
               suffix="кг"
               {...register("additionalHistory.weight")}
             />
+
             <Input
               label="Рост"
               type="number"
               suffix="см"
               {...register("additionalHistory.height")}
             />
+
             <Input
               label="Окружность живота"
               type="number"

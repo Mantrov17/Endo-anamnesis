@@ -1,17 +1,20 @@
 import React from "react";
 
-import type { Patient } from "@/shared";
+import type { Patient } from "@/entities/patient";
 
 import { Button } from "@/shared/ui/Button";
+
 import { Heading } from "@/shared/ui/Heading";
 
 import { getPatientAgeLabel } from "../lib/patientsList";
+
 import { PatientAnamneses } from "./PatientAnamneses";
 
 import styles from "../styles.module.scss";
 
 interface PatientCardProps {
   patient: Patient;
+
   isExpanded: boolean;
 
   onToggle: (patientId: string) => void;
@@ -38,9 +41,13 @@ export const PatientCard: React.FC<PatientCardProps> = ({
 
   const createdDateTime = new Date(patient.createdAt).toLocaleString("ru-RU", {
     day: "2-digit",
+
     month: "2-digit",
+
     year: "numeric",
+
     hour: "2-digit",
+
     minute: "2-digit",
   });
 

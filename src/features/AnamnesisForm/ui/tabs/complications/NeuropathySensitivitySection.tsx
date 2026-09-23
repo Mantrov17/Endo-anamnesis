@@ -2,7 +2,7 @@ import React from "react";
 
 import { type Path, useFormContext } from "react-hook-form";
 
-import type { AnamnesisFormData } from "@/shared";
+import type { AnamnesisFormData } from "@/entities/anamnesis";
 
 import { Field } from "../../Field";
 
@@ -31,7 +31,9 @@ export const NeuropathySensitivitySection: React.FC = () => {
         <div className={styles.table}>
           <div className={styles.tableRow}>
             <span>Вид</span>
+
             <span>Правая</span>
+
             <span>Левая</span>
           </div>
 

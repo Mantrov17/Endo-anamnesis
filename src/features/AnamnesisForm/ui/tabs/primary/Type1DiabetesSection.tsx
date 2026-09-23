@@ -2,14 +2,20 @@ import React from "react";
 
 import { useFormContext } from "react-hook-form";
 
-import type { AnamnesisFormData } from "@/shared";
+import type { AnamnesisFormData } from "@/entities/anamnesis";
+
 import { boolFromString } from "@/shared/lib/boolFromString";
+
 import { DateField } from "@/shared/ui/DateInput";
+
 import { Input } from "@/shared/ui/Input";
+
 import { Textarea } from "@/shared/ui/Textarea";
 
 import { Field } from "../../Field";
+
 import { YesNo } from "../../YesNo";
+
 import styles from "../../styles.module.scss";
 
 export const Type1DiabetesSection: React.FC = () => {
@@ -20,8 +26,11 @@ export const Type1DiabetesSection: React.FC = () => {
   );
 
   const gadChecked = watch("type1Diabetes.autoantibodies.GAD");
+
   const ia2Checked = watch("type1Diabetes.autoantibodies.IA2");
+
   const znt8Checked = watch("type1Diabetes.autoantibodies.ZnT8");
+
   const iaaChecked = watch("type1Diabetes.autoantibodies.IAA");
 
   const cPeptideTested = boolFromString(watch("type1Diabetes.cPeptide.tested"));
@@ -310,7 +319,6 @@ export const Type1DiabetesSection: React.FC = () => {
         )}
       </fieldset>
 
-      {/* ===== C-пептид ===== */}
       <Field noteKey="type1Diabetes.cPeptide">
         <fieldset className={styles.fieldset}>
           <legend>C-пептид</legend>
@@ -349,7 +357,6 @@ export const Type1DiabetesSection: React.FC = () => {
         </fieldset>
       </Field>
 
-      {/* ===== Гликированный гемоглобин ===== */}
       <Field noteKey="type1Diabetes.hba1c">
         <fieldset className={styles.fieldset}>
           <legend>Гликированный гемоглобин</legend>

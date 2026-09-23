@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { PatientForm } from "@/features/PatientForm";
 
-import { getPatientById, type PatientFormData } from "@/shared";
+import { getPatientById, type PatientFormData } from "@/entities/patient";
 
 import { Heading } from "@/shared/ui/Heading";
 
@@ -51,12 +51,6 @@ export const PatientFormPage: React.FC = () => {
     });
   }, [patientId, patient, navigate]);
 
-  /*
-   * Для edit-route пациента ещё нет
-   * только в случае некорректного ID.
-   * Пока effect выполняет redirect,
-   * пустую форму не показываем.
-   */
   if (patientId && !patient) {
     return null;
   }

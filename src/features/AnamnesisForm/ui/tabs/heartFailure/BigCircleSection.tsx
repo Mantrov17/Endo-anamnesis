@@ -2,10 +2,12 @@ import React from "react";
 
 import { useFormContext } from "react-hook-form";
 
-import type { AnamnesisFormData } from "@/shared";
+import type { AnamnesisFormData } from "@/entities/anamnesis";
+
 import { Input } from "@/shared/ui/Input";
 
 import { Field } from "../../Field";
+
 import { YesNo } from "../../YesNo";
 
 import styles from "../../styles.module.scss";
@@ -103,7 +105,9 @@ export const BigCircleSection: React.FC = () => {
 
             <select {...register("heartFailure.bigCircle.edemaTemperature")}>
               <option value="">—</option>
+
               <option value="cold">Холодная</option>
+
               <option value="hot">Горячая</option>
             </select>
           </div>
@@ -113,8 +117,11 @@ export const BigCircleSection: React.FC = () => {
 
             <select {...register("heartFailure.bigCircle.edemaColor")}>
               <option value="">—</option>
+
               <option value="pale">Бледный</option>
+
               <option value="cyanotic">Цианотичный</option>
+
               <option value="hyperemic">Гиперемия</option>
             </select>
           </div>
@@ -126,7 +133,9 @@ export const BigCircleSection: React.FC = () => {
 
             <select {...register("heartFailure.bigCircle.edemaDensity")}>
               <option value="">—</option>
+
               <option value="soft">Мягкие</option>
+
               <option value="dense">Плотные</option>
             </select>
           </div>
@@ -136,7 +145,9 @@ export const BigCircleSection: React.FC = () => {
 
             <select {...register("heartFailure.bigCircle.edemaResolves")}>
               <option value="">—</option>
+
               <option value="immediate">Сразу</option>
+
               <option value="delayed">Спустя время</option>
             </select>
           </div>

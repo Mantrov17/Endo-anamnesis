@@ -1,10 +1,16 @@
 import { type FormEvent, useState } from "react";
 
-import { createPatient, type PatientFormData, updatePatient } from "@/shared";
+import {
+  createPatient,
+  type PatientFormData,
+  updatePatient,
+} from "@/entities/patient";
 
 interface UsePatientFormProps {
   patientId?: string;
+
   initialData?: PatientFormData;
+
   onSuccess?: () => void;
 }
 
@@ -31,10 +37,12 @@ export const usePatientForm = ({
 
   const updateField = <K extends keyof PatientFormData>(
     name: K,
+
     value: PatientFormData[K],
   ) => {
     setFormData((previous) => ({
       ...previous,
+
       [name]: value,
     }));
   };

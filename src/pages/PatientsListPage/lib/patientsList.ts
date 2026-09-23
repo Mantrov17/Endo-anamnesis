@@ -1,4 +1,4 @@
-import type { Patient } from "@/shared";
+import type { Patient } from "@/entities/patient";
 
 export type GenderFilter = "" | "male" | "female";
 
@@ -6,15 +6,21 @@ export type PatientsSortBy = "createdAt" | "alphabet";
 
 interface FilterAndSortPatientsParams {
   patients: Patient[];
+
   searchTerm: string;
+
   genderFilter: GenderFilter;
+
   dateFrom: string;
+
   dateTo: string;
+
   sortBy: PatientsSortBy;
 }
 
 export const getPatientAgeLabel = (birthDate: string): string => {
   const today = new Date();
+
   const birth = new Date(birthDate);
 
   let age = today.getFullYear() - birth.getFullYear();
@@ -30,6 +36,7 @@ export const getPatientAgeLabel = (birthDate: string): string => {
   }
 
   const lastDigit = age % 10;
+
   const lastTwo = age % 100;
 
   if (lastTwo >= 11 && lastTwo <= 19) {

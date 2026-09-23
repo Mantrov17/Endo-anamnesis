@@ -1,4 +1,4 @@
-import type { AnamnesisFormData, AnamnesisRecord } from "@/shared";
+import type { AnamnesisFormData, AnamnesisRecord } from "@/entities/anamnesis";
 
 import { getDefaultValues } from "./defaultValues";
 

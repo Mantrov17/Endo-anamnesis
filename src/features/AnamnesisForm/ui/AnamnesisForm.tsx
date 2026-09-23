@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { FormProvider } from "react-hook-form";
 
-import { useAnamnesisForm } from "@/features/AnamnesisForm";
+import type { AnamnesisFormData } from "@/entities/anamnesis";
 
-import type { AnamnesisFormData } from "@/shared";
+import { useAnamnesisForm } from "@/features/AnamnesisForm";
 
 import { Button } from "@/shared/ui/Button";
 
@@ -34,7 +34,9 @@ import styles from "./styles.module.scss";
 
 interface AnamnesisFormProps {
   patientId: string;
+
   initialData?: AnamnesisFormData;
+
   anamnesisId?: string;
 
   onSuccess?: (anamnesisId: string) => void;
@@ -54,29 +56,28 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
 
   const tabsListRef = useRef<HTMLDivElement | null>(null);
 
-  const saveFeedbackTimeoutRef = useRef<number | null>(null);
-
-  const handleSaveSuccess = (savedAnamnesisId: string) => {
-    setIsSaveConfirmed(true);
-
-    if (saveFeedbackTimeoutRef.current !== null) {
-      window.clearTimeout(saveFeedbackTimeoutRef.current);
-    }
-
-    saveFeedbackTimeoutRef.current = window.setTimeout(() => {
-      setIsSaveConfirmed(false);
-
-      saveFeedbackTimeoutRef.current = null;
-    }, 2000);
-
-    onSuccess?.(savedAnamnesisId);
-  };
+  const saveConfirmationTimeoutRef = useRef<number | null>(null);
 
   const { formMethods, submitForm, currentAnamnesisId } = useAnamnesisForm({
     patientId,
     initialData,
     anamnesisId,
-    onSuccess: handleSaveSuccess,
+
+    onSuccess: (savedAnamnesisId) => {
+      setIsSaveConfirmed(true);
+
+      if (saveConfirmationTimeoutRef.current !== null) {
+        window.clearTimeout(saveConfirmationTimeoutRef.current);
+      }
+
+      saveConfirmationTimeoutRef.current = window.setTimeout(() => {
+        setIsSaveConfirmed(false);
+
+        saveConfirmationTimeoutRef.current = null;
+      }, 2000);
+
+      onSuccess?.(savedAnamnesisId);
+    },
   });
 
   const { watch, setValue } = formMethods;
@@ -93,11 +94,19 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
 
   useEffect(() => {
     if (isType1 && !type1Data) {
-      setValue("type1Diabetes", createType1DiabetesDefaults());
+      setValue(
+        "type1Diabetes",
+
+        createType1DiabetesDefaults(),
+      );
     }
 
     if (isType2 && !type2Data) {
-      setValue("type2Diabetes", createType2DiabetesDefaults());
+      setValue(
+        "type2Diabetes",
+
+        createType2DiabetesDefaults(),
+      );
     }
   }, [isType1, isType2, type1Data, type2Data, setValue]);
 
@@ -109,11 +118,17 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
     }
 
     const handleWheel = (event: WheelEvent) => {
-      const isMediumScreen = window.matchMedia(
-        "(min-width: 641px) and (max-width: 1100px)",
-      ).matches;
+      const viewportWidth = window.innerWidth;
 
-      if (!isMediumScreen) {
+      /*
+       * На desktop слева вертикальные табы.
+       * На телефоне используется dropdown.
+       *
+       * Колесо переводим в горизонтальный
+       * скролл только для промежуточного
+       * layout 641–1100 px.
+       */
+      if (viewportWidth <= 640 || viewportWidth > 1100) {
         return;
       }
 
@@ -123,20 +138,23 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
         return;
       }
 
-      const horizontalWheel = Math.abs(event.deltaX);
+      const delta =
+        Math.abs(event.deltaY) >= Math.abs(event.deltaX)
+          ? event.deltaY
+          : event.deltaX;
 
-      const verticalWheel = Math.abs(event.deltaY);
-
-      const scrollAmount =
-        horizontalWheel > verticalWheel ? event.deltaX : event.deltaY;
-
-      if (scrollAmount === 0) {
+      if (!delta) {
         return;
       }
 
-      const nextScrollLeft = Math.min(
-        maxScrollLeft,
-        Math.max(0, tabsList.scrollLeft + scrollAmount),
+      const nextScrollLeft = Math.max(
+        0,
+
+        Math.min(
+          maxScrollLeft,
+
+          tabsList.scrollLeft + delta,
+        ),
       );
 
       if (nextScrollLeft === tabsList.scrollLeft) {
@@ -145,10 +163,7 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
 
       event.preventDefault();
 
-      tabsList.scrollTo({
-        left: nextScrollLeft,
-        behavior: "auto",
-      });
+      tabsList.scrollLeft = nextScrollLeft;
     };
 
     tabsList.addEventListener("wheel", handleWheel, {
@@ -162,8 +177,8 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
 
   useEffect(() => {
     return () => {
-      if (saveFeedbackTimeoutRef.current !== null) {
-        window.clearTimeout(saveFeedbackTimeoutRef.current);
+      if (saveConfirmationTimeoutRef.current !== null) {
+        window.clearTimeout(saveConfirmationTimeoutRef.current);
       }
     };
   }, []);
@@ -243,9 +258,13 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
             <span className={styles.mobileTabsLabel}>{activeTabLabel}</span>
 
             <span
-              className={`${styles.mobileTabsChevron} ${
-                isMobileTabsOpen ? styles.open : ""
-              }`}
+              className={[
+                styles.mobileTabsChevron,
+
+                isMobileTabsOpen ? styles.open : undefined,
+              ]
+                .filter(Boolean)
+                .join(" ")}
               aria-hidden="true"
             >
               ▾
@@ -255,17 +274,25 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
           <div
             ref={tabsListRef}
             id="anamnesis-tabs-list"
-            className={`${styles.tabsList} ${
-              isMobileTabsOpen ? styles.mobileOpen : ""
-            }`}
+            className={[
+              styles.tabsList,
+
+              isMobileTabsOpen ? styles.mobileOpen : undefined,
+            ]
+              .filter(Boolean)
+              .join(" ")}
           >
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
-                className={`${styles.tabButton} ${
-                  activeTab === tab.id ? styles.active : ""
-                }`}
+                className={[
+                  styles.tabButton,
+
+                  activeTab === tab.id ? styles.active : undefined,
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
                 onClick={() => handleTabChange(tab.id)}
               >
                 {tab.label}
@@ -281,7 +308,7 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
 
               <div className={styles.actions}>
                 <Button type="submit" variant="primary">
-                  <span aria-live="polite">{submitButtonText}</span>
+                  {submitButtonText}
                 </Button>
               </div>
             </form>

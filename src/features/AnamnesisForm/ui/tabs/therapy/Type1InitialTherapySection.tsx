@@ -2,12 +2,16 @@ import React from "react";
 
 import { useFormContext } from "react-hook-form";
 
-import type { AnamnesisFormData } from "@/shared";
+import type { AnamnesisFormData } from "@/entities/anamnesis";
+
 import { boolFromString } from "@/shared/lib/boolFromString";
+
 import { Input } from "@/shared/ui/Input";
+
 import { Textarea } from "@/shared/ui/Textarea";
 
 import { DrugList } from "../../DrugList";
+
 import { YesNo } from "../../YesNo";
 
 import styles from "../../styles.module.scss";

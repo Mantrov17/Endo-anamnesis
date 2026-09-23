@@ -2,14 +2,20 @@ import React from "react";
 
 import { useFormContext } from "react-hook-form";
 
-import type { AnamnesisFormData } from "@/shared";
+import type { AnamnesisFormData } from "@/entities/anamnesis";
+
 import { boolFromString } from "@/shared/lib/boolFromString";
+
 import { DateField } from "@/shared/ui/DateInput";
+
 import { Input } from "@/shared/ui/Input";
+
 import { Textarea } from "@/shared/ui/Textarea";
 
 import { Field } from "../../Field";
+
 import { YesNo } from "../../YesNo";
+
 import styles from "../../styles.module.scss";
 
 export const Type2DiabetesSection: React.FC = () => {
@@ -151,7 +157,6 @@ export const Type2DiabetesSection: React.FC = () => {
         register={register}
       />
 
-      {/* ===== Гликированный гемоглобин СД2 ===== */}
       <fieldset className={styles.fieldset}>
         <legend>Гликированный гемоглобин</legend>
 

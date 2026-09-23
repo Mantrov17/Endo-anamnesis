@@ -1,11 +1,10 @@
 import React from "react";
 
-import type { AnamnesisRecord } from "@/shared";
-
 import { Button } from "@/shared/ui/Button";
 import { Heading } from "@/shared/ui/Heading";
 
 import styles from "../styles.module.scss";
+import type { AnamnesisRecord } from "@/entities/anamnesis";
 
 interface PatientAnamnesesProps {
   patientId: string;

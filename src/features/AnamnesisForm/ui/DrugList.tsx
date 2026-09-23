@@ -1,13 +1,17 @@
 import React from "react";
+
 import {
-  useFieldArray,
   type Control,
   type FieldArrayPath,
   type Path,
   type UseFormRegister,
+  useFieldArray,
 } from "react-hook-form";
+
+import type { AnamnesisFormData } from "@/entities/anamnesis";
+
 import { Input } from "@/shared/ui/Input";
-import type { AnamnesisFormData } from "@/shared";
+
 import styles from "./styles.module.scss";
 
 export type DrugArrayPath =
@@ -23,11 +27,19 @@ export type DrugArrayPath =
 
 interface DrugListProps {
   control: Control<AnamnesisFormData>;
+
   register: UseFormRegister<AnamnesisFormData>;
+
   name: DrugArrayPath;
+
   firstField: "drugName" | "name";
+
   nameLabel?: string;
-  /** Показать третье поле — кратность приёма (раз/сутки) */
+
+  /**
+   * Показать третье поле —
+   * кратность приёма.
+   */
   showFrequency?: boolean;
 }
 
@@ -41,19 +53,32 @@ export const DrugList: React.FC<DrugListProps> = ({
 }) => {
   const { fields, append, remove } = useFieldArray({
     control,
+
     name: name as FieldArrayPath<AnamnesisFormData>,
   });
 
   const addRow = () => {
     if (firstField === "drugName") {
       if (showFrequency) {
-        append({ drugName: "", dose: "", frequency: "" } as never);
+        append({
+          drugName: "",
+          dose: "",
+          frequency: "",
+        } as never);
       } else {
-        append({ drugName: "", dose: "" } as never);
+        append({
+          drugName: "",
+          dose: "",
+        } as never);
       }
-    } else {
-      append({ name: "", dose: "" } as never);
+
+      return;
     }
+
+    append({
+      name: "",
+      dose: "",
+    } as never);
   };
 
   return (
@@ -61,14 +86,18 @@ export const DrugList: React.FC<DrugListProps> = ({
       {fields.map((field, index) => {
         const firstPath =
           `${name}.${index}.${firstField}` as Path<AnamnesisFormData>;
+
         const dosePath = `${name}.${index}.dose` as Path<AnamnesisFormData>;
+
         const freqPath =
           `${name}.${index}.frequency` as Path<AnamnesisFormData>;
 
         return (
           <div key={field.id} className={styles.drugRow}>
             <Input label={nameLabel} {...register(firstPath)} />
+
             <Input label="Доза" {...register(dosePath)} />
+
             {showFrequency && (
               <Input
                 label="Кратность"
@@ -77,6 +106,7 @@ export const DrugList: React.FC<DrugListProps> = ({
                 {...register(freqPath)}
               />
             )}
+
             {fields.length > 1 && (
               <button
                 type="button"
@@ -90,6 +120,7 @@ export const DrugList: React.FC<DrugListProps> = ({
           </div>
         );
       })}
+
       <button type="button" className={styles.addDrugButton} onClick={addRow}>
         + Добавить препарат
       </button>

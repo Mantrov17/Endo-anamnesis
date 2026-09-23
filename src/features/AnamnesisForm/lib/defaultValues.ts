@@ -1,4 +1,4 @@
-import type { AnamnesisFormData } from "@/shared";
+import type { AnamnesisFormData } from "@/entities/anamnesis";
 
 import {
   createActualTherapyDefaults,
@@ -11,9 +11,13 @@ import {
 } from "./defaults/diabetesCareDefaults";
 
 import { createPrimaryExamDefaults } from "./defaults/primaryExamDefaults";
+
 import { createComplicationsDefaults } from "./defaults/complicationsDefaults";
+
 import { createExaminationDefaults } from "./defaults/examinationDefaults";
+
 import { createLifestyleDefaults } from "./defaults/lifestyleDefaults";
+
 import { createMeasurementsDefaults } from "./defaults/measurementsDefaults";
 
 import { createSecondaryHypertensionDefaults } from "./defaults/secondaryHypertensionDefaults";

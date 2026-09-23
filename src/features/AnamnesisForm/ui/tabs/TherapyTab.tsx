@@ -2,13 +2,18 @@ import React from "react";
 
 import { useFormContext } from "react-hook-form";
 
-import type { AnamnesisFormData } from "@/shared";
+import type { AnamnesisFormData } from "@/entities/anamnesis";
+
 import { Input } from "@/shared/ui/Input";
 
 import { ActualTherapySection } from "./therapy/ActualTherapySection";
+
 import { Type1InitialTherapySection } from "./therapy/Type1InitialTherapySection";
+
 import { Type1InjectionSitesSection } from "./therapy/Type1InjectionSitesSection";
+
 import { Type2AdherenceSection } from "./therapy/Type2AdherenceSection";
+
 import { Type2InitialTherapySection } from "./therapy/Type2InitialTherapySection";
 
 import styles from "../styles.module.scss";
