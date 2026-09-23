@@ -1,69 +1,70 @@
 import React from "react";
+
 import styles from "./styles.module.scss";
 
-interface RadioOption {
+export interface RadioOption {
   value: string;
   label: string;
 }
 
 interface RadioGroupProps {
   name: string;
+
   options: RadioOption[];
+
+  value: string;
+
+  onChange: (value: string) => void;
+
   label?: string;
+
   error?: string;
-  // Для react-hook-form
-  register?: any;
-  // Для управляемого режима
-  value?: string;
-  onChange?: (name: string, value: string) => void;
+
+  disabled?: boolean;
 }
 
 export const RadioGroup: React.FC<RadioGroupProps> = ({
   name,
   options,
-  label,
-  error,
-  register,
   value,
   onChange,
+  label,
+  error,
+  disabled = false,
 }) => {
-  const isControlled = value !== undefined && onChange !== undefined;
+  const errorId = error ? `${name}-error` : undefined;
 
   return (
     <div className={styles.radioGroup}>
       {label && <div className={styles.label}>{label}</div>}
-      <div className={styles.options}>
-        {options.map((option) => {
-          let inputProps: React.InputHTMLAttributes<HTMLInputElement> = {};
 
-          if (isControlled) {
-            inputProps = {
-              checked: value === option.value,
-              onChange: () => onChange(name, option.value),
-            };
-          } else if (register) {
-            // Если register передан, используем его (он возвращает onChange, onBlur, ref и т.д.)
-            const reg = register(name);
-            inputProps = {
-              ...reg,
-              value: option.value,
-            };
-          } else {
-            inputProps = {
-              name,
-              value: option.value,
-            };
-          }
+      <div
+        className={styles.options}
+        role="radiogroup"
+        aria-label={label}
+        aria-describedby={errorId}
+      >
+        {options.map((option) => (
+          <label key={option.value} className={styles.option}>
+            <input
+              type="radio"
+              name={name}
+              value={option.value}
+              checked={value === option.value}
+              onChange={() => onChange(option.value)}
+              disabled={disabled}
+            />
 
-          return (
-            <label key={option.value} className={styles.option}>
-              <input type="radio" {...inputProps} />
-              {option.label}
-            </label>
-          );
-        })}
+            {option.label}
+          </label>
+        ))}
       </div>
-      {error && <span className={styles.error}>{error}</span>}
+
+      {error && (
+        <span id={errorId} className={styles.error}>
+          {error}
+        </span>
+      )}
     </div>
   );
 };

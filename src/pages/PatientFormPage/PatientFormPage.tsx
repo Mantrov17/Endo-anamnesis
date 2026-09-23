@@ -1,137 +1,79 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
 
-import {
-  createPatient,
-  getPatientById,
-  type PatientFormData,
-  updatePatient,
-} from "@/shared";
+import { PatientForm } from "@/features/PatientForm";
 
-import { Button } from "@/shared/ui/Button";
-import { DateInput } from "@/shared/ui/DateInput/DateInput.tsx";
+import { getPatientById, type PatientFormData } from "@/shared";
+
 import { Heading } from "@/shared/ui/Heading";
-import { Input } from "@/shared/ui/Input";
-import { RadioGroup } from "@/shared/ui/RadioGroup";
 
 import styles from "./styles.module.scss";
 
 export const PatientFormPage: React.FC = () => {
-  const { id } = useParams<{ id?: string }>();
-
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState<PatientFormData>({
-    fullName: "",
-    birthDate: "",
-    gender: "male",
-  });
+  const { patientId } = useParams<{
+    patientId?: string;
+  }>();
 
-  const [loading, setLoading] = useState(false);
+  const patient = useMemo(() => {
+    if (!patientId) {
+      return undefined;
+    }
+
+    return getPatientById(patientId);
+  }, [patientId]);
+
+  const initialData = useMemo<PatientFormData | undefined>(() => {
+    if (!patient) {
+      return undefined;
+    }
+
+    return {
+      fullName: patient.fullName,
+
+      birthDate: patient.birthDate,
+
+      gender: patient.gender,
+    };
+  }, [patient]);
 
   useEffect(() => {
-    if (!id) {
+    if (!patientId || patient) {
       return;
     }
 
-    const patient = getPatientById(id);
+    window.alert("Пациент не найден");
 
-    if (patient) {
-      setFormData({
-        fullName: patient.fullName,
-        birthDate: patient.birthDate,
-        gender: patient.gender,
-      });
+    navigate("/", {
+      replace: true,
+    });
+  }, [patientId, patient, navigate]);
 
-      return;
-    }
-
-    alert("Пациент не найден");
-    navigate("/");
-  }, [id, navigate]);
-
-  const handleChange = (name: string, value: string) => {
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    setLoading(true);
-
-    try {
-      if (id) {
-        updatePatient(id, formData);
-      } else {
-        createPatient(formData);
-      }
-
-      navigate("/");
-    } catch (_error) {
-      alert("Ошибка сохранения");
-    } finally {
-      setLoading(false);
-    }
-  };
+  /*
+   * Для edit-route пациента ещё нет
+   * только в случае некорректного ID.
+   * Пока effect выполняет redirect,
+   * пустую форму не показываем.
+   */
+  if (patientId && !patient) {
+    return null;
+  }
 
   return (
     <main className={styles.container}>
       <Heading level={1} variant="page" className={styles.title}>
-        {id ? "Редактирование пациента" : "Новый пациент"}
+        {patientId ? "Редактирование пациента" : "Новый пациент"}
       </Heading>
 
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <Input
-          label="ФИО"
-          name="fullName"
-          value={formData.fullName}
-          onChange={(event) =>
-            handleChange(event.target.name, event.target.value)
-          }
-          required
-        />
-
-        <DateInput
-          label="Дата рождения"
-          value={formData.birthDate}
-          onChange={(iso) => handleChange("birthDate", iso)}
-        />
-
-        <RadioGroup
-          label="Пол"
-          name="gender"
-          value={formData.gender || "male"}
-          onChange={handleChange}
-          options={[
-            {
-              value: "male",
-              label: "Мужской",
-            },
-            {
-              value: "female",
-              label: "Женский",
-            },
-          ]}
-        />
-
-        <div className={styles.actions}>
-          <Button type="submit" variant="primary" disabled={loading}>
-            {loading ? "Сохранение..." : "Сохранить"}
-          </Button>
-
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => navigate("/")}
-          >
-            Отмена
-          </Button>
-        </div>
-      </form>
+      <PatientForm
+        key={patientId ?? "new-patient"}
+        patientId={patientId}
+        initialData={initialData}
+        onSuccess={() => navigate("/")}
+        onCancel={() => navigate("/")}
+      />
     </main>
   );
 };

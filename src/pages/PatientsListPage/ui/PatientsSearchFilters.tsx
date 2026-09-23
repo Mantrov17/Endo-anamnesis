@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Button } from "@/shared/ui/Button";
-import { DateInput } from "@/shared/ui/DateInput/DateInput.tsx";
+import { DateInput } from "@/shared/ui/DateInput";
 
 import type { GenderFilter } from "../lib/patientsList";
 
