@@ -39,6 +39,10 @@ export const PatientCard: React.FC<PatientCardProps> = ({
 }) => {
   const age = getPatientAgeLabel(patient.birthDate);
 
+  const birthInfo = patient.birthDate
+    ? `${patient.birthDate} (${age})`
+    : "Дата рождения не указана";
+
   const createdDateTime = new Date(patient.createdAt).toLocaleString("ru-RU", {
     day: "2-digit",
 
@@ -64,8 +68,7 @@ export const PatientCard: React.FC<PatientCardProps> = ({
           </Heading>
 
           <span className={styles.patientMeta}>
-            {patient.birthDate} ({age}) •{" "}
-            {patient.gender === "male" ? "М" : "Ж"}
+            {birthInfo} • {patient.gender === "male" ? "М" : "Ж"}
           </span>
 
           <span className={styles.anamnesisCount}>

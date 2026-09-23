@@ -39,6 +39,13 @@ export const Type1DiabetesSection: React.FC = () => {
 
   const hba1cTestedType1 = boolFromString(watch("type1Diabetes.hba1c.tested"));
 
+  const otherClassicSymptom =
+    watch("type1Diabetes.classicSymptoms.other") === true;
+
+  const familyHistoryDiabetes = boolFromString(
+    watch("type1Diabetes.familyHistoryDiabetes"),
+  );
+
   return (
     <div className={styles.section}>
       <h3>Дебют СД 1 типа</h3>
@@ -118,6 +125,13 @@ export const Type1DiabetesSection: React.FC = () => {
           </label>
         </div>
       </Field>
+
+      <Textarea
+        label="Дополнительная информация"
+        placeholder="Введите дополнительную информацию"
+        {...register("type1Diabetes.diagnosisDetails")}
+        rows={3}
+      />
 
       <Field
         hint="Что послужило триггерным фактором?"
@@ -213,15 +227,25 @@ export const Type1DiabetesSection: React.FC = () => {
             />{" "}
             Потеря сознания
           </label>
+
+          <label>
+            <input
+              type="checkbox"
+              {...register("type1Diabetes.classicSymptoms.other")}
+            />{" "}
+            Свой вариант ответа
+          </label>
+
+          {otherClassicSymptom && (
+            <Textarea
+              label="Свой вариант"
+              placeholder="Укажите другой симптом"
+              {...register("type1Diabetes.classicSymptoms.otherDetails")}
+              rows={2}
+            />
+          )}
         </fieldset>
       </Field>
-
-      <YesNo
-        label="Обращение к эндокринологу после обнаружения гипергликемии"
-        name="type1Diabetes.investigatedAfterDetection"
-        register={register}
-        yesNoLabels={["Было", "Не было"]}
-      />
 
       <YesNo
         label="Первично поставлен СД 2 типа?"
@@ -395,6 +419,21 @@ export const Type1DiabetesSection: React.FC = () => {
           )}
         </fieldset>
       </Field>
+
+      <YesNo
+        label="Наследственность по сахарному диабету"
+        name="type1Diabetes.familyHistoryDiabetes"
+        register={register}
+      />
+
+      {familyHistoryDiabetes === true && (
+        <Textarea
+          label="Уточните наследственность"
+          placeholder="Например: мать — СД 2 типа, отец — СД 1 типа"
+          {...register("type1Diabetes.familyHistoryDiabetesDetails")}
+          rows={3}
+        />
+      )}
     </div>
   );
 };

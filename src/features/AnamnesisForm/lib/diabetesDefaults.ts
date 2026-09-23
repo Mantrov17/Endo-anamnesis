@@ -9,6 +9,7 @@ export const createType1DiabetesDefaults = (): Type1DiabetesData => ({
   yearOfDiagnosis: "",
   diseaseDuration: null,
   howDiagnosed: "",
+  diagnosisDetails: "",
   circumstances: "",
   glycemiaAtOnset: null,
 
@@ -23,6 +24,9 @@ export const createType1DiabetesDefaults = (): Type1DiabetesData => ({
     abdominalPain: false,
     visionBlur: false,
     lossOfConsciousness: false,
+
+    other: false,
+    otherDetails: "",
   },
 
   autoantibodies: {
@@ -99,6 +103,9 @@ export const createType1DiabetesDefaults = (): Type1DiabetesData => ({
 
   investigatedAfterDetection: null,
   initiallyType2: null,
+
+  familyHistoryDiabetes: null,
+  familyHistoryDiabetesDetails: "",
 });
 
 export const createType2DiabetesDefaults = (): Type2DiabetesData => ({
@@ -109,6 +116,7 @@ export const createType2DiabetesDefaults = (): Type2DiabetesData => ({
   yearOfDiagnosis: "",
   diseaseDuration: null,
   howDiagnosed: "",
+  diagnosisDetails: "",
 
   classicSymptoms: {
     polyuria: false,
@@ -116,6 +124,9 @@ export const createType2DiabetesDefaults = (): Type2DiabetesData => ({
     weakness: false,
     weightLoss: false,
     visionBlur: false,
+
+    other: false,
+    otherDetails: "",
   },
 
   investigatedAfterDetection: null,
@@ -151,4 +162,7 @@ export const createType2DiabetesDefaults = (): Type2DiabetesData => ({
   },
 
   gestationalDiabetes: null,
+
+  familyHistoryDiabetes: null,
+  familyHistoryDiabetesDetails: "",
 });

@@ -37,6 +37,8 @@ export interface Type1Diabetes {
     | "emergency"
     | "";
 
+  diagnosisDetails: string;
+
   circumstances: string;
 
   glycemiaAtOnset: number | null;
@@ -57,6 +59,9 @@ export interface Type1Diabetes {
     visionBlur: boolean;
 
     lossOfConsciousness: boolean;
+
+    other: boolean;
+    otherDetails: string;
   };
 
   autoantibodies: {
@@ -150,6 +155,10 @@ export interface Type1Diabetes {
   investigatedAfterDetection: boolean | null;
 
   initiallyType2: boolean | null;
+
+  familyHistoryDiabetes: boolean | null;
+
+  familyHistoryDiabetesDetails: string;
 }
 
 // ==================== СД 2 типа ====================
@@ -172,12 +181,17 @@ export interface Type2Diabetes {
     | "hospitalization"
     | "";
 
+  diagnosisDetails: string;
+
   classicSymptoms: {
     polyuria: boolean;
     polydipsia: boolean;
     weakness: boolean;
     weightLoss: boolean;
     visionBlur: boolean;
+
+    other: boolean;
+    otherDetails: string;
   };
 
   investigatedAfterDetection: boolean | null;
@@ -219,6 +233,10 @@ export interface Type2Diabetes {
   };
 
   gestationalDiabetes: boolean | null;
+
+  familyHistoryDiabetes: boolean | null;
+
+  familyHistoryDiabetesDetails: string;
 }
 
 // ==================== Актуальная терапия ====================

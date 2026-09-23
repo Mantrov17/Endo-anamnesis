@@ -52,10 +52,6 @@ export const useAnamnesisForm = ({
   const formMethods = useForm<AnamnesisFormData>({
     defaultValues: mergeAnamnesisWithDefaults(initialData ?? {}),
 
-    /*
-     * Поля всех вкладок являются
-     * частью одной формы.
-     */
     shouldUnregister: false,
   });
 
@@ -78,12 +74,34 @@ export const useAnamnesisForm = ({
       return;
     }
 
-    setValue("birthDate", patient.birthDate);
+    /*
+     * Пустая дата в карточке пациента
+     * не должна очищать дату, которая
+     * уже могла быть сохранена
+     * непосредственно в анамнезе.
+     */
+    if (patient.birthDate) {
+      setValue("birthDate", patient.birthDate, {
+        shouldDirty: false,
+      });
+    }
 
-    setValue("fullName", patient.fullName);
+    setValue("fullName", patient.fullName, {
+      shouldDirty: false,
+    });
 
-    setValue("gender", patient.gender);
+    setValue("gender", patient.gender, {
+      shouldDirty: false,
+    });
   }, [patientId, setValue]);
+
+  // ====================
+  // Дата рождения / возраст
+  // ====================
+
+  const birthDate = watch("birthDate");
+
+  const currentAge = calculateAge(birthDate);
 
   // ====================
   // ИМТ
@@ -104,12 +122,8 @@ export const useAnamnesisForm = ({
   // Целевой HbA1c
   // ====================
 
-  const birthDateForTarget = watch("birthDate");
-
   useEffect(() => {
-    const age = calculateAge(birthDateForTarget);
-
-    if (age === null) {
+    if (currentAge === null) {
       setValue("therapy.targetHba1c", "", {
         shouldDirty: false,
       });
@@ -120,13 +134,13 @@ export const useAnamnesisForm = ({
     setValue(
       "therapy.targetHba1c",
 
-      calculateTargetHba1c(age),
+      calculateTargetHba1c(currentAge),
 
       {
         shouldDirty: false,
       },
     );
-  }, [birthDateForTarget, setValue]);
+  }, [currentAge, setValue]);
 
   // ====================
   // СД 1
@@ -135,8 +149,6 @@ export const useAnamnesisForm = ({
   const t1Year = watch("type1Diabetes.yearOfDiagnosis");
 
   const t1Age = watch("type1Diabetes.ageAtDiagnosis");
-
-  const birthDate = watch("birthDate");
 
   useEffect(() => {
     const diagnosisYear = parseDiagnosisYear(t1Year);
@@ -310,7 +322,23 @@ export const useAnamnesisForm = ({
   }, [legLeft, legRight, armLeft, armRight, setValue]);
 
   // ====================
-  // H2FPEF
+  // H2FPEF — возраст
+  // ====================
+
+  useEffect(() => {
+    setValue(
+      "h2fpef.elderly60",
+
+      currentAge !== null ? currentAge > 60 : false,
+
+      {
+        shouldDirty: false,
+      },
+    );
+  }, [currentAge, setValue]);
+
+  // ====================
+  // H2FPEF — сумма
   // ====================
 
   const h2fpef = watch("h2fpef");
@@ -341,12 +369,23 @@ export const useAnamnesisForm = ({
         return;
       }
 
+      /*
+       * Приоритет у даты,
+       * введённой непосредственно
+       * в анамнезе.
+       *
+       * Если её там нет,
+       * используем дату из
+       * карточки пациента.
+       */
+      const effectiveBirthDate = data.birthDate || patient.birthDate;
+
       const payload = mergeAnamnesisWithDefaults({
         ...data,
 
         fullName: patient.fullName,
 
-        birthDate: patient.birthDate,
+        birthDate: effectiveBirthDate,
 
         gender: patient.gender,
       });

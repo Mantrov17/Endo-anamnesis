@@ -25,6 +25,13 @@ export const Type2DiabetesSection: React.FC = () => {
 
   const hba1cUnknownType2 = watch("type2Diabetes.hba1c.unknown") === true;
 
+  const otherClassicSymptom =
+    watch("type2Diabetes.classicSymptoms.other") === true;
+
+  const familyHistoryDiabetes = boolFromString(
+    watch("type2Diabetes.familyHistoryDiabetes"),
+  );
+
   return (
     <div className={styles.section}>
       <h3>Дебют СД 2 типа</h3>
@@ -99,6 +106,13 @@ export const Type2DiabetesSection: React.FC = () => {
         </label>
       </div>
 
+      <Textarea
+        label="Дополнительная информация"
+        placeholder="Введите дополнительную информацию"
+        {...register("type2Diabetes.diagnosisDetails")}
+        rows={3}
+      />
+
       <fieldset className={styles.fieldset}>
         <legend>Симптомы при дебюте</legend>
 
@@ -141,6 +155,23 @@ export const Type2DiabetesSection: React.FC = () => {
           />{" "}
           Нечёткость зрения
         </label>
+
+        <label>
+          <input
+            type="checkbox"
+            {...register("type2Diabetes.classicSymptoms.other")}
+          />{" "}
+          Свой вариант ответа
+        </label>
+
+        {otherClassicSymptom && (
+          <Textarea
+            label="Свой вариант"
+            placeholder="Укажите другой симптом"
+            {...register("type2Diabetes.classicSymptoms.otherDetails")}
+            rows={2}
+          />
+        )}
       </fieldset>
 
       <Field noteKey="type2Diabetes.maxGlucoseValues">
@@ -150,12 +181,6 @@ export const Type2DiabetesSection: React.FC = () => {
           rows={2}
         />
       </Field>
-
-      <YesNo
-        label="Вы обратились к эндокринологу после обнаружения повышенного результата?"
-        name="type2Diabetes.investigatedAfterDetection"
-        register={register}
-      />
 
       <fieldset className={styles.fieldset}>
         <legend>Гликированный гемоглобин</legend>
@@ -200,6 +225,21 @@ export const Type2DiabetesSection: React.FC = () => {
         name="type2Diabetes.gestationalDiabetes"
         register={register}
       />
+
+      <YesNo
+        label="Наследственность по сахарному диабету"
+        name="type2Diabetes.familyHistoryDiabetes"
+        register={register}
+      />
+
+      {familyHistoryDiabetes === true && (
+        <Textarea
+          label="Уточните наследственность"
+          placeholder="Например: мать — СД 2 типа, бабушка — сахарный диабет"
+          {...register("type2Diabetes.familyHistoryDiabetesDetails")}
+          rows={3}
+        />
+      )}
     </div>
   );
 };

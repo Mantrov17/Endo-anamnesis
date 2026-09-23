@@ -13,6 +13,10 @@ import styles from "../styles.module.scss";
 export const H2FPEFTab: React.FC = () => {
   const { register, watch } = useFormContext<AnamnesisFormData>();
 
+  const birthDate = watch("birthDate");
+
+  const elderly60 = watch("h2fpef.elderly60") ?? false;
+
   const totalScore = watch("h2fpef.totalScore") ?? 0;
 
   return (
@@ -47,13 +51,21 @@ export const H2FPEFTab: React.FC = () => {
       />
 
       <label>
-        <input type="checkbox" {...register("h2fpef.elderly60")} /> Возраст
-        &gt;60 лет (1 балл)
+        <input type="checkbox" checked={elderly60} disabled readOnly /> Возраст
+        &gt;60 лет (автоматически по дате рождения, 1 балл)
       </label>
+
+      {!birthDate && (
+        <div className={styles.warning}>
+          Возрастной критерий H2FPEF недоступен: дата рождения не указана.
+          Итоговая сумма рассчитывается без возрастного балла и может быть
+          неполной.
+        </div>
+      )}
 
       <label>
         <input type="checkbox" {...register("h2fpef.fillingPressure")} />{" "}
-        Давление наполнения E/e' &gt;9 (1 балл)
+        Давление наполнения E/e&apos; &gt;9 (1 балл)
       </label>
 
       <Input

@@ -17,6 +17,18 @@ export const addAnamnesis = (
     return null;
   }
 
+  /*
+   * Дата рождения может быть неизвестна
+   * при создании пациента и введена позже
+   * во время первичного осмотра.
+   *
+   * В таком случае синхронизируем её
+   * с основной карточкой пациента.
+   */
+  if (data.birthDate && patient.birthDate !== data.birthDate) {
+    patient.birthDate = data.birthDate;
+  }
+
   const newAnamnesis: AnamnesisRecord = {
     ...data,
 
@@ -66,6 +78,10 @@ export const updateAnamnesis = (
 
   if (index === -1) {
     return false;
+  }
+
+  if (data.birthDate && patient.birthDate !== data.birthDate) {
+    patient.birthDate = data.birthDate;
   }
 
   patient.anamneses[index] = {

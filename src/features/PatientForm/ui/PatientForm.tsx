@@ -3,11 +3,8 @@ import React from "react";
 import type { PatientFormData } from "@/entities/patient";
 
 import { Button } from "@/shared/ui/Button";
-
 import { DateInput } from "@/shared/ui/DateInput";
-
 import { Input } from "@/shared/ui/Input";
-
 import { RadioGroup } from "@/shared/ui/RadioGroup";
 
 import { usePatientForm } from "../model/usePatientForm";
@@ -44,18 +41,12 @@ export const PatientForm: React.FC<PatientFormProps> = ({
         label="ФИО"
         name="fullName"
         value={formData.fullName}
-        onChange={(event) =>
-          updateField(
-            "fullName",
-
-            event.target.value,
-          )
-        }
+        onChange={(event) => updateField("fullName", event.target.value)}
         required
       />
 
       <DateInput
-        label="Дата рождения"
+        label="Дата рождения (необязательно)"
         value={formData.birthDate}
         onChange={(iso) => updateField("birthDate", iso)}
       />
@@ -65,11 +56,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({
         name="gender"
         value={gender}
         onChange={(value) =>
-          updateField(
-            "gender",
-
-            value === "female" ? "female" : "male",
-          )
+          updateField("gender", value === "female" ? "female" : "male")
         }
         options={[
           {

@@ -19,9 +19,17 @@ interface FilterAndSortPatientsParams {
 }
 
 export const getPatientAgeLabel = (birthDate: string): string => {
+  if (!birthDate) {
+    return "Возраст не указан";
+  }
+
   const today = new Date();
 
   const birth = new Date(birthDate);
+
+  if (isNaN(birth.getTime())) {
+    return "Возраст не указан";
+  }
 
   let age = today.getFullYear() - birth.getFullYear();
 
@@ -32,7 +40,7 @@ export const getPatientAgeLabel = (birthDate: string): string => {
   }
 
   if (age < 0) {
-    return "0 лет";
+    return "Возраст не указан";
   }
 
   const lastDigit = age % 10;
@@ -77,11 +85,15 @@ export const filterAndSortPatients = ({
   }
 
   if (dateFrom) {
-    result = result.filter((patient) => patient.birthDate >= dateFrom);
+    result = result.filter(
+      (patient) => Boolean(patient.birthDate) && patient.birthDate >= dateFrom,
+    );
   }
 
   if (dateTo) {
-    result = result.filter((patient) => patient.birthDate <= dateTo);
+    result = result.filter(
+      (patient) => Boolean(patient.birthDate) && patient.birthDate <= dateTo,
+    );
   }
 
   if (sortBy === "createdAt") {
