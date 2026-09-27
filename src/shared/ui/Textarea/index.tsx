@@ -1,4 +1,9 @@
-import React, { type ComponentPropsWithRef, useId } from "react";
+import React, {
+  type ComponentPropsWithRef,
+  useId,
+  useLayoutEffect,
+  useRef,
+} from "react";
 
 import styles from "./styles.module.scss";
 
@@ -7,12 +12,32 @@ type TextareaProps = ComponentPropsWithRef<"textarea"> & {
   error?: string;
 };
 
+const resizeTextarea = (textarea: HTMLTextAreaElement | null) => {
+  if (!textarea) {
+    return;
+  }
+
+  /*
+   * Сначала сбрасываем высоту, чтобы textarea
+   * могла не только увеличиваться, но и уменьшаться
+   * после удаления текста.
+   */
+  textarea.style.height = "auto";
+
+  /*
+   * +2px учитывают границы элемента.
+   */
+  textarea.style.height = `${textarea.scrollHeight + 2}px`;
+};
+
 export const Textarea: React.FC<TextareaProps> = ({
   label,
   error,
   className,
   id,
   ref,
+
+  onInput,
 
   "aria-describedby": ariaDescribedBy,
 
@@ -34,6 +59,33 @@ export const Textarea: React.FC<TextareaProps> = ({
     .filter(Boolean)
     .join(" ");
 
+  const internalRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const setRefs = (element: HTMLTextAreaElement | null) => {
+    internalRef.current = element;
+
+    if (typeof ref === "function") {
+      ref(element);
+    } else if (ref) {
+      ref.current = element;
+    }
+  };
+
+  /*
+   * Нужен для уже заполненных textarea:
+   * например, при открытии сохранённого анамнеза
+   * или дневника на редактирование.
+   */
+  useLayoutEffect(() => {
+    resizeTextarea(internalRef.current);
+  }, [props.value, props.defaultValue]);
+
+  const handleInput: React.FormEventHandler<HTMLTextAreaElement> = (event) => {
+    resizeTextarea(event.currentTarget);
+
+    onInput?.(event);
+  };
+
   return (
     <div className={styles.wrapper}>
       {label && (
@@ -44,9 +96,10 @@ export const Textarea: React.FC<TextareaProps> = ({
 
       <textarea
         {...props}
-        ref={ref}
+        ref={setRefs}
         id={textareaId}
         className={textareaClassName}
+        onInput={handleInput}
         aria-describedby={describedBy || undefined}
         aria-invalid={ariaInvalid ?? (error ? true : undefined)}
       />
