@@ -1,0 +1,540 @@
+.form {
+  width: 100%;
+  min-width: 0;
+
+  padding-bottom: 96px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+
+  margin-bottom: 16px;
+}
+
+.emptyState {
+  padding: 24px 16px;
+
+  color: var(
+                  --text-muted,
+                  #7a8b92
+  );
+
+  background: var(
+                  --bg-surface,
+                  #fff
+  );
+
+  border: 1px dashed var(
+                  --border,
+                  #dce5e8
+  );
+
+  border-radius: 14px;
+
+  text-align: center;
+}
+
+.desktopView {
+  display: block;
+}
+
+.mobileView {
+  display: none;
+}
+
+.tableScroll {
+  width: 100%;
+
+  overflow-x: auto;
+
+  border: 1px solid var(
+                  --border,
+                  #dce5e8
+  );
+
+  border-radius: 14px;
+
+  background: var(
+                  --bg-surface,
+                  #fff
+  );
+}
+
+.table {
+  width: 100%;
+  min-width: 900px;
+
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 10px;
+
+    vertical-align: middle;
+
+    border-right: 1px solid var(
+                    --border,
+                    #dce5e8
+    );
+
+    border-bottom: 1px solid var(
+                    --border,
+                    #dce5e8
+    );
+  }
+
+  th:last-child,
+  td:last-child {
+    border-right: 0;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  th {
+    background: var(
+                    --bg-surface-soft,
+                    #f8fafb
+    );
+
+    font-size: 14px;
+    font-weight: 700;
+
+    text-align: left;
+  }
+}
+
+.dateCell {
+  width: 150px;
+
+  vertical-align: top !important;
+
+  background: var(
+                  --bg-surface-soft,
+                  #f8fafb
+  );
+}
+
+.timeCell {
+  width: 90px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.dateInput,
+.numberInput,
+.noteInput {
+  width: 100%;
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  padding: 9px 10px;
+
+  color: var(
+                  --text-primary,
+                  #17252b
+  );
+
+  background: var(
+                  --bg-surface,
+                  #fff
+  );
+
+  border: 1px solid var(
+                  --border-strong,
+                  #c8d6da
+  );
+
+  border-radius: 9px;
+
+  font: inherit;
+}
+
+.numberInput {
+  min-width: 100px;
+}
+
+.noteInput {
+  min-width: 240px;
+}
+
+.actionsColumn {
+  width: 110px;
+}
+
+.actionsCell {
+  width: 110px;
+
+  text-align: center;
+}
+
+.actions {
+  position: fixed;
+
+  z-index: 110;
+
+  right: max(
+          var(
+                          --page-gutter,
+                          24px
+          ),
+          calc(
+                  (100vw -
+                  var(--page-max,
+                          1360px)) /
+                  2 +
+                  var(--page-gutter,
+                          24px)
+          )
+  );
+
+  bottom: max(
+          16px,
+          env(
+                          safe-area-inset-bottom
+          )
+  );
+
+  margin: 0;
+
+  padding: 8px;
+
+  background: rgba(
+                  255,
+                  255,
+                  255,
+                  0.94
+  );
+
+  border: 1px solid var(
+                  --border,
+                  #dce5e8
+  );
+
+  border-radius: 14px;
+
+  box-shadow: 0 12px 34px rgba(
+                  31,
+                  52,
+                  60,
+                  0.18
+  );
+
+  backdrop-filter: blur(12px);
+
+  > button {
+    min-width: 210px;
+    min-height: 50px;
+
+    font-size: 16px;
+  }
+}
+
+.mobileDay {
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+
+  background: var(
+                  --bg-surface,
+                  #fff
+  );
+
+  border: 1px solid var(
+                  --border,
+                  #dce5e8
+  );
+
+  border-radius: 14px;
+
+  box-shadow: 0 2px 8px rgba(
+                  31,
+                  52,
+                  60,
+                  0.05
+  );
+}
+
+.mobileDayHeader {
+  display: grid;
+
+  grid-template-columns:
+    minmax(
+      0,
+                    1fr
+    )
+    auto;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 10px;
+
+  background: var(
+                  --bg-surface-soft,
+                  #f8fafb
+  );
+
+  border-bottom: 1px solid var(
+                  --border,
+                  #dce5e8
+  );
+}
+
+.mobileDateInput {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+
+  box-sizing: border-box;
+
+  padding: 8px 10px;
+
+  color: var(
+                  --text-primary,
+                  #17252b
+  );
+
+  background: var(
+                  --bg-surface,
+                  #fff
+  );
+
+  border: 1px solid var(
+                  --border-strong,
+                  #c8d6da
+  );
+
+  border-radius: 9px;
+
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.mobileDeleteButton {
+  min-height: 44px !important;
+
+  padding: 8px 10px !important;
+
+  font-size: 13px !important;
+}
+
+.mobileTableWrapper {
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+}
+
+.mobileTable {
+  width: 100%;
+
+  table-layout: fixed;
+
+  border-collapse: collapse;
+
+  th,
+  td {
+    box-sizing: border-box;
+
+    padding: 6px 4px;
+
+    border-right: 1px solid var(
+                    --border,
+                    #dce5e8
+    );
+
+    border-bottom: 1px solid var(
+                    --border,
+                    #dce5e8
+    );
+
+    vertical-align: middle;
+  }
+
+  th:last-child,
+  td:last-child {
+    border-right: 0;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  th {
+    color: var(
+                    --text-secondary,
+                    #52656d
+    );
+
+    background: var(
+                    --bg-surface-soft,
+                    #f8fafb
+    );
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-align: center;
+  }
+}
+
+.mobileTimeHeader {
+  width: 52px;
+}
+
+.mobileNumberHeader {
+  width: 64px;
+}
+
+.mobileNoteHeader {
+  width: auto;
+}
+
+.mobileTimeCell {
+  color: var(
+                  --text-primary,
+                  #17252b
+  );
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-align: center;
+
+  white-space: nowrap;
+}
+
+.mobileNumberInput,
+.mobileNoteInput {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+
+  box-sizing: border-box;
+
+  padding: 6px;
+
+  color: var(
+                  --text-primary,
+                  #17252b
+  );
+
+  background: var(
+                  --bg-surface,
+                  #fff
+  );
+
+  border: 1px solid var(
+                  --border-strong,
+                  #c8d6da
+  );
+
+  border-radius: 8px;
+
+  /*
+   * 16px не даёт Safari увеличивать
+   * страницу при фокусе на input.
+   */
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.mobileNumberInput {
+  text-align: center;
+}
+
+.mobileNoteInput {
+  padding-inline: 7px;
+}
+
+@media (max-width: 640px) {
+  .form {
+    padding-bottom: 90px;
+  }
+
+  .toolbar {
+    justify-content: stretch;
+
+    margin-bottom: 12px;
+
+    > button {
+      width: 100%;
+    }
+  }
+
+  .desktopView {
+    display: none;
+  }
+
+  .mobileView {
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+  }
+
+  .emptyState {
+    padding: 20px 14px;
+
+    font-size: 14px;
+  }
+
+  .actions {
+    right: 12px;
+    left: 12px;
+
+    bottom: max(
+            10px,
+            env(
+                            safe-area-inset-bottom
+            )
+    );
+
+    > button {
+      width: 100%;
+
+      min-width: 0;
+      min-height: 52px;
+    }
+  }
+}
+
+@media (max-width: 370px) {
+  .mobileDayHeader {
+    grid-template-columns: 1fr;
+
+    gap: 7px;
+  }
+
+  .mobileDeleteButton {
+    width: 100%;
+  }
+
+  .mobileTimeHeader {
+    width: 48px;
+  }
+
+  .mobileNumberHeader {
+    width: 60px;
+  }
+
+  .mobileTable {
+    th,
+    td {
+      padding-inline: 3px;
+    }
+  }
+
+  .mobileNumberInput,
+  .mobileNoteInput {
+    padding-inline: 4px;
+  }
+}

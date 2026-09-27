@@ -8,6 +8,8 @@ import { AnamnesisPage } from "@/pages/AnamnesisPage";
 
 import { DiaryPage } from "@/pages/DiaryPage";
 
+import { GlycemicProfilePage } from "@/pages/GlycemicProfilePage";
+
 import { PatientFormPage } from "@/pages/PatientFormPage";
 
 import { PatientsListPage } from "@/pages/PatientsListPage";
@@ -25,6 +27,11 @@ export const App: React.FC = () => {
         <Route
           path="/patient/:patientId/anamnesis"
           element={<AnamnesisPage />}
+        />
+
+        <Route
+          path="/patient/:patientId/glycemic-profile"
+          element={<GlycemicProfilePage />}
         />
 
         <Route path="/patient/:patientId/diary/new" element={<DiaryPage />} />

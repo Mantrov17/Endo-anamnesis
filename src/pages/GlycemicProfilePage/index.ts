@@ -1,0 +1,1 @@
+export { GlycemicProfilePage } from "./GlycemicProfilePage";

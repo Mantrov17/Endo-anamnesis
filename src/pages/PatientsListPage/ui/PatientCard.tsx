@@ -25,6 +25,8 @@ interface PatientCardProps {
 
   onOpenPrimaryAnamnesis: (patientId: string) => void;
 
+  onOpenGlycemicProfile: (patientId: string) => void;
+
   onAddDiary: (patientId: string) => void;
 
   onEditDiary: (patientId: string, diaryId: string) => void;
@@ -38,6 +40,7 @@ export const PatientCard: React.FC<PatientCardProps> = ({
   onToggle,
   onDeletePatient,
   onOpenPrimaryAnamnesis,
+  onOpenGlycemicProfile,
   onAddDiary,
   onEditDiary,
   onDeleteDiary,
@@ -48,13 +51,7 @@ export const PatientCard: React.FC<PatientCardProps> = ({
     ? `${patient.birthDate} (${age})`
     : "Дата рождения не указана";
 
-  const createdDateTime = new Date(patient.createdAt).toLocaleString("ru-RU", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const createdDateTime = new Date(patient.createdAt).toLocaleString("ru-RU");
 
   return (
     <article className={styles.card}>
@@ -103,6 +100,7 @@ export const PatientCard: React.FC<PatientCardProps> = ({
             patientId={patient.id}
             primaryAnamnesis={patient.primaryAnamnesis}
             onOpen={onOpenPrimaryAnamnesis}
+            onOpenGlycemicProfile={onOpenGlycemicProfile}
           />
 
           <PatientDiaries

@@ -6,7 +6,7 @@ export const createComplicationsDefaults = (): ComplicationsDefaults => ({
   eyes: {
     visionLoss: null,
     visionLossStart: "",
-    visionLossDuration: "",
+    visionLossReason: "",
 
     nightVisionGood: null,
 

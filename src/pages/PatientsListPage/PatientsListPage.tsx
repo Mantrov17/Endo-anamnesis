@@ -38,6 +38,7 @@ export const PatientsListPage: React.FC = () => {
     handleDeletePatient,
 
     handleOpenPrimaryAnamnesis,
+    handleOpenGlycemicProfile,
 
     handleAddDiary,
     handleEditDiary,
@@ -111,6 +112,7 @@ export const PatientsListPage: React.FC = () => {
                 onToggle={togglePatientExpand}
                 onDeletePatient={handleDeletePatient}
                 onOpenPrimaryAnamnesis={handleOpenPrimaryAnamnesis}
+                onOpenGlycemicProfile={handleOpenGlycemicProfile}
                 onAddDiary={handleAddDiary}
                 onEditDiary={handleEditDiary}
                 onDeleteDiary={handleDeleteDiary}

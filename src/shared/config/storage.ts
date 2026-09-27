@@ -13,5 +13,8 @@ export const PATIENTS_STORAGE_VERSION_KEY = "patientsDataSchemaVersion";
  *
  * Версия 3:
  * - появился массив diaryEntries.
+ *
+ * Версия 4:
+ * - появился единственный glycemicProfile.
  */
-export const PATIENTS_STORAGE_VERSION = 3;
+export const PATIENTS_STORAGE_VERSION = 4;

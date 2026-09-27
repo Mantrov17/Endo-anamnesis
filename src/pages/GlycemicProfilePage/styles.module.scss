@@ -1,0 +1,177 @@
+.container {
+  --profile-header-height: 82px;
+  --profile-fixed-gap: 12px;
+
+  width: 100%;
+  max-width: var(--page-max, 1360px);
+
+  min-width: 0;
+
+  margin-inline: auto;
+
+  padding-top: calc(
+          var(--profile-header-height) +
+          var(--profile-fixed-gap)
+  );
+
+  padding-right: var(--page-gutter, 24px);
+
+  padding-bottom: 40px;
+
+  padding-left: var(--page-gutter, 24px);
+
+  overflow-x: clip;
+}
+
+.pageHeader {
+  position: fixed;
+
+  z-index: 100;
+
+  top: 0;
+
+  left: max(
+          var(--page-gutter, 24px),
+          calc(
+                  (100vw -
+                  var(--page-max, 1360px)) / 2 +
+                  var(--page-gutter, 24px)
+          )
+  );
+
+  right: max(
+          var(--page-gutter, 24px),
+          calc(
+                  (100vw -
+                  var(--page-max, 1360px)) / 2 +
+                  var(--page-gutter, 24px)
+          )
+  );
+
+  height: var(--profile-header-height);
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 10px 0;
+
+  background: rgba(
+                  255,
+                  255,
+                  255,
+                  0.96
+  );
+
+  border-bottom: 1px solid var(--border, #dce5e8);
+
+  box-shadow: 0 6px 18px rgba(
+                  31,
+                  52,
+                  60,
+                  0.06
+  );
+
+  backdrop-filter: blur(14px);
+}
+
+.backButton {
+  min-height: 44px;
+
+  flex: 0 0 auto;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 8px 13px 8px 9px;
+
+  color: var(--accent, #176b6a);
+
+  background: var(--bg-surface, #fff);
+
+  border: 1px solid #c9dfdc;
+
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.backIcon {
+  width: 28px;
+  height: 28px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: var(
+                  --bg-accent-soft,
+                  #edf6f5
+  );
+
+  border-radius: 8px;
+
+  font-size: 18px;
+}
+
+.headerInfo {
+  min-width: 0;
+
+  flex: 1 1 auto;
+}
+
+.title {
+  margin: 0;
+}
+
+.patientName {
+  margin-top: 3px;
+
+  color: var(
+                  --text-secondary,
+                  #52656d
+  );
+
+  font-size: 14px;
+}
+
+@media (max-width: 640px) {
+  .container {
+    --profile-header-height: 76px;
+    --profile-fixed-gap: 8px;
+
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .pageHeader {
+    right: 12px;
+    left: 12px;
+
+    height: var(--profile-header-height);
+  }
+
+  .backButton {
+    min-width: 44px;
+
+    padding: 7px;
+  }
+
+  .backText {
+    display: none;
+  }
+
+  .title {
+    font-size: 17px;
+  }
+
+  .patientName {
+    font-size: 12px;
+  }
+}

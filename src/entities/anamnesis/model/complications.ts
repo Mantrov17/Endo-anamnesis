@@ -4,7 +4,7 @@ export interface Complications {
 
     visionLossStart: string;
 
-    visionLossDuration: string;
+    visionLossReason: string;
 
     nightVisionGood: boolean | null;
 

@@ -91,7 +91,7 @@ export const usePatientsList = () => {
 
   const handleDeletePatient = (patientId: string) => {
     const confirmed = window.confirm(
-      "Удалить пациента, его первичный анамнез и все дневники?",
+      "Удалить пациента, его первичный анамнез, гликемический профиль и все дневники?",
     );
 
     if (!confirmed) {
@@ -243,6 +243,10 @@ export const usePatientsList = () => {
     URL.revokeObjectURL(url);
   };
 
+  const handleOpenGlycemicProfile = (patientId: string) => {
+    navigate(`/patient/${patientId}/glycemic-profile`);
+  };
+
   return {
     patients,
     filteredPatients,
@@ -266,6 +270,7 @@ export const usePatientsList = () => {
     handleDeletePatient,
 
     handleOpenPrimaryAnamnesis,
+    handleOpenGlycemicProfile,
 
     handleAddDiary,
     handleEditDiary,

@@ -1,19 +1,24 @@
 .container {
-  --diary-page-header-height: 86px;
+  --diary-page-header-height: 82px;
   --diary-fixed-gap: 12px;
 
   width: 100%;
-  max-width: 760px;
+  max-width: var(
+                  --page-max,
+                  1360px
+  );
+
   min-width: 0;
 
   margin-inline: auto;
 
-  /*
-   * Место под закреплённую шапку.
-   */
   padding-top: calc(
-          var(--diary-page-header-height) +
-          var(--diary-fixed-gap)
+          var(
+                  --diary-page-header-height
+          ) +
+          var(
+                  --diary-fixed-gap
+          )
   );
 
   padding-right: var(
@@ -21,11 +26,7 @@
                   24px
   );
 
-  /*
-   * Дополнительный запас под
-   * закреплённую кнопку сохранения.
-   */
-  padding-bottom: 40px;
+  padding-bottom: 56px;
 
   padding-left: var(
                   --page-gutter,
@@ -48,10 +49,17 @@
                           24px
           ),
           calc(
-                  (100vw -
-                  760px) / 2 +
-                  var(--page-gutter,
-                          24px)
+                  (
+                  100vw -
+                  var(
+                          --page-max,
+                          1360px
+                  )
+                  ) / 2 +
+                  var(
+                          --page-gutter,
+                          24px
+                  )
           )
   );
 
@@ -61,10 +69,17 @@
                           24px
           ),
           calc(
-                  (100vw -
-                  760px) / 2 +
-                  var(--page-gutter,
-                          24px)
+                  (
+                  100vw -
+                  var(
+                          --page-max,
+                          1360px
+                  )
+                  ) / 2 +
+                  var(
+                          --page-gutter,
+                          24px
+                  )
           )
   );
 
@@ -79,11 +94,11 @@
   display: flex;
   align-items: center;
 
-  gap: 14px;
+  gap: 18px;
 
   margin: 0;
 
-  padding: 10px 0;
+  padding: 12px 0;
 
   background: rgba(
                   255,
@@ -92,17 +107,22 @@
                   0.96
   );
 
-  border-bottom: 1px solid var(
+  border-bottom: 1px solid
+  var(
                   --border,
                   #dce5e8
   );
 
-  box-shadow: 0 6px 18px rgba(
-                  31,
-                  52,
-                  60,
-                  0.06
-  );
+  box-shadow:
+          0
+          6px
+          18px
+          rgba(
+                          31,
+                          52,
+                          60,
+                          0.06
+          );
 
   backdrop-filter: blur(14px);
 }
@@ -117,7 +137,11 @@
 
   gap: 9px;
 
-  padding: 8px 13px 8px 9px;
+  padding:
+          8px
+          13px
+          8px
+          9px;
 
   color: var(
                   --accent,
@@ -129,27 +153,33 @@
                   #fff
   );
 
-  border: 1px solid #c9dfdc;
+  border: 1px solid
+  #c9dfdc;
 
   border-radius: 12px;
 
-  box-shadow: 0 3px 10px rgba(
-                  31,
-                  52,
-                  60,
-                  0.05
-  );
+  box-shadow:
+          0
+          3px
+          10px
+          rgba(
+                          31,
+                          52,
+                          60,
+                          0.05
+          );
 
   cursor: pointer;
 
   font-size: 14px;
   font-weight: 600;
 
-  transition: color 160ms ease,
-  background-color 160ms ease,
-  border-color 160ms ease,
-  box-shadow 160ms ease,
-  transform 160ms ease;
+  transition:
+          color 160ms ease,
+          background-color 160ms ease,
+          border-color 160ms ease,
+          box-shadow 160ms ease,
+          transform 160ms ease;
 
   &:hover {
     color: var(
@@ -164,21 +194,41 @@
 
     border-color: #a9ceca;
 
+    box-shadow:
+            0
+            5px
+            14px
+            rgba(
+                            31,
+                            52,
+                            60,
+                            0.08
+            );
+
     transform: translateY(-1px);
   }
 
   &:focus-visible {
     outline: none;
 
-    box-shadow: 0 0 0 3px var(
-                    --focus-ring,
-                    rgba(
-                                    23,
-                                    107,
-                                    106,
-                                    0.18
-                    )
-    );
+    box-shadow:
+            0
+            0
+            0
+            3px
+            var(
+                            --focus-ring,
+                            rgba(
+                                            23,
+                                            107,
+                                            106,
+                                            0.18
+                            )
+            );
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 
@@ -192,15 +242,22 @@
   align-items: center;
   justify-content: center;
 
-  border-radius: 8px;
-
   background: var(
                   --bg-accent-soft,
                   #edf6f5
   );
 
+  border-radius: 8px;
+
   font-size: 18px;
   line-height: 1;
+
+  transition:
+          transform 160ms ease;
+
+  .backButton:hover & {
+    transform: translateX(-2px);
+  }
 }
 
 .backText {
@@ -217,6 +274,8 @@
   min-width: 0;
 
   margin: 0;
+
+  overflow-wrap: anywhere;
 }
 
 .patientName {
@@ -230,10 +289,35 @@
   overflow: hidden;
 
   font-size: 14px;
+  line-height: 1.3;
 
   text-overflow: ellipsis;
 
   white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .pageHeader {
+    gap: 13px;
+  }
+
+  .backButton {
+    padding-right: 10px;
+  }
+
+  .backText {
+    max-width: 120px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-bottom: 36px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -241,17 +325,51 @@
     --diary-page-header-height: 76px;
     --diary-fixed-gap: 8px;
 
+    width: 100%;
     max-width: 100%;
 
-    padding-right: 12px;
-    padding-left: 12px;
+    padding-top: calc(
+            var(
+                    --diary-page-header-height
+            ) +
+            var(
+                    --diary-fixed-gap
+            )
+    );
 
-    padding-bottom: 34px;
+    padding-left: max(
+            12px,
+            env(
+                            safe-area-inset-left,
+                            0px
+            )
+    );
+
+    padding-right: max(
+            12px,
+            env(
+                            safe-area-inset-right,
+                            0px
+            )
+    );
   }
 
   .pageHeader {
-    left: 12px;
-    right: 12px;
+    left: max(
+            12px,
+            env(
+                            safe-area-inset-left,
+                            0px
+            )
+    );
+
+    right: max(
+            12px,
+            env(
+                            safe-area-inset-right,
+                            0px
+            )
+    );
 
     height: var(
                     --diary-page-header-height
@@ -263,19 +381,15 @@
   }
 
   .backButton {
-    min-width: 44px;
+    width: 46px;
+    min-width: 46px;
+    height: 46px;
 
     padding: 7px;
-  }
 
-  /*
-   * Как и в большой форме:
-   * на узком экране оставляем
-   * компактную стрелку, чтобы
-   * заголовку дневника хватало места.
-   */
-  .backText {
-    display: none;
+    justify-content: center;
+
+    border-radius: 11px;
   }
 
   .backIcon {
@@ -285,11 +399,39 @@
     flex-basis: 28px;
   }
 
+  .backText {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    margin: -1px;
+    padding: 0;
+
+    overflow: hidden;
+
+    clip: rect(
+                    0
+                    0
+                    0
+                    0
+    );
+
+    white-space: nowrap;
+
+    border: 0;
+  }
+
   .title {
-    font-size: 17px;
+    min-width: 0;
+
+    font-size: 23px;
+    line-height: 1.18;
+
+    overflow-wrap: anywhere;
   }
 
   .patientName {
-    font-size: 12px;
+    font-size: 14px;
   }
 }

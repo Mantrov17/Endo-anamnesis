@@ -27,6 +27,8 @@ export const createPatient = (data: PatientFormData): Patient => {
 
     primaryAnamnesis: null,
 
+    glycemicProfile: null,
+
     diaryEntries: [],
   };
 

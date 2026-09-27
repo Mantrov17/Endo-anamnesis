@@ -4,9 +4,13 @@ import { useFormContext } from "react-hook-form";
 
 import type { AnamnesisFormData } from "@/entities/anamnesis";
 
+import { boolFromString } from "@/shared/lib/boolFromString";
+
 import { DateField } from "@/shared/ui/DateInput";
 
 import { Input } from "@/shared/ui/Input";
+
+import { Textarea } from "@/shared/ui/Textarea";
 
 import { Field } from "../../Field";
 
@@ -16,6 +20,12 @@ import styles from "../../styles.module.scss";
 
 export const EyesEntSection: React.FC = () => {
   const { register, watch, setValue } = useFormContext<AnamnesisFormData>();
+
+  const visionLoss = boolFromString(watch("complications.eyes.visionLoss"));
+
+  const floaters = boolFromString(watch("complications.eyes.floaters"));
+
+  const hearingLoss = boolFromString(watch("complications.ears.hearingLoss"));
 
   return (
     <>
@@ -29,17 +39,18 @@ export const EyesEntSection: React.FC = () => {
             register={register}
           />
 
-          {watch("complications.eyes.visionLoss") === true && (
+          {visionLoss === true && (
             <>
               <Input
                 label="Когда началось снижение зрения?"
                 {...register("complications.eyes.visionLossStart")}
               />
 
-              <Input
-                label="За какой промежуток времени (авторасчёт)"
-                {...register("complications.eyes.visionLossDuration")}
-                readOnly
+              <Textarea
+                label="Причина снижения зрения"
+                placeholder="Укажите причину снижения зрения"
+                {...register("complications.eyes.visionLossReason")}
+                rows={2}
               />
 
               <YesNo
@@ -83,7 +94,7 @@ export const EyesEntSection: React.FC = () => {
             register={register}
           />
 
-          {watch("complications.eyes.floaters") === true && (
+          {floaters === true && (
             <div className={styles.radioGroup}>
               <label>При каких условиях?</label>
 
@@ -142,7 +153,7 @@ export const EyesEntSection: React.FC = () => {
             register={register}
           />
 
-          {watch("complications.ears.hearingLoss") === true && (
+          {hearingLoss === true && (
             <>
               <Input
                 label="Когда началось снижение слуха?"

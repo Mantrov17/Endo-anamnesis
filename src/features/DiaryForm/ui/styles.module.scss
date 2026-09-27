@@ -5,14 +5,85 @@
   display: flex;
   flex-direction: column;
 
-  gap: 18px;
+  padding-bottom: 90px;
+
+  font-size: 16px;
+  line-height: 1.5;
+
+  label {
+    font-size: 16px;
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+.formSurface {
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+
+  background: var(
+                  --bg-surface,
+                  #fff
+  );
+
+  border: 1px solid var(
+                  --border,
+                  #dce5e8
+  );
+
+  border-radius: var(
+                  --radius-lg,
+                  18px
+  );
+
+  box-shadow: var(
+                  --shadow-sm,
+                  0 8px 24px rgba(
+                                  31,
+                                  52,
+                                  60,
+                                  0.07
+                  )
+  );
+}
+
+.content {
+  width: 100%;
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
 
   /*
-   * Запас снизу, чтобы последние поля
-   * можно было проскроллить выше
-   * закреплённой кнопки сохранения.
+   * Теперь расстояние между всеми
+   * полями задаётся только здесь.
    */
-  padding-bottom: 100px;
+  gap: 10px;
+
+  padding: 20px;
+}
+
+.field {
+  width: 100%;
+  min-width: 0;
+
+  /*
+   * Input/Textarea имеют собственный
+   * wrapper с margin-bottom: 18px.
+   * В дневнике он нам не нужен,
+   * иначе получается двойной отступ.
+   */
+  > div {
+    margin-bottom: 0;
+  }
 }
 
 .actions {
@@ -27,8 +98,8 @@
           ),
           calc(
                   (100vw -
-                  min(760px,
-                  100vw)) / 2 +
+                  var(--page-max,
+                          1360px)) / 2 +
                   var(--page-gutter,
                           24px)
           )
@@ -43,6 +114,8 @@
 
   display: flex;
   justify-content: flex-end;
+
+  gap: 10px;
 
   margin: 0;
 
@@ -72,7 +145,7 @@
   backdrop-filter: blur(12px);
 
   > button {
-    min-width: 210px;
+    min-width: 190px;
     min-height: 50px;
 
     font-size: 16px;
@@ -81,9 +154,32 @@
 
 @media (max-width: 640px) {
   .form {
-    gap: 16px;
+    padding-bottom: 98px;
+  }
 
-    padding-bottom: 92px;
+  .formSurface {
+    border-radius: 14px;
+  }
+
+  .content {
+    /*
+     * Как у содержимого большой формы:
+     * 18 сверху и по 12 с боков.
+     */
+    padding: 18px 12px 12px;
+
+    /*
+     * Между соседними полями теперь
+     * только 8px вместо фактических
+     * ~30–40px.
+     */
+    gap: 8px;
+  }
+
+  .field {
+    > div {
+      margin-bottom: 0;
+    }
   }
 
   .actions {
@@ -97,6 +193,8 @@
     );
 
     left: 12px;
+
+    margin: 0;
 
     padding: 8px;
 

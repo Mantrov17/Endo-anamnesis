@@ -2,6 +2,8 @@ import type { AnamnesisRecord } from "@/entities/anamnesis/@x/patient";
 
 import type { DiaryRecord } from "@/entities/diary/@x/patient";
 
+import type { GlycemicProfile } from "@/entities/glycemicProfile/@x/patient";
+
 export interface PatientBase {
   fullName: string;
 
@@ -18,6 +20,8 @@ export interface Patient extends PatientBase {
   createdAt: string;
 
   primaryAnamnesis: AnamnesisRecord | null;
+
+  glycemicProfile: GlycemicProfile | null;
 
   diaryEntries: DiaryRecord[];
 }

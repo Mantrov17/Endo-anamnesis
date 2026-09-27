@@ -16,25 +16,21 @@ type PrimaryAnamnesisRecord = NonNullable<Patient["primaryAnamnesis"]>;
 
 type StoredDiaryRecord = Patient["diaryEntries"][number];
 
+type StoredGlycemicProfile = NonNullable<Patient["glycemicProfile"]>;
+
 type StoredPatient = Omit<
   Patient,
-  "createdAt" | "primaryAnamnesis" | "diaryEntries"
+  "createdAt" | "primaryAnamnesis" | "diaryEntries" | "glycemicProfile"
 > & {
   createdAt?: string;
 
   primaryAnamnesis?: PrimaryAnamnesisRecord | null;
 
-  /*
-   * Старая схема до появления
-   * primaryAnamnesis.
-   */
   anamneses?: PrimaryAnamnesisRecord[];
 
-  /*
-   * Отсутствует у пациентов,
-   * созданных до появления дневников.
-   */
   diaryEntries?: StoredDiaryRecord[];
+
+  glycemicProfile?: StoredGlycemicProfile | null;
 };
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
@@ -79,6 +75,14 @@ const isStoredPatient = (value: unknown): value is StoredPatient => {
   }
 
   if (value.diaryEntries !== undefined && !Array.isArray(value.diaryEntries)) {
+    return false;
+  }
+
+  if (
+    value.glycemicProfile !== undefined &&
+    value.glycemicProfile !== null &&
+    !isObject(value.glycemicProfile)
+  ) {
     return false;
   }
 
@@ -144,6 +148,8 @@ const migrateStoredPatient = (patient: StoredPatient): Patient => {
 
     primaryAnamnesis,
 
+    glycemicProfile: patient.glycemicProfile ?? null,
+
     diaryEntries: patient.diaryEntries ?? [],
   };
 };
@@ -160,6 +166,7 @@ const needsMigration = (
     (patient) =>
       "anamneses" in patient ||
       !("primaryAnamnesis" in patient) ||
+      !("glycemicProfile" in patient) ||
       !("diaryEntries" in patient) ||
       !patient.createdAt,
   );
