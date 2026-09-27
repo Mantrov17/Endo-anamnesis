@@ -21,25 +21,34 @@ export const SelfMonitoringTab: React.FC = () => {
     <div className={styles.section}>
       <h3>Самоконтроль</h3>
 
+      <div className={styles.radioGroup}>
+        <label>Частота самоконтроля гликемии</label>
+
+        <label>
+          <input
+            type="radio"
+            value="regular"
+            {...register("selfMonitoring.frequencyRegularity")}
+          />{" "}
+          Регулярно
+        </label>
+
+        <label>
+          <input
+            type="radio"
+            value="irregular"
+            {...register("selfMonitoring.frequencyRegularity")}
+          />{" "}
+          Нерегулярно
+        </label>
+      </div>
+
       <Textarea
-        label="Как часто происходит самоконтроль глюкозы?"
+        label="Уточните частоту самоконтроля"
+        placeholder="Например: 8–12 раз в сутки"
         {...register("selfMonitoring.frequency")}
         rows={2}
       />
-
-      <YesNo
-        label="В одно и то же время?"
-        name="selfMonitoring.sameTime"
-        register={register}
-      />
-
-      {watch("selfMonitoring.sameTime") === false && (
-        <Textarea
-          label="Поясните"
-          {...register("selfMonitoring.ifNotSameTimeReason")}
-          rows={2}
-        />
-      )}
 
       <YesNo
         label="Ведение дневника"
@@ -47,55 +56,32 @@ export const SelfMonitoringTab: React.FC = () => {
         register={register}
       />
 
-      <fieldset className={styles.fieldset}>
-        <legend>Для СД 1 типа</legend>
+      <YesNo
+        label="Имеется ли глюкометр?"
+        name="selfMonitoring.hasGlucometer"
+        register={register}
+      />
 
-        <Input
-          label="Как часто меняете иглу (например, после каждой инъекции)"
-          {...register("selfMonitoring.needleChangeFrequency")}
-        />
-
-        <Input
-          label="Как часто меняете место инъекции"
-          {...register("selfMonitoring.siteChangeFrequency")}
-        />
-
-        <Input
-          label="Сколько см отступаете (не менее 1–2 см)"
-          {...register("selfMonitoring.injectionSiteDistance")}
-        />
-      </fieldset>
-
-      <fieldset className={styles.fieldset}>
-        <legend>Для СД 1 и 2 типа</legend>
-
+      {watch("selfMonitoring.hasGlucometer") === true && (
         <YesNo
-          label="Имеется ли глюкометр?"
-          name="selfMonitoring.hasGlucometer"
+          label="Производилась ли калибровка?"
+          name="selfMonitoring.calibrationDone"
           register={register}
         />
+      )}
 
-        {watch("selfMonitoring.hasGlucometer") === true && (
-          <YesNo
-            label="Производилась ли калибровка?"
-            name="selfMonitoring.calibrationDone"
-            register={register}
-          />
-        )}
+      <Input
+        label="Когда последний раз были у врача на диспансеризации?"
+        {...register("selfMonitoring.lastDoctorVisit")}
+      />
 
-        <Input
-          label="Когда последний раз были у врача на диспансеризации?"
-          {...register("selfMonitoring.lastDoctorVisit")}
-        />
-
-        <label>
-          <input
-            type="checkbox"
-            {...register("selfMonitoring.lastDoctorVisitUnknown")}
-          />{" "}
-          Затрудняюсь ответить
-        </label>
-      </fieldset>
+      <label className={styles.smallCheckbox}>
+        <input
+          type="checkbox"
+          {...register("selfMonitoring.lastDoctorVisitUnknown")}
+        />{" "}
+        Затрудняюсь ответить
+      </label>
 
       <Field
         noteKey="selfMonitoring.general"

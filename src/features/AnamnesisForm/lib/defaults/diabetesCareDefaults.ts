@@ -39,14 +39,10 @@ export const createHypoglycemiaDefaults = (): HypoglycemiaDefaults => ({
 });
 
 export const createSelfMonitoringDefaults = (): SelfMonitoringDefaults => ({
+  frequencyRegularity: "",
   frequency: "",
-  sameTime: null,
-  ifNotSameTimeReason: "",
-  diary: null,
 
-  needleChangeFrequency: "",
-  siteChangeFrequency: "",
-  injectionSiteDistance: "",
+  diary: null,
 
   hasGlucometer: null,
   calibrationDone: null,

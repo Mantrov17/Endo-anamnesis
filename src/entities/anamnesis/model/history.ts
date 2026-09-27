@@ -44,19 +44,11 @@ export interface Hypoglycemia {
 // ==================== Самоконтроль ====================
 
 export interface SelfMonitoring {
+  frequencyRegularity: "regular" | "irregular" | "";
+
   frequency: string;
 
-  sameTime: boolean | null;
-
-  ifNotSameTimeReason: string;
-
   diary: boolean | null;
-
-  needleChangeFrequency: string;
-
-  siteChangeFrequency: string;
-
-  injectionSiteDistance: string;
 
   hasGlucometer: boolean | null;
 
