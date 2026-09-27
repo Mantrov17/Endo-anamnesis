@@ -6,6 +6,8 @@ import "./styles.scss";
 
 import { AnamnesisPage } from "@/pages/AnamnesisPage";
 
+import { DiaryPage } from "@/pages/DiaryPage";
+
 import { PatientFormPage } from "@/pages/PatientFormPage";
 
 import { PatientsListPage } from "@/pages/PatientsListPage";
@@ -25,9 +27,11 @@ export const App: React.FC = () => {
           element={<AnamnesisPage />}
         />
 
+        <Route path="/patient/:patientId/diary/new" element={<DiaryPage />} />
+
         <Route
-          path="/patient/:patientId/anamnesis/:anamnesisId"
-          element={<AnamnesisPage />}
+          path="/patient/:patientId/diary/:diaryId"
+          element={<DiaryPage />}
         />
       </Routes>
     </HashRouter>

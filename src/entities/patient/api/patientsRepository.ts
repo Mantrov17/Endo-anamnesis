@@ -12,8 +12,29 @@ import {
 
 import type { Patient } from "../model/types";
 
-type StoredPatient = Omit<Patient, "createdAt"> & {
+type PrimaryAnamnesisRecord = NonNullable<Patient["primaryAnamnesis"]>;
+
+type StoredDiaryRecord = Patient["diaryEntries"][number];
+
+type StoredPatient = Omit<
+  Patient,
+  "createdAt" | "primaryAnamnesis" | "diaryEntries"
+> & {
   createdAt?: string;
+
+  primaryAnamnesis?: PrimaryAnamnesisRecord | null;
+
+  /*
+   * Старая схема до появления
+   * primaryAnamnesis.
+   */
+  anamneses?: PrimaryAnamnesisRecord[];
+
+  /*
+   * Отсутствует у пациентов,
+   * созданных до появления дневников.
+   */
+  diaryEntries?: StoredDiaryRecord[];
 };
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
@@ -33,10 +54,6 @@ const isStoredPatient = (value: unknown): value is StoredPatient => {
     return false;
   }
 
-  if (!Array.isArray(value.anamneses)) {
-    return false;
-  }
-
   if (value.createdAt !== undefined && typeof value.createdAt !== "string") {
     return false;
   }
@@ -46,6 +63,22 @@ const isStoredPatient = (value: unknown): value is StoredPatient => {
     value.gender !== "male" &&
     value.gender !== "female"
   ) {
+    return false;
+  }
+
+  if (value.anamneses !== undefined && !Array.isArray(value.anamneses)) {
+    return false;
+  }
+
+  if (
+    value.primaryAnamnesis !== undefined &&
+    value.primaryAnamnesis !== null &&
+    !isObject(value.primaryAnamnesis)
+  ) {
+    return false;
+  }
+
+  if (value.diaryEntries !== undefined && !Array.isArray(value.diaryEntries)) {
     return false;
   }
 
@@ -68,85 +101,89 @@ const readStorageVersion = (): number => {
   );
 };
 
-const migrateToVersion1 = (patients: StoredPatient[]): Patient[] => {
-  const migrationDate = new Date().toISOString();
-
-  return patients.map((patient) => ({
-    ...patient,
-
-    createdAt: patient.createdAt || migrationDate,
-
-    anamneses: patient.anamneses,
-  }));
-};
-
-const migratePatients = (
-  patients: StoredPatient[],
-  fromVersion: number,
-): Patient[] => {
-  if (fromVersion < 1) {
-    return migrateToVersion1(patients);
+const getLatestLegacyAnamnesis = (
+  anamneses: PrimaryAnamnesisRecord[],
+): PrimaryAnamnesisRecord | null => {
+  if (anamneses.length === 0) {
+    return null;
   }
 
-  /*
-   * Защитная нормализация.
-   *
-   * Даже у данных версии 1 createdAt
-   * может отсутствовать, если localStorage
-   * редактировался вручную или был создан
-   * промежуточной версией приложения.
-   */
-  return patients.map((patient) => ({
-    ...patient,
+  return anamneses.reduce((latest, current) => {
+    const latestTimestamp = Date.parse(latest.savedAt);
+
+    const currentTimestamp = Date.parse(current.savedAt);
+
+    const safeLatestTimestamp = Number.isFinite(latestTimestamp)
+      ? latestTimestamp
+      : 0;
+
+    const safeCurrentTimestamp = Number.isFinite(currentTimestamp)
+      ? currentTimestamp
+      : 0;
+
+    return safeCurrentTimestamp >= safeLatestTimestamp ? current : latest;
+  });
+};
+
+const migrateStoredPatient = (patient: StoredPatient): Patient => {
+  const primaryAnamnesis =
+    patient.primaryAnamnesis !== undefined
+      ? patient.primaryAnamnesis
+      : getLatestLegacyAnamnesis(patient.anamneses ?? []);
+
+  return {
+    id: patient.id,
+
+    fullName: patient.fullName,
+
+    birthDate: patient.birthDate,
+
+    gender: patient.gender,
 
     createdAt: patient.createdAt || new Date().toISOString(),
 
-    anamneses: patient.anamneses,
-  }));
+    primaryAnamnesis,
+
+    diaryEntries: patient.diaryEntries ?? [],
+  };
+};
+
+const needsMigration = (
+  patients: StoredPatient[],
+  version: number,
+): boolean => {
+  if (version !== PATIENTS_STORAGE_VERSION) {
+    return true;
+  }
+
+  return patients.some(
+    (patient) =>
+      "anamneses" in patient ||
+      !("primaryAnamnesis" in patient) ||
+      !("diaryEntries" in patient) ||
+      !patient.createdAt,
+  );
 };
 
 const persistMigration = (patients: Patient[]): void => {
   try {
-    /*
-     * Сначала записываем сами данные.
-     * Только потом версию схемы.
-     */
     writeJsonStorage(PATIENTS_STORAGE_KEY, patients);
 
     try {
       writeJsonStorage(PATIENTS_STORAGE_VERSION_KEY, PATIENTS_STORAGE_VERSION);
     } catch (error) {
-      /*
-       * Основные данные уже записаны.
-       * Отсутствие номера версии не должно
-       * делать чтение данных невозможным.
-       *
-       * При следующем запуске миграция
-       * просто выполнится повторно.
-       */
       console.warn(
         "Данные пациентов мигрированы, но не удалось сохранить номер версии схемы.",
         error,
       );
     }
   } catch (error) {
-    /*
-     * Ошибка автосохранения миграции
-     * не должна превращать чтение данных
-     * в ошибку приложения.
-     *
-     * В памяти используем уже
-     * нормализованную структуру.
-     */
-    console.warn(
-      "Не удалось записать мигрированные данные пациентов в localStorage.",
-      error,
-    );
+    console.warn("Не удалось записать мигрированные данные пациентов.", error);
   }
 };
 
 export const readPatientsStorage = (): Patient[] => {
-  const patients = readJsonStorage<StoredPatient[]>(
+  const storedPatients = readJsonStorage<StoredPatient[]>(
     PATIENTS_STORAGE_KEY,
     [],
     isStoredPatientsArray,
@@ -154,67 +191,36 @@ export const readPatientsStorage = (): Patient[] => {
 
   const version = readStorageVersion();
 
-  /*
-   * Более новую структуру читаем
-   * максимально осторожно, но
-   * автоматически не перезаписываем.
-   */
+  const patients = storedPatients.map(migrateStoredPatient);
+
   if (version > PATIENTS_STORAGE_VERSION) {
     console.warn(
       `patientsData имеет более новую версию схемы (${version}), чем поддерживает приложение (${PATIENTS_STORAGE_VERSION}).`,
     );
 
-    return patients.map((patient) => ({
-      ...patient,
-
-      createdAt: patient.createdAt || new Date().toISOString(),
-
-      anamneses: patient.anamneses,
-    }));
+    return patients;
   }
 
-  const migratedPatients = migratePatients(patients, version);
-
-  /*
-   * Пустое хранилище не создаём
-   * только из-за открытия приложения.
-   */
-  if (patients.length === 0) {
-    return migratedPatients;
+  if (storedPatients.length === 0) {
+    return patients;
   }
 
-  if (version !== PATIENTS_STORAGE_VERSION) {
-    persistMigration(migratedPatients);
+  if (needsMigration(storedPatients, version)) {
+    persistMigration(patients);
   }
 
-  return migratedPatients;
+  return patients;
 };
 
 export const writePatientsStorage = (patients: Patient[]): void => {
   const currentStoredVersion = readStorageVersion();
 
-  /*
-   * Если данные уже открывались более новой
-   * версией приложения, старая версия
-   * не имеет права перезаписать их своей
-   * схемой.
-   */
   if (currentStoredVersion > PATIENTS_STORAGE_VERSION) {
     throw new StorageWriteError("incompatible-version", PATIENTS_STORAGE_KEY);
   }
 
-  /*
-   * Если эта запись завершилась ошибкой,
-   * исключение обязательно уходит наверх:
-   * UI не должен показать "Сохранено".
-   */
   writeJsonStorage(PATIENTS_STORAGE_KEY, patients);
 
-  /*
-   * Основные данные уже успешно записаны.
-   * Ошибка записи технического номера
-   * версии не означает потерю изменений.
-   */
   try {
     writeJsonStorage(PATIENTS_STORAGE_VERSION_KEY, PATIENTS_STORAGE_VERSION);
   } catch (error) {

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import { deleteAnamnesis } from "@/entities/anamnesis";
+import { deleteDiary } from "@/entities/diary";
 
 import {
   deletePatient,
@@ -53,7 +53,6 @@ export const usePatientsList = () => {
         dateTo,
         sortBy,
       }),
-
     [patients, searchTerm, genderFilter, dateFrom, dateTo, sortBy],
   );
 
@@ -62,11 +61,7 @@ export const usePatientsList = () => {
   const paginatedPatients = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
 
-    return filteredPatients.slice(
-      start,
-
-      start + itemsPerPage,
-    );
+    return filteredPatients.slice(start, start + itemsPerPage);
   }, [filteredPatients, currentPage, itemsPerPage]);
 
   const hasActiveFilters =
@@ -95,7 +90,9 @@ export const usePatientsList = () => {
   };
 
   const handleDeletePatient = (patientId: string) => {
-    const confirmed = window.confirm("Удалить пациента и все его анамнезы?");
+    const confirmed = window.confirm(
+      "Удалить пациента, его первичный анамнез и все дневники?",
+    );
 
     if (!confirmed) {
       return;
@@ -105,7 +102,7 @@ export const usePatientsList = () => {
       const success = deletePatient(patientId);
 
       if (!success) {
-        window.alert("Пациент не найден. Возможно, он уже был удалён.");
+        window.alert("Пациент не найден.");
 
         return;
       }
@@ -118,33 +115,37 @@ export const usePatientsList = () => {
     }
   };
 
-  const handleAddAnamnesis = (patientId: string) => {
+  const handleOpenPrimaryAnamnesis = (patientId: string) => {
     navigate(`/patient/${patientId}/anamnesis`);
   };
 
-  const handleEditAnamnesis = (patientId: string, anamnesisId: string) => {
-    navigate(`/patient/${patientId}/anamnesis/${anamnesisId}`);
+  const handleAddDiary = (patientId: string) => {
+    navigate(`/patient/${patientId}/diary/new`);
   };
 
-  const handleDeleteAnamnesis = (patientId: string, anamnesisId: string) => {
-    const confirmed = window.confirm("Удалить этот анамнез?");
+  const handleEditDiary = (patientId: string, diaryId: string) => {
+    navigate(`/patient/${patientId}/diary/${diaryId}`);
+  };
+
+  const handleDeleteDiary = (patientId: string, diaryId: string) => {
+    const confirmed = window.confirm("Удалить этот дневник?");
 
     if (!confirmed) {
       return;
     }
 
     try {
-      const success = deleteAnamnesis(patientId, anamnesisId);
+      const success = deleteDiary(patientId, diaryId);
 
       if (!success) {
-        window.alert("Анамнез не найден. Возможно, он уже был удалён.");
+        window.alert("Дневник не найден. Возможно, он уже был удалён.");
 
         return;
       }
 
       refreshPatients();
     } catch (error) {
-      console.error("Ошибка удаления анамнеза:", error);
+      console.error("Ошибка удаления дневника:", error);
 
       window.alert(getStorageWriteErrorMessage(error));
     }
@@ -264,9 +265,11 @@ export const usePatientsList = () => {
     handleAddPatient,
     handleDeletePatient,
 
-    handleAddAnamnesis,
-    handleEditAnamnesis,
-    handleDeleteAnamnesis,
+    handleOpenPrimaryAnamnesis,
+
+    handleAddDiary,
+    handleEditDiary,
+    handleDeleteDiary,
 
     handleSearchChange,
     clearSearch,

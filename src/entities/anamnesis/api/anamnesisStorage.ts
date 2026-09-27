@@ -5,6 +5,10 @@ import {
 
 import type { AnamnesisFormData, AnamnesisRecord } from "../model";
 
+const createAnamnesisId = (): string => {
+  return Date.now().toString() + Math.random().toString(36).slice(2, 6);
+};
+
 export const addAnamnesis = (
   patientId: string,
   data: AnamnesisFormData,
@@ -18,30 +22,30 @@ export const addAnamnesis = (
   }
 
   /*
-   * Дата рождения может быть неизвестна
-   * при создании пациента и введена позже
-   * во время первичного осмотра.
+   * Даже если addAnamnesis случайно
+   * вызывается повторно, второго
+   * первичного анамнеза не появится.
    *
-   * В таком случае синхронизируем её
-   * с основной карточкой пациента.
+   * Сохраняем ID уже существующего
+   * первичного анамнеза.
    */
-  if (data.birthDate && patient.birthDate !== data.birthDate) {
-    patient.birthDate = data.birthDate;
-  }
-
-  const newAnamnesis: AnamnesisRecord = {
+  const record: AnamnesisRecord = {
     ...data,
 
-    id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
+    id: patient.primaryAnamnesis?.id ?? createAnamnesisId(),
 
     savedAt: new Date().toISOString(),
   };
 
-  patient.anamneses.push(newAnamnesis);
+  if (data.birthDate && patient.birthDate !== data.birthDate) {
+    patient.birthDate = data.birthDate;
+  }
+
+  patient.primaryAnamnesis = record;
 
   writePatientsStorage(patients);
 
-  return newAnamnesis;
+  return record;
 };
 
 export const getAnamnesisById = (
@@ -52,11 +56,15 @@ export const getAnamnesisById = (
 
   const patient = patients.find((item) => item.id === patientId);
 
-  if (!patient) {
+  if (!patient || !patient.primaryAnamnesis) {
     return undefined;
   }
 
-  return patient.anamneses.find((anamnesis) => anamnesis.id === anamnesisId);
+  if (patient.primaryAnamnesis.id !== anamnesisId) {
+    return undefined;
+  }
+
+  return patient.primaryAnamnesis;
 };
 
 export const updateAnamnesis = (
@@ -68,15 +76,11 @@ export const updateAnamnesis = (
 
   const patient = patients.find((item) => item.id === patientId);
 
-  if (!patient) {
+  if (!patient || !patient.primaryAnamnesis) {
     return false;
   }
 
-  const index = patient.anamneses.findIndex(
-    (anamnesis) => anamnesis.id === anamnesisId,
-  );
-
-  if (index === -1) {
+  if (patient.primaryAnamnesis.id !== anamnesisId) {
     return false;
   }
 
@@ -84,10 +88,17 @@ export const updateAnamnesis = (
     patient.birthDate = data.birthDate;
   }
 
-  patient.anamneses[index] = {
-    ...patient.anamneses[index],
+  patient.primaryAnamnesis = {
+    ...patient.primaryAnamnesis,
 
     ...data,
+
+    /*
+     * Теперь savedAt означает
+     * последнее сохранение первичного
+     * анамнеза.
+     */
+    savedAt: new Date().toISOString(),
   };
 
   writePatientsStorage(patients);
@@ -95,6 +106,13 @@ export const updateAnamnesis = (
   return true;
 };
 
+/*
+ * Пока оставляем функцию для
+ * совместимости API.
+ *
+ * Из интерфейса возможность удаления
+ * первичного анамнеза убираем.
+ */
 export const deleteAnamnesis = (
   patientId: string,
   anamnesisId: string,
@@ -103,19 +121,15 @@ export const deleteAnamnesis = (
 
   const patient = patients.find((item) => item.id === patientId);
 
-  if (!patient) {
+  if (!patient || !patient.primaryAnamnesis) {
     return false;
   }
 
-  const initialLength = patient.anamneses.length;
-
-  patient.anamneses = patient.anamneses.filter(
-    (anamnesis) => anamnesis.id !== anamnesisId,
-  );
-
-  if (patient.anamneses.length === initialLength) {
+  if (patient.primaryAnamnesis.id !== anamnesisId) {
     return false;
   }
+
+  patient.primaryAnamnesis = null;
 
   writePatientsStorage(patients);
 

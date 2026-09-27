@@ -1,29 +1,36 @@
 import React from "react";
 
+import { type DiaryRecord, formatDiaryTitle } from "@/entities/diary";
+
 import { Button } from "@/shared/ui/Button";
+
 import { Heading } from "@/shared/ui/Heading";
 
 import styles from "../styles.module.scss";
-import type { AnamnesisRecord } from "@/entities/anamnesis";
 
-interface PatientAnamnesesProps {
+interface PatientDiariesProps {
   patientId: string;
-  anamneses: AnamnesisRecord[];
+
+  diaryEntries: DiaryRecord[];
 
   onAdd: (patientId: string) => void;
 
-  onEdit: (patientId: string, anamnesisId: string) => void;
+  onEdit: (patientId: string, diaryId: string) => void;
 
-  onDelete: (patientId: string, anamnesisId: string) => void;
+  onDelete: (patientId: string, diaryId: string) => void;
 }
 
-export const PatientAnamneses: React.FC<PatientAnamnesesProps> = ({
+export const PatientDiaries: React.FC<PatientDiariesProps> = ({
   patientId,
-  anamneses,
+  diaryEntries,
   onAdd,
   onEdit,
   onDelete,
 }) => {
+  const sortedDiaries = [...diaryEntries].sort(
+    (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt),
+  );
+
   return (
     <div className={styles.anamnesesSection}>
       <div className={styles.anamnesesHeader}>
@@ -32,7 +39,7 @@ export const PatientAnamneses: React.FC<PatientAnamnesesProps> = ({
           variant="subsection"
           className={styles.anamnesesTitle}
         >
-          Анамнезы
+          Дневники
         </Heading>
 
         <Button
@@ -43,22 +50,23 @@ export const PatientAnamneses: React.FC<PatientAnamnesesProps> = ({
             onAdd(patientId);
           }}
         >
-          + Добавить анамнез
+          + Добавить дневник
         </Button>
       </div>
 
-      {anamneses.length === 0 ? (
-        <p className={styles.noAnamnesis}>Нет анамнезов</p>
+      {sortedDiaries.length === 0 ? (
+        <p className={styles.noAnamnesis}>Дневников пока нет</p>
       ) : (
         <div className={styles.anamnesisList}>
-          {anamneses.map((anam) => (
-            <div key={anam.id} className={styles.anamnesisItem}>
+          {sortedDiaries.map((diary) => (
+            <div key={diary.id} className={styles.anamnesisItem}>
               <div className={styles.anamnesisInfo}>
-                <strong>
-                  Анамнез от {new Date(anam.savedAt).toLocaleDateString()}
-                </strong>
+                <strong>{formatDiaryTitle(diary.date)}</strong>
 
-                <span>Создан: {new Date(anam.savedAt).toLocaleString()}</span>
+                <span>
+                  Последнее изменение:{" "}
+                  {new Date(diary.updatedAt).toLocaleString("ru-RU")}
+                </span>
               </div>
 
               <div className={styles.anamnesisActions}>
@@ -67,7 +75,7 @@ export const PatientAnamneses: React.FC<PatientAnamnesesProps> = ({
                   onClick={(event) => {
                     event.stopPropagation();
 
-                    onEdit(patientId, anam.id);
+                    onEdit(patientId, diary.id);
                   }}
                 >
                   Редактировать
@@ -78,7 +86,7 @@ export const PatientAnamneses: React.FC<PatientAnamnesesProps> = ({
                   onClick={(event) => {
                     event.stopPropagation();
 
-                    onDelete(patientId, anam.id);
+                    onDelete(patientId, diary.id);
                   }}
                 >
                   Удалить

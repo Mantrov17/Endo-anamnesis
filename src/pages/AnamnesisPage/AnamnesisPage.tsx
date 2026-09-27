@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
 
-import { getAnamnesisById, type AnamnesisFormData } from "@/entities/anamnesis";
+import type { AnamnesisFormData } from "@/entities/anamnesis";
 
 import { getPatientById } from "@/entities/patient";
 
@@ -22,9 +22,8 @@ import styles from "./styles.module.scss";
 export const AnamnesisPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const { patientId, anamnesisId } = useParams<{
+  const { patientId } = useParams<{
     patientId: string;
-    anamnesisId?: string;
   }>();
 
   const [isSaved, setIsSaved] = useState(false);
@@ -32,6 +31,10 @@ export const AnamnesisPage: React.FC = () => {
   const [initialData, setInitialData] = useState<AnamnesisFormData | undefined>(
     undefined,
   );
+
+  const [primaryAnamnesisId, setPrimaryAnamnesisId] = useState<
+    string | undefined
+  >(undefined);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -57,45 +60,27 @@ export const AnamnesisPage: React.FC = () => {
       return;
     }
 
-    if (anamnesisId) {
-      const anamnesis = getAnamnesisById(patientId, anamnesisId);
+    if (patient.primaryAnamnesis) {
+      const formData = normalizeAnamnesisFormData(patient.primaryAnamnesis);
 
-      if (anamnesis) {
-        const formData = normalizeAnamnesisFormData(anamnesis);
+      setInitialData(formData);
 
-        setInitialData(formData);
-      } else {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setError("Анамнез не найден");
-      }
+      setPrimaryAnamnesisId(patient.primaryAnamnesis.id);
+    } else {
+      setInitialData(undefined);
+
+      setPrimaryAnamnesisId(undefined);
     }
 
     setLoading(false);
-  }, [patientId, anamnesisId, navigate]);
+  }, [patientId, navigate]);
 
-  const handleFormSuccess = (savedAnamnesisId: string) => {
+  const handleFormSuccess = () => {
     setIsSaved(true);
 
     window.setTimeout(() => {
       setIsSaved(false);
     }, 3000);
-
-    /*
-     * После первого сохранения
-     * переводим страницу с route
-     * "новый анамнез" на route
-     * созданной записи.
-     *
-     * replace нужен, чтобы кнопка
-     * "Назад" не возвращала нас
-     * на уже неактуальную форму
-     * создания.
-     */
-    if (!anamnesisId && patientId) {
-      navigate(`/patient/${patientId}/anamnesis/${savedAnamnesisId}`, {
-        replace: true,
-      });
-    }
   };
 
   if (loading) {
@@ -138,18 +123,20 @@ export const AnamnesisPage: React.FC = () => {
         </button>
 
         <Heading level={1} variant="page" className={styles.title}>
-          {anamnesisId ? "Редактирование анамнеза" : "Новый анамнез пациента"}
+          Первичный анамнез
         </Heading>
       </div>
 
       <AnamnesisForm
         patientId={patientId}
         initialData={initialData}
-        anamnesisId={anamnesisId}
+        anamnesisId={primaryAnamnesisId}
         onSuccess={handleFormSuccess}
       />
 
-      {isSaved && <SuccessMessage>✅ Анамнез успешно сохранён.</SuccessMessage>}
+      {isSaved && (
+        <SuccessMessage>✅ Первичный анамнез успешно сохранён.</SuccessMessage>
+      )}
     </main>
   );
 };

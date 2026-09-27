@@ -3,9 +3,13 @@ import React from "react";
 import { usePatientsList } from "./model/usePatientsList";
 
 import { PatientCard } from "./ui/PatientCard";
+
 import { PatientsHeader } from "./ui/PatientsHeader";
+
 import { PatientsPagination } from "./ui/PatientsPagination";
+
 import { PatientsSearchFilters } from "./ui/PatientsSearchFilters";
+
 import { PatientsStatsControls } from "./ui/PatientsStatsControls";
 
 import styles from "./styles.module.scss";
@@ -33,9 +37,11 @@ export const PatientsListPage: React.FC = () => {
     handleAddPatient,
     handleDeletePatient,
 
-    handleAddAnamnesis,
-    handleEditAnamnesis,
-    handleDeleteAnamnesis,
+    handleOpenPrimaryAnamnesis,
+
+    handleAddDiary,
+    handleEditDiary,
+    handleDeleteDiary,
 
     handleSearchChange,
     clearSearch,
@@ -104,9 +110,10 @@ export const PatientsListPage: React.FC = () => {
                 isExpanded={expandedPatients.has(patient.id)}
                 onToggle={togglePatientExpand}
                 onDeletePatient={handleDeletePatient}
-                onAddAnamnesis={handleAddAnamnesis}
-                onEditAnamnesis={handleEditAnamnesis}
-                onDeleteAnamnesis={handleDeleteAnamnesis}
+                onOpenPrimaryAnamnesis={handleOpenPrimaryAnamnesis}
+                onAddDiary={handleAddDiary}
+                onEditDiary={handleEditDiary}
+                onDeleteDiary={handleDeleteDiary}
               />
             ))}
           </div>

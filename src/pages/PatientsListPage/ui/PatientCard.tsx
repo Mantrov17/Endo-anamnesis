@@ -8,7 +8,9 @@ import { Heading } from "@/shared/ui/Heading";
 
 import { getPatientAgeLabel } from "../lib/patientsList";
 
-import { PatientAnamneses } from "./PatientAnamneses";
+import { PatientDiaries } from "./PatientDiaries";
+
+import { PatientPrimaryAnamnesis } from "./PatientPrimaryAnamnesis";
 
 import styles from "../styles.module.scss";
 
@@ -21,11 +23,13 @@ interface PatientCardProps {
 
   onDeletePatient: (patientId: string) => void;
 
-  onAddAnamnesis: (patientId: string) => void;
+  onOpenPrimaryAnamnesis: (patientId: string) => void;
 
-  onEditAnamnesis: (patientId: string, anamnesisId: string) => void;
+  onAddDiary: (patientId: string) => void;
 
-  onDeleteAnamnesis: (patientId: string, anamnesisId: string) => void;
+  onEditDiary: (patientId: string, diaryId: string) => void;
+
+  onDeleteDiary: (patientId: string, diaryId: string) => void;
 }
 
 export const PatientCard: React.FC<PatientCardProps> = ({
@@ -33,9 +37,10 @@ export const PatientCard: React.FC<PatientCardProps> = ({
   isExpanded,
   onToggle,
   onDeletePatient,
-  onAddAnamnesis,
-  onEditAnamnesis,
-  onDeleteAnamnesis,
+  onOpenPrimaryAnamnesis,
+  onAddDiary,
+  onEditDiary,
+  onDeleteDiary,
 }) => {
   const age = getPatientAgeLabel(patient.birthDate);
 
@@ -45,13 +50,9 @@ export const PatientCard: React.FC<PatientCardProps> = ({
 
   const createdDateTime = new Date(patient.createdAt).toLocaleString("ru-RU", {
     day: "2-digit",
-
     month: "2-digit",
-
     year: "numeric",
-
     hour: "2-digit",
-
     minute: "2-digit",
   });
 
@@ -72,7 +73,13 @@ export const PatientCard: React.FC<PatientCardProps> = ({
           </span>
 
           <span className={styles.anamnesisCount}>
-            Записей: {patient.anamneses.length}
+            {patient.primaryAnamnesis
+              ? "Первичный анамнез заполнен"
+              : "Первичный анамнез не заполнен"}
+          </span>
+
+          <span className={styles.anamnesisCount}>
+            Дневников: {patient.diaryEntries.length}
           </span>
 
           <span className={styles.createdAtMeta}>
@@ -91,13 +98,21 @@ export const PatientCard: React.FC<PatientCardProps> = ({
       </div>
 
       {isExpanded && (
-        <PatientAnamneses
-          patientId={patient.id}
-          anamneses={patient.anamneses}
-          onAdd={onAddAnamnesis}
-          onEdit={onEditAnamnesis}
-          onDelete={onDeleteAnamnesis}
-        />
+        <>
+          <PatientPrimaryAnamnesis
+            patientId={patient.id}
+            primaryAnamnesis={patient.primaryAnamnesis}
+            onOpen={onOpenPrimaryAnamnesis}
+          />
+
+          <PatientDiaries
+            patientId={patient.id}
+            diaryEntries={patient.diaryEntries}
+            onAdd={onAddDiary}
+            onEdit={onEditDiary}
+            onDelete={onDeleteDiary}
+          />
+        </>
       )}
     </article>
   );

@@ -1,0 +1,295 @@
+.container {
+  --diary-page-header-height: 86px;
+  --diary-fixed-gap: 12px;
+
+  width: 100%;
+  max-width: 760px;
+  min-width: 0;
+
+  margin-inline: auto;
+
+  /*
+   * Место под закреплённую шапку.
+   */
+  padding-top: calc(
+          var(--diary-page-header-height) +
+          var(--diary-fixed-gap)
+  );
+
+  padding-right: var(
+                  --page-gutter,
+                  24px
+  );
+
+  /*
+   * Дополнительный запас под
+   * закреплённую кнопку сохранения.
+   */
+  padding-bottom: 40px;
+
+  padding-left: var(
+                  --page-gutter,
+                  24px
+  );
+
+  overflow-x: clip;
+}
+
+.pageHeader {
+  position: fixed;
+
+  z-index: 100;
+
+  top: 0;
+
+  left: max(
+          var(
+                          --page-gutter,
+                          24px
+          ),
+          calc(
+                  (100vw -
+                  760px) / 2 +
+                  var(--page-gutter,
+                          24px)
+          )
+  );
+
+  right: max(
+          var(
+                          --page-gutter,
+                          24px
+          ),
+          calc(
+                  (100vw -
+                  760px) / 2 +
+                  var(--page-gutter,
+                          24px)
+          )
+  );
+
+  height: var(
+                  --diary-page-header-height
+  );
+
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  margin: 0;
+
+  padding: 10px 0;
+
+  background: rgba(
+                  255,
+                  255,
+                  255,
+                  0.96
+  );
+
+  border-bottom: 1px solid var(
+                  --border,
+                  #dce5e8
+  );
+
+  box-shadow: 0 6px 18px rgba(
+                  31,
+                  52,
+                  60,
+                  0.06
+  );
+
+  backdrop-filter: blur(14px);
+}
+
+.backButton {
+  min-height: 44px;
+
+  flex: 0 0 auto;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 8px 13px 8px 9px;
+
+  color: var(
+                  --accent,
+                  #176b6a
+  );
+
+  background: var(
+                  --bg-surface,
+                  #fff
+  );
+
+  border: 1px solid #c9dfdc;
+
+  border-radius: 12px;
+
+  box-shadow: 0 3px 10px rgba(
+                  31,
+                  52,
+                  60,
+                  0.05
+  );
+
+  cursor: pointer;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  transition: color 160ms ease,
+  background-color 160ms ease,
+  border-color 160ms ease,
+  box-shadow 160ms ease,
+  transform 160ms ease;
+
+  &:hover {
+    color: var(
+                    --accent-hover,
+                    #125b5a
+    );
+
+    background: var(
+                    --bg-accent-soft,
+                    #edf6f5
+    );
+
+    border-color: #a9ceca;
+
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: none;
+
+    box-shadow: 0 0 0 3px var(
+                    --focus-ring,
+                    rgba(
+                                    23,
+                                    107,
+                                    106,
+                                    0.18
+                    )
+    );
+  }
+}
+
+.backIcon {
+  width: 28px;
+  height: 28px;
+
+  flex: 0 0 28px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background: var(
+                  --bg-accent-soft,
+                  #edf6f5
+  );
+
+  font-size: 18px;
+  line-height: 1;
+}
+
+.backText {
+  white-space: nowrap;
+}
+
+.headerInfo {
+  min-width: 0;
+
+  flex: 1 1 auto;
+}
+
+.title {
+  min-width: 0;
+
+  margin: 0;
+}
+
+.patientName {
+  margin-top: 3px;
+
+  color: var(
+                  --text-secondary,
+                  #52656d
+  );
+
+  overflow: hidden;
+
+  font-size: 14px;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .container {
+    --diary-page-header-height: 76px;
+    --diary-fixed-gap: 8px;
+
+    max-width: 100%;
+
+    padding-right: 12px;
+    padding-left: 12px;
+
+    padding-bottom: 34px;
+  }
+
+  .pageHeader {
+    left: 12px;
+    right: 12px;
+
+    height: var(
+                    --diary-page-header-height
+    );
+
+    gap: 9px;
+
+    padding: 8px 0;
+  }
+
+  .backButton {
+    min-width: 44px;
+
+    padding: 7px;
+  }
+
+  /*
+   * Как и в большой форме:
+   * на узком экране оставляем
+   * компактную стрелку, чтобы
+   * заголовку дневника хватало места.
+   */
+  .backText {
+    display: none;
+  }
+
+  .backIcon {
+    width: 28px;
+    height: 28px;
+
+    flex-basis: 28px;
+  }
+
+  .title {
+    font-size: 17px;
+  }
+
+  .patientName {
+    font-size: 12px;
+  }
+}

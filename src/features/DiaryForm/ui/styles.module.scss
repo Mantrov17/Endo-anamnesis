@@ -1,0 +1,114 @@
+.form {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+
+  /*
+   * Запас снизу, чтобы последние поля
+   * можно было проскроллить выше
+   * закреплённой кнопки сохранения.
+   */
+  padding-bottom: 100px;
+}
+
+.actions {
+  position: fixed;
+
+  z-index: 110;
+
+  right: max(
+          var(
+                          --page-gutter,
+                          24px
+          ),
+          calc(
+                  (100vw -
+                  min(760px,
+                  100vw)) / 2 +
+                  var(--page-gutter,
+                          24px)
+          )
+  );
+
+  bottom: max(
+          16px,
+          env(
+                          safe-area-inset-bottom
+          )
+  );
+
+  display: flex;
+  justify-content: flex-end;
+
+  margin: 0;
+
+  padding: 8px;
+
+  background: rgba(
+                  255,
+                  255,
+                  255,
+                  0.94
+  );
+
+  border: 1px solid var(
+                  --border,
+                  #dce5e8
+  );
+
+  border-radius: 14px;
+
+  box-shadow: 0 12px 34px rgba(
+                  31,
+                  52,
+                  60,
+                  0.18
+  );
+
+  backdrop-filter: blur(12px);
+
+  > button {
+    min-width: 210px;
+    min-height: 50px;
+
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .form {
+    gap: 16px;
+
+    padding-bottom: 92px;
+  }
+
+  .actions {
+    right: 12px;
+
+    bottom: max(
+            10px,
+            env(
+                            safe-area-inset-bottom
+            )
+    );
+
+    left: 12px;
+
+    padding: 8px;
+
+    border-radius: 14px;
+
+    > button {
+      width: 100%;
+
+      min-width: 0;
+      min-height: 52px;
+
+      font-size: 16px;
+    }
+  }
+}

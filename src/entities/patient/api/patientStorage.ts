@@ -25,7 +25,9 @@ export const createPatient = (data: PatientFormData): Patient => {
 
     createdAt: new Date().toISOString(),
 
-    anamneses: [],
+    primaryAnamnesis: null,
+
+    diaryEntries: [],
   };
 
   patients.push(newPatient);
