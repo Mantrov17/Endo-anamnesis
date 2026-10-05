@@ -89,6 +89,10 @@ export const usePatientsList = () => {
     navigate("/patient/new");
   };
 
+  const handleEditPatient = (patientId: string) => {
+    navigate(`/patient/${patientId}/edit`);
+  };
+
   const handleDeletePatient = (patientId: string) => {
     const confirmed = window.confirm(
       "Удалить пациента, его первичный анамнез, гликемический профиль и все дневники?",
@@ -267,6 +271,7 @@ export const usePatientsList = () => {
     expandedPatients,
 
     handleAddPatient,
+    handleEditPatient,
     handleDeletePatient,
 
     handleOpenPrimaryAnamnesis,

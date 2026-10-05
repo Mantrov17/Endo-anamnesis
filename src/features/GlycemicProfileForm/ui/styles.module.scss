@@ -1,408 +1,150 @@
 .form {
+  --date-column-width: 76px;
+  --metric-column-width: 118px;
+  --hour-column-width: 72px;
+
   width: 100%;
   min-width: 0;
 
-  padding-bottom: 96px;
+  padding-bottom: 72px;
 }
 
 .toolbar {
-  display: flex;
-  justify-content: flex-end;
+  width: 100%;
+  min-width: 0;
 
-  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 10px;
+}
+
+.tableHint {
+  min-width: 0;
+
+  color: var(--text-muted, #76878b);
+
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.toolbar > button {
+  flex: 0 0 auto;
+
+  min-height: 40px;
+
+  padding: 6px 10px;
+
+  font-size: 13px;
 }
 
 .emptyState {
-  padding: 24px 16px;
+  padding: 18px 12px;
 
-  color: var(
-                  --text-muted,
-                  #7a8b92
-  );
+  color: var(--text-muted, #76878b);
 
-  background: var(
-                  --bg-surface,
-                  #fff
-  );
+  background: #f7fcfb;
 
-  border: 1px dashed var(
-                  --border,
-                  #dce5e8
-  );
-
-  border-radius: 14px;
+  border: 1px dashed var(--border, #d7e7e4);
+  border-radius: 10px;
 
   text-align: center;
-}
 
-.desktopView {
-  display: block;
-}
-
-.mobileView {
-  display: none;
+  font-size: 13px;
 }
 
 .tableScroll {
+  position: relative;
+
   width: 100%;
+  min-width: 0;
 
   overflow-x: auto;
+  overflow-y: hidden;
 
-  border: 1px solid var(
-                  --border,
-                  #dce5e8
-  );
+  background: var(--bg-surface, #fff);
 
-  border-radius: 14px;
+  border: 1px solid var(--border, #d7e7e4);
+  border-radius: 10px;
 
-  background: var(
-                  --bg-surface,
-                  #fff
-  );
+  scrollbar-width: thin;
+
+  scrollbar-color: #91bdb6 #edf5f4;
+
+  overscroll-behavior-x: contain;
+
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    height: 7px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #edf5f4;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #91bdb6;
+
+    border-radius: 999px;
+  }
 }
 
 .table {
-  width: 100%;
-  min-width: 900px;
-
-  border-collapse: collapse;
-
-  th,
-  td {
-    padding: 10px;
-
-    vertical-align: middle;
-
-    border-right: 1px solid var(
-                    --border,
-                    #dce5e8
-    );
-
-    border-bottom: 1px solid var(
-                    --border,
-                    #dce5e8
-    );
-  }
-
-  th:last-child,
-  td:last-child {
-    border-right: 0;
-  }
-
-  tbody tr:last-child td {
-    border-bottom: 0;
-  }
-
-  th {
-    background: var(
-                    --bg-surface-soft,
-                    #f8fafb
-    );
-
-    font-size: 14px;
-    font-weight: 700;
-
-    text-align: left;
-  }
-}
-
-.dateCell {
-  width: 150px;
-
-  vertical-align: top !important;
-
-  background: var(
-                  --bg-surface-soft,
-                  #f8fafb
-  );
-}
-
-.timeCell {
-  width: 90px;
-
-  font-weight: 700;
-
-  white-space: nowrap;
-}
-
-.dateInput,
-.numberInput,
-.noteInput {
-  width: 100%;
-  min-width: 0;
-
-  box-sizing: border-box;
-
-  padding: 9px 10px;
-
-  color: var(
-                  --text-primary,
-                  #17252b
-  );
-
-  background: var(
-                  --bg-surface,
-                  #fff
-  );
-
-  border: 1px solid var(
-                  --border-strong,
-                  #c8d6da
-  );
-
-  border-radius: 9px;
-
-  font: inherit;
-}
-
-.numberInput {
-  min-width: 100px;
-}
-
-.noteInput {
-  min-width: 240px;
-}
-
-.actionsColumn {
-  width: 110px;
-}
-
-.actionsCell {
-  width: 110px;
-
-  text-align: center;
-}
-
-.actions {
-  position: fixed;
-
-  z-index: 110;
-
-  right: max(
-          var(
-                          --page-gutter,
-                          24px
-          ),
-          calc(
-                  (100vw -
-                  var(--page-max,
-                          1360px)) /
-                  2 +
-                  var(--page-gutter,
-                          24px)
-          )
-  );
-
-  bottom: max(
-          16px,
-          env(
-                          safe-area-inset-bottom
-          )
-  );
-
-  margin: 0;
-
-  padding: 8px;
-
-  background: rgba(
-                  255,
-                  255,
-                  255,
-                  0.94
-  );
-
-  border: 1px solid var(
-                  --border,
-                  #dce5e8
-  );
-
-  border-radius: 14px;
-
-  box-shadow: 0 12px 34px rgba(
-                  31,
-                  52,
-                  60,
-                  0.18
-  );
-
-  backdrop-filter: blur(12px);
-
-  > button {
-    min-width: 210px;
-    min-height: 50px;
-
-    font-size: 16px;
-  }
-}
-
-.mobileDay {
-  width: 100%;
-  min-width: 0;
-
-  overflow: hidden;
-
-  background: var(
-                  --bg-surface,
-                  #fff
-  );
-
-  border: 1px solid var(
-                  --border,
-                  #dce5e8
-  );
-
-  border-radius: 14px;
-
-  box-shadow: 0 2px 8px rgba(
-                  31,
-                  52,
-                  60,
-                  0.05
-  );
-}
-
-.mobileDayHeader {
-  display: grid;
-
-  grid-template-columns:
-    minmax(
-      0,
-                    1fr
-    )
-    auto;
-
-  align-items: center;
-
-  gap: 8px;
-
-  padding: 10px;
-
-  background: var(
-                  --bg-surface-soft,
-                  #f8fafb
-  );
-
-  border-bottom: 1px solid var(
-                  --border,
-                  #dce5e8
-  );
-}
-
-.mobileDateInput {
-  width: 100%;
-  min-width: 0;
-  min-height: 44px;
-
-  box-sizing: border-box;
-
-  padding: 8px 10px;
-
-  color: var(
-                  --text-primary,
-                  #17252b
-  );
-
-  background: var(
-                  --bg-surface,
-                  #fff
-  );
-
-  border: 1px solid var(
-                  --border-strong,
-                  #c8d6da
-  );
-
-  border-radius: 9px;
-
-  font-size: 16px;
-  font-family: inherit;
-}
-
-.mobileDeleteButton {
-  min-height: 44px !important;
-
-  padding: 8px 10px !important;
-
-  font-size: 13px !important;
-}
-
-.mobileTableWrapper {
-  width: 100%;
-  min-width: 0;
-
-  overflow: hidden;
-}
-
-.mobileTable {
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
+
+  border-collapse: separate;
+  border-spacing: 0;
 
   table-layout: fixed;
 
-  border-collapse: collapse;
+  color: var(--text-primary, #203235);
+
+  background: #ffffff;
+
+  font-size: 12.5px;
 
   th,
   td {
+    height: 44px;
+
     box-sizing: border-box;
 
-    padding: 6px 4px;
+    padding: 4px;
 
-    border-right: 1px solid var(
-                    --border,
-                    #dce5e8
-    );
-
-    border-bottom: 1px solid var(
-                    --border,
-                    #dce5e8
-    );
+    border-right: 1px solid var(--border, #d7e7e4);
+    border-bottom: 1px solid var(--border, #d7e7e4);
 
     vertical-align: middle;
   }
 
-  th:last-child,
-  td:last-child {
+  tr > *:last-child {
     border-right: 0;
   }
 
-  tbody tr:last-child td {
+  tbody tr:last-child > * {
     border-bottom: 0;
   }
-
-  th {
-    color: var(
-                    --text-secondary,
-                    #52656d
-    );
-
-    background: var(
-                    --bg-surface-soft,
-                    #f8fafb
-    );
-
-    font-size: 11px;
-    font-weight: 700;
-
-    text-align: center;
-  }
 }
 
-.mobileTimeHeader {
-  width: 52px;
-}
+.dateHeader,
+.metricHeader,
+.hourHeader {
+  position: sticky;
 
-.mobileNumberHeader {
-  width: 64px;
-}
+  top: 0;
 
-.mobileNoteHeader {
-  width: auto;
-}
+  z-index: 8;
 
-.mobileTimeCell {
-  color: var(
-                  --text-primary,
-                  #17252b
-  );
+  height: 42px;
+
+  color: #315654;
+
+  background: #eaf7f5;
 
   font-size: 12px;
   font-weight: 700;
@@ -412,129 +154,443 @@
   white-space: nowrap;
 }
 
-.mobileNumberInput,
-.mobileNoteInput {
+.dateHeader {
+  left: 0;
+
+  z-index: 12;
+
+  width: var(--date-column-width);
+  min-width: var(--date-column-width);
+  max-width: var(--date-column-width);
+}
+
+.metricHeader {
+  left: var(--date-column-width);
+
+  z-index: 11;
+
+  width: var(--metric-column-width);
+  min-width: var(--metric-column-width);
+  max-width: var(--metric-column-width);
+
+  text-align: left;
+
+  box-shadow: 6px 0 10px -10px rgba(31, 76, 74, 0.8);
+}
+
+.hourHeader {
+  position: sticky;
+
+  top: 0;
+
+  width: var(--hour-column-width);
+  min-width: var(--hour-column-width);
+  max-width: var(--hour-column-width);
+}
+
+.dateCell {
+  position: sticky;
+
+  left: 0;
+
+  z-index: 6;
+
+  width: var(--date-column-width);
+  min-width: var(--date-column-width);
+  max-width: var(--date-column-width);
+
+  padding: 5px !important;
+
+  background: #f5fbfa;
+
+  vertical-align: top !important;
+}
+
+.dateCellContent {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  gap: 5px;
+}
+
+.datePicker {
+  position: relative;
+
+  width: 100%;
+  min-height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 5px 4px;
+
+  color: var(--accent, #1f7f78);
+
+  background: var(--bg-accent-soft, #e6f6f3);
+
+  border: 1px solid #b7ddd7;
+  border-radius: 7px;
+
+  cursor: pointer;
+
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+
+  user-select: none;
+
+  overflow: hidden;
+
+  input {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    opacity: 0;
+
+    cursor: pointer;
+  }
+}
+
+.removeDayButton {
+  width: 100%;
+  min-height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  color: var(--danger, #c15459);
+
+  background: var(--danger-soft, #fdeeee);
+
+  border: 1px solid #efc7c9;
+  border-radius: 6px;
+
+  cursor: pointer;
+
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1;
+
+  transition:
+          color 150ms ease,
+          background-color 150ms ease,
+          border-color 150ms ease;
+
+  &:hover {
+    color: #ffffff;
+
+    background: var(--danger, #c15459);
+
+    border-color: var(--danger, #c15459);
+  }
+}
+
+.metricCell {
+  position: sticky;
+
+  left: var(--date-column-width);
+
+  z-index: 5;
+
+  width: var(--metric-column-width);
+  min-width: var(--metric-column-width);
+  max-width: var(--metric-column-width);
+
+  padding: 6px 8px !important;
+
+  color: var(--text-primary, #203235);
+
+  background: #ffffff;
+
+  font-size: 12px;
+  font-weight: 650;
+
+  text-align: left;
+
+  white-space: nowrap;
+
+  box-shadow: 6px 0 10px -10px rgba(31, 76, 74, 0.8);
+}
+
+.valueCell {
+  width: var(--hour-column-width);
+  min-width: var(--hour-column-width);
+  max-width: var(--hour-column-width);
+
+  padding: 3px !important;
+
+  background: #ffffff;
+}
+
+.cellInput {
   width: 100%;
   min-width: 0;
-  min-height: 42px;
+  height: 36px;
 
   box-sizing: border-box;
 
-  padding: 6px;
+  padding: 4px 5px;
 
-  color: var(
-                  --text-primary,
-                  #17252b
-  );
+  color: var(--text-primary, #203235);
 
-  background: var(
-                  --bg-surface,
-                  #fff
-  );
+  background: #ffffff;
 
-  border: 1px solid var(
-                  --border-strong,
-                  #c8d6da
-  );
+  border: 1px solid transparent;
+  border-radius: 6px;
 
-  border-radius: 8px;
+  outline: none;
 
-  /*
-   * 16px не даёт Safari увеличивать
-   * страницу при фокусе на input.
-   */
-  font-size: 16px;
   font-family: inherit;
-}
+  font-size: 13px;
+  line-height: 1.2;
 
-.mobileNumberInput {
   text-align: center;
+
+  transition:
+          border-color 120ms ease,
+          background-color 120ms ease,
+          box-shadow 120ms ease;
+
+  &:hover {
+    background: #f6fbfa;
+
+    border-color: #d5e7e3;
+  }
+
+  &:focus {
+    background: #ffffff;
+
+    border-color: var(--accent, #1f7f78);
+
+    box-shadow: 0 0 0 2px rgba(31, 127, 120, 0.12);
+  }
 }
 
-.mobileNoteInput {
-  padding-inline: 7px;
+.noteInput {
+  text-align: left;
+}
+
+.dayStart {
+  > * {
+    border-top: 1px solid #a9cec8;
+  }
+}
+
+.dayStart:first-child {
+  > * {
+    border-top: 0;
+  }
+}
+
+.actions {
+  position: fixed;
+
+  z-index: 110;
+
+  right: max(
+          var(--page-gutter, 24px),
+          calc(
+                  (100vw - var(--page-max, 1360px)) / 2 +
+                  var(--page-gutter, 24px)
+          )
+  );
+
+  bottom: max(12px, env(safe-area-inset-bottom));
+
+  margin: 0;
+
+  padding: 5px;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  border: 1px solid var(--border, #d7e7e4);
+  border-radius: 10px;
+
+  box-shadow: 0 8px 24px rgba(31, 76, 74, 0.14);
+
+  backdrop-filter: blur(10px);
+
+  > button {
+    min-width: 160px;
+    min-height: 42px;
+
+    font-size: 13.5px;
+  }
 }
 
 @media (max-width: 640px) {
   .form {
-    padding-bottom: 90px;
+    --date-column-width: 64px;
+    --metric-column-width: 96px;
+    --hour-column-width: 62px;
+
+    padding-bottom: 70px;
   }
 
   .toolbar {
-    justify-content: stretch;
+    align-items: flex-end;
 
-    margin-bottom: 12px;
+    gap: 7px;
 
-    > button {
-      width: 100%;
+    margin-bottom: 7px;
+  }
+
+  .tableHint {
+    font-size: 10.5px;
+    line-height: 1.3;
+  }
+
+  .toolbar > button {
+    min-height: 38px;
+
+    padding: 5px 8px;
+
+    font-size: 11.5px;
+
+    white-space: nowrap;
+  }
+
+  .tableScroll {
+    border-radius: 8px;
+
+    /*
+     * Позволяет пальцем свободно двигать
+     * большую таблицу влево/вправо.
+     */
+    touch-action: pan-x pan-y;
+  }
+
+  .table {
+    font-size: 11px;
+
+    th,
+    td {
+      height: 40px;
+
+      padding: 3px;
     }
   }
 
-  .desktopView {
-    display: none;
+  .dateHeader,
+  .metricHeader,
+  .hourHeader {
+    height: 38px;
+
+    font-size: 10.5px;
   }
 
-  .mobileView {
-    display: flex;
-    flex-direction: column;
-
-    gap: 14px;
+  .metricHeader {
+    padding-inline: 6px !important;
   }
 
-  .emptyState {
-    padding: 20px 14px;
+  .dateCell {
+    padding: 4px !important;
+  }
 
-    font-size: 14px;
+  .dateCellContent {
+    gap: 4px;
+  }
+
+  .datePicker {
+    min-height: 30px;
+
+    padding: 4px 2px;
+
+    border-radius: 6px;
+
+    font-size: 11px;
+  }
+
+  .removeDayButton {
+    min-height: 25px;
+
+    border-radius: 5px;
+
+    font-size: 15px;
+  }
+
+  .metricCell {
+    padding: 5px 6px !important;
+
+    font-size: 10.5px;
+    line-height: 1.2;
+
+    white-space: normal;
+  }
+
+  .valueCell {
+    padding: 2px !important;
+  }
+
+  .cellInput {
+    height: 34px;
+
+    padding: 3px;
+
+    border-radius: 5px;
+
+    /*
+     * Не уменьшаем ниже 16px:
+     * иначе Safari может приблизить страницу
+     * при фокусе на ячейке.
+     */
+    font-size: 16px;
+  }
+
+  .noteInput {
+    font-size: 16px;
   }
 
   .actions {
-    right: 12px;
-    left: 12px;
+    right: 10px;
+    bottom: max(8px, env(safe-area-inset-bottom));
 
-    bottom: max(
-            10px,
-            env(
-                            safe-area-inset-bottom
-            )
-    );
+    padding: 5px;
 
     > button {
-      width: 100%;
+      min-width: 145px;
+      min-height: 42px;
 
-      min-width: 0;
-      min-height: 52px;
+      font-size: 13px;
     }
   }
 }
 
 @media (max-width: 370px) {
-  .mobileDayHeader {
-    grid-template-columns: 1fr;
-
-    gap: 7px;
+  .form {
+    --date-column-width: 60px;
+    --metric-column-width: 90px;
+    --hour-column-width: 60px;
   }
 
-  .mobileDeleteButton {
-    width: 100%;
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .mobileTimeHeader {
-    width: 48px;
+  .tableHint {
+    order: 2;
   }
 
-  .mobileNumberHeader {
-    width: 60px;
+  .toolbar > button {
+    align-self: flex-end;
   }
 
-  .mobileTable {
-    th,
-    td {
-      padding-inline: 3px;
-    }
-  }
+  .metricCell {
+    padding-inline: 5px !important;
 
-  .mobileNumberInput,
-  .mobileNoteInput {
-    padding-inline: 4px;
+    font-size: 10px;
   }
 }

@@ -1,25 +1,38 @@
 .fieldset {
   min-width: 0;
-  margin: 10px 0;
-  padding: 16px;
-  background: var(--bg-surface-soft, #f8fafb);
-  border: 1px solid var(--border, #dce5e8);
-  border-radius: 14px;
+
+  margin: 6px 0 10px;
+
+  padding: 12px;
+
+  background: #f7fcfb;
+
+  border: 1px solid var(--border, #d7e7e4);
+  border-radius: 10px;
 
   legend {
-    max-width: calc(100% - 16px);
-    padding: 0 8px;
-    color: var(--text-primary, #17252b);
-    font-size: 14px;
+    max-width: calc(100% - 12px);
+
+    padding: 0 6px;
+
+    color: var(--text-primary, #203235);
+
+    font-size: 13.5px;
     font-weight: 700;
-    line-height: 1.35;
+    line-height: 1.3;
   }
 }
 
 @media (max-width: 640px) {
   .fieldset {
-    margin: 8px 0;
-    padding: 14px 12px;
-    border-radius: 12px;
+    margin: 5px 0 9px;
+
+    padding: 10px 9px;
+
+    border-radius: 9px;
+
+    legend {
+      font-size: 13px;
+    }
   }
 }

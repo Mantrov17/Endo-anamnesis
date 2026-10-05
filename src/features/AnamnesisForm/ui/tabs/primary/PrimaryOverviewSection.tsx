@@ -6,8 +6,6 @@ import type { AnamnesisFormData } from "@/entities/anamnesis";
 
 import { boolFromString } from "@/shared/lib/boolFromString";
 
-import { DateField } from "@/shared/ui/DateInput";
-
 import { Input } from "@/shared/ui/Input";
 
 import { Textarea } from "@/shared/ui/Textarea";
@@ -24,12 +22,9 @@ export const PrimaryOverviewSection: React.FC = () => {
   const {
     register,
     watch,
-    setValue,
 
     formState: { errors },
   } = useFormContext<AnamnesisFormData>();
-
-  const birthDate = watch("birthDate");
 
   const weightChange6Months = boolFromString(
     watch("primaryExam.weightChange6Months"),
@@ -112,24 +107,6 @@ export const PrimaryOverviewSection: React.FC = () => {
           rows={3}
         />
       </Field>
-
-      <fieldset className={styles.fieldset}>
-        <legend>Данные пациента</legend>
-
-        <DateField
-          label="Дата рождения"
-          name="birthDate"
-          watch={watch}
-          setValue={setValue}
-        />
-
-        {!birthDate && (
-          <div className={styles.warning}>
-            Дата рождения не указана. Возрастные автоматические расчёты пока
-            недоступны
-          </div>
-        )}
-      </fieldset>
 
       <fieldset className={styles.fieldset}>
         <legend>Антропометрия</legend>

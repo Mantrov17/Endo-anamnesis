@@ -37,10 +37,6 @@ export const addAnamnesis = (
     savedAt: new Date().toISOString(),
   };
 
-  if (data.birthDate && patient.birthDate !== data.birthDate) {
-    patient.birthDate = data.birthDate;
-  }
-
   patient.primaryAnamnesis = record;
 
   writePatientsStorage(patients);
@@ -82,10 +78,6 @@ export const updateAnamnesis = (
 
   if (patient.primaryAnamnesis.id !== anamnesisId) {
     return false;
-  }
-
-  if (data.birthDate && patient.birthDate !== data.birthDate) {
-    patient.birthDate = data.birthDate;
   }
 
   patient.primaryAnamnesis = {

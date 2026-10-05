@@ -35,6 +35,7 @@ export const PatientsListPage: React.FC = () => {
     expandedPatients,
 
     handleAddPatient,
+    handleEditPatient,
     handleDeletePatient,
 
     handleOpenPrimaryAnamnesis,
@@ -110,6 +111,7 @@ export const PatientsListPage: React.FC = () => {
                 patient={patient}
                 isExpanded={expandedPatients.has(patient.id)}
                 onToggle={togglePatientExpand}
+                onEditPatient={handleEditPatient}
                 onDeletePatient={handleDeletePatient}
                 onOpenPrimaryAnamnesis={handleOpenPrimaryAnamnesis}
                 onOpenGlycemicProfile={handleOpenGlycemicProfile}

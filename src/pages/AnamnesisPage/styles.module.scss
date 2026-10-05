@@ -1,25 +1,42 @@
 .container {
-  --anamnesis-page-header-height: 82px;
-  --anamnesis-fixed-gap: 12px;
+  --bg-surface: #ffffff;
+  --bg-surface-soft: #f4fbfa;
+  --bg-accent-soft: #e6f6f3;
+
+  --text-primary: #203235;
+  --text-secondary: #556a6d;
+  --text-muted: #76878b;
+
+  --border: #d7e7e4;
+  --border-strong: #bfd9d3;
+
+  --accent: #1f7f78;
+  --accent-hover: #186a64;
+  --accent-pressed: #145852;
+  --accent-contrast: #ffffff;
+
+  --danger: #c15459;
+  --danger-hover: #a9464a;
+  --danger-soft: #fdeeee;
+
+  --focus-ring: rgba(31, 127, 120, 0.16);
+
+  --anamnesis-page-header-height: 72px;
+  --anamnesis-fixed-gap: 8px;
 
   width: 100%;
   max-width: var(--page-max, 1360px);
-
   min-width: 0;
 
   margin-inline: auto;
 
-  /*
-   * Верх страницы зарезервирован под
-   * постоянно закреплённую шапку.
-   */
   padding-top: calc(
           var(--anamnesis-page-header-height) +
           var(--anamnesis-fixed-gap)
   );
 
   padding-right: var(--page-gutter, 24px);
-  padding-bottom: 56px;
+  padding-bottom: 44px;
   padding-left: var(--page-gutter, 24px);
 
   overflow-x: clip;
@@ -32,17 +49,10 @@
 
   top: 0;
 
-  /*
-   * Выравниваем fixed-шапку точно
-   * по основному контейнеру страницы.
-   */
   left: max(
           var(--page-gutter, 24px),
           calc(
-                  (
-                  100vw -
-                  var(--page-max, 1360px)
-                  ) / 2 +
+                  (100vw - var(--page-max, 1360px)) / 2 +
                   var(--page-gutter, 24px)
           )
   );
@@ -50,18 +60,12 @@
   right: max(
           var(--page-gutter, 24px),
           calc(
-                  (
-                  100vw -
-                  var(--page-max, 1360px)
-                  ) / 2 +
+                  (100vw - var(--page-max, 1360px)) / 2 +
                   var(--page-gutter, 24px)
           )
   );
 
-  height: var(
-                  --anamnesis-page-header-height
-  );
-
+  height: var(--anamnesis-page-header-height);
   min-width: 0;
 
   box-sizing: border-box;
@@ -69,85 +73,54 @@
   display: flex;
   align-items: center;
 
-  gap: 18px;
+  gap: 12px;
 
   margin: 0;
 
-  padding: 12px 0;
+  padding: 8px 0;
 
-  background: rgba(
-                  255,
-                  255,
-                  255,
-                  0.96
-  );
+  background: rgba(255, 255, 255, 0.96);
 
-  border-bottom: 1px solid
-  var(--border, #dce5e8);
+  border-bottom: 1px solid var(--border);
 
-  box-shadow:
-          0 6px 18px
-          rgba(
-                          31,
-                          52,
-                          60,
-                          0.06
-          );
+  box-shadow: 0 4px 14px rgba(31, 76, 74, 0.05);
 
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(12px);
 }
 
 .title {
   min-width: 0;
 
   flex: 1 1 auto;
+
+  font-size: clamp(22px, 2.3vw, 30px);
+  line-height: 1.15;
 }
 
 .backButton {
-  min-height: 44px;
+  min-height: 40px;
 
   flex: 0 0 auto;
 
   display: inline-flex;
   align-items: center;
 
-  gap: 9px;
+  gap: 7px;
 
-  padding:
-          8px
-          13px
-          8px
-          9px;
+  padding: 6px 10px 6px 7px;
 
-  color: var(
-                  --accent,
-                  #176b6a
-  );
+  color: var(--accent);
 
-  background: var(
-                  --bg-surface,
-                  #fff
-  );
+  background: var(--bg-surface);
 
-  border: 1px solid
-  #c9dfdc;
+  border: 1px solid #b9ddd7;
+  border-radius: 9px;
 
-  border-radius: 12px;
-
-  box-shadow:
-          0
-          3px
-          10px
-          rgba(
-                          31,
-                          52,
-                          60,
-                          0.05
-          );
+  box-shadow: 0 2px 7px rgba(31, 76, 74, 0.04);
 
   cursor: pointer;
 
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 
   transition:
@@ -158,86 +131,49 @@
           transform 160ms ease;
 
   &:hover {
-    color: var(
-                    --accent-hover,
-                    #125b5a
-    );
+    color: var(--accent-hover);
 
-    background: var(
-                    --bg-accent-soft,
-                    #edf6f5
-    );
+    background: var(--bg-accent-soft);
 
-    border-color: #a9ceca;
+    border-color: #9fcfc7;
 
-    box-shadow:
-            0
-            5px
-            14px
-            rgba(
-                            31,
-                            52,
-                            60,
-                            0.08
-            );
+    box-shadow: 0 3px 10px rgba(31, 76, 74, 0.07);
 
-    transform:
-            translateY(-1px);
+    transform: translateY(-1px);
   }
 
   &:focus-visible {
     outline: none;
 
-    box-shadow:
-            0
-            0
-            0
-            3px
-            var(
-                            --focus-ring,
-                            rgba(
-                                            23,
-                                            107,
-                                            106,
-                                            0.18
-                            )
-            );
+    box-shadow: 0 0 0 3px var(--focus-ring);
   }
 
   &:active {
-    transform:
-            translateY(0);
+    transform: translateY(0);
   }
 }
 
 .backIcon {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
 
-  flex: 0 0 28px;
+  flex: 0 0 24px;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  background: var(
-                  --bg-accent-soft,
-                  #edf6f5
-  );
+  background: var(--bg-accent-soft);
 
-  border-radius: 8px;
+  border-radius: 6px;
 
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1;
 
-  transition:
-          transform
-          160ms
-          ease;
+  transition: transform 160ms ease;
 
   .backButton:hover & {
-    transform:
-            translateX(-2px);
+    transform: translateX(-1px);
   }
 }
 
@@ -246,46 +182,40 @@
 }
 
 .error {
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 
-  padding: 16px 18px;
+  padding: 10px 12px;
 
   color: #8d3434;
 
-  background: var(
-                  --danger-soft,
-                  #fff1f1
-  );
+  background: var(--danger-soft);
 
-  border: 1px solid
-  #efc9c9;
+  border: 1px solid #efc9c9;
+  border-radius: 9px;
 
-  border-radius: 12px;
-
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 }
 
 .recordsBlock {
-  margin-top: 30px;
+  margin-top: 20px;
 
-  padding-top: 22px;
+  padding-top: 14px;
 
-  border-top: 1px solid
-  var(--border, #dce5e8);
+  border-top: 1px solid var(--border);
 }
 
 @media (max-width: 900px) {
   .pageHeader {
-    gap: 13px;
+    gap: 9px;
   }
 
   .backButton {
-    padding-right: 10px;
+    padding-right: 8px;
   }
 
   .backText {
-    max-width: 120px;
+    max-width: 110px;
 
     overflow: hidden;
 
@@ -295,14 +225,14 @@
 
 @media (max-width: 768px) {
   .container {
-    padding-bottom: 36px;
+    padding-bottom: 30px;
   }
 }
 
 @media (max-width: 640px) {
   .container {
-    --anamnesis-page-header-height: 76px;
-    --anamnesis-fixed-gap: 8px;
+    --anamnesis-page-header-height: 64px;
+    --anamnesis-fixed-gap: 6px;
 
     width: 100%;
     max-width: 100%;
@@ -312,64 +242,36 @@
             var(--anamnesis-fixed-gap)
     );
 
-    padding-left: max(
-            12px,
-            env(
-                            safe-area-inset-left,
-                            0px
-            )
-    );
-
-    padding-right: max(
-            12px,
-            env(
-                            safe-area-inset-right,
-                            0px
-            )
-    );
+    padding-left: max(10px, env(safe-area-inset-left, 0px));
+    padding-right: max(10px, env(safe-area-inset-right, 0px));
   }
 
   .pageHeader {
-    left: max(
-            12px,
-            env(
-                            safe-area-inset-left,
-                            0px
-            )
-    );
+    left: max(10px, env(safe-area-inset-left, 0px));
+    right: max(10px, env(safe-area-inset-right, 0px));
 
-    right: max(
-            12px,
-            env(
-                            safe-area-inset-right,
-                            0px
-            )
-    );
+    height: var(--anamnesis-page-header-height);
 
-    height: var(
-                    --anamnesis-page-header-height
-    );
+    gap: 6px;
 
-    gap: 9px;
-
-    padding: 8px 0;
+    padding: 6px 0;
   }
 
   .backButton {
-    width: 46px;
-    min-width: 46px;
-    height: 46px;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
 
-    padding: 7px;
+    padding: 5px;
 
     justify-content: center;
 
-    border-radius: 11px;
+    border-radius: 8px;
   }
 
   .backIcon {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
   }
 
   .backText {
@@ -383,12 +285,7 @@
 
     overflow: hidden;
 
-    clip: rect(
-                    0
-                    0
-                    0
-                    0
-    );
+    clip: rect(0 0 0 0);
 
     white-space: nowrap;
 
@@ -398,10 +295,17 @@
   .title {
     min-width: 0;
 
-    font-size: 23px;
-
-    line-height: 1.18;
+    font-size: 18px;
+    line-height: 1.15;
 
     overflow-wrap: anywhere;
+  }
+
+  .error {
+    margin-bottom: 9px;
+
+    padding: 8px 9px;
+
+    font-size: 12.5px;
   }
 }

@@ -10,6 +10,7 @@ export { GLYCEMIC_PROFILE_TIMES } from "./model/constants";
 export {
   createGlycemicProfileDay,
   getTodayLocalDate,
+  normalizeGlycemicProfileDay,
 } from "./lib/createGlycemicProfileDay";
 
 export {

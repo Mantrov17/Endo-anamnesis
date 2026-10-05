@@ -51,11 +51,21 @@ export const updatePatient = (
     return false;
   }
 
-  patients[index] = {
+  const updatedPatient: Patient = {
     ...patients[index],
 
     ...data,
   };
+
+  if (data.birthDate !== undefined && updatedPatient.primaryAnamnesis) {
+    updatedPatient.primaryAnamnesis = {
+      ...updatedPatient.primaryAnamnesis,
+
+      birthDate: data.birthDate,
+    };
+  }
+
+  patients[index] = updatedPatient;
 
   writePatientsStorage(patients);
 

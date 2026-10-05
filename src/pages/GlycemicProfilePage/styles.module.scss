@@ -1,10 +1,31 @@
 .container {
-  --profile-header-height: 82px;
-  --profile-fixed-gap: 12px;
+  --bg-surface: #ffffff;
+  --bg-surface-soft: #f4fbfa;
+  --bg-accent-soft: #e6f6f3;
+
+  --text-primary: #203235;
+  --text-secondary: #556a6d;
+  --text-muted: #76878b;
+
+  --border: #d7e7e4;
+  --border-strong: #bfd9d3;
+
+  --accent: #1f7f78;
+  --accent-hover: #186a64;
+  --accent-pressed: #145852;
+  --accent-contrast: #ffffff;
+
+  --danger: #c15459;
+  --danger-hover: #a9464a;
+  --danger-soft: #fdeeee;
+
+  --focus-ring: rgba(31, 127, 120, 0.16);
+
+  --profile-header-height: 72px;
+  --profile-fixed-gap: 8px;
 
   width: 100%;
   max-width: var(--page-max, 1360px);
-
   min-width: 0;
 
   margin-inline: auto;
@@ -15,9 +36,7 @@
   );
 
   padding-right: var(--page-gutter, 24px);
-
-  padding-bottom: 40px;
-
+  padding-bottom: 32px;
   padding-left: var(--page-gutter, 24px);
 
   overflow-x: clip;
@@ -33,8 +52,7 @@
   left: max(
           var(--page-gutter, 24px),
           calc(
-                  (100vw -
-                  var(--page-max, 1360px)) / 2 +
+                  (100vw - var(--page-max, 1360px)) / 2 +
                   var(--page-gutter, 24px)
           )
   );
@@ -42,8 +60,7 @@
   right: max(
           var(--page-gutter, 24px),
           calc(
-                  (100vw -
-                  var(--page-max, 1360px)) / 2 +
+                  (100vw - var(--page-max, 1360px)) / 2 +
                   var(--page-gutter, 24px)
           )
   );
@@ -53,71 +70,57 @@
   display: flex;
   align-items: center;
 
-  gap: 14px;
+  gap: 10px;
 
-  padding: 10px 0;
+  padding: 8px 0;
 
-  background: rgba(
-                  255,
-                  255,
-                  255,
-                  0.96
-  );
+  background: rgba(255, 255, 255, 0.96);
 
-  border-bottom: 1px solid var(--border, #dce5e8);
+  border-bottom: 1px solid var(--border);
 
-  box-shadow: 0 6px 18px rgba(
-                  31,
-                  52,
-                  60,
-                  0.06
-  );
+  box-shadow: 0 4px 14px rgba(31, 76, 74, 0.05);
 
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(12px);
 }
 
 .backButton {
-  min-height: 44px;
+  min-height: 40px;
 
   flex: 0 0 auto;
 
   display: inline-flex;
   align-items: center;
 
-  gap: 9px;
+  gap: 7px;
 
-  padding: 8px 13px 8px 9px;
+  padding: 6px 10px 6px 7px;
 
-  color: var(--accent, #176b6a);
+  color: var(--accent);
 
-  background: var(--bg-surface, #fff);
+  background: var(--bg-surface);
 
-  border: 1px solid #c9dfdc;
-
-  border-radius: 12px;
+  border: 1px solid #b9ddd7;
+  border-radius: 9px;
 
   cursor: pointer;
 
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 }
 
 .backIcon {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  background: var(
-                  --bg-accent-soft,
-                  #edf6f5
-  );
+  background: var(--bg-accent-soft);
 
-  border-radius: 8px;
+  border-radius: 6px;
 
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .headerInfo {
@@ -128,39 +131,55 @@
 
 .title {
   margin: 0;
+
+  font-size: clamp(22px, 2.3vw, 30px);
+  line-height: 1.15;
 }
 
 .patientName {
-  margin-top: 3px;
+  margin-top: 2px;
 
-  color: var(
-                  --text-secondary,
-                  #52656d
-  );
+  color: var(--text-secondary);
 
-  font-size: 14px;
+  font-size: 12.5px;
+  line-height: 1.25;
 }
 
 @media (max-width: 640px) {
   .container {
-    --profile-header-height: 76px;
-    --profile-fixed-gap: 8px;
+    --profile-header-height: 64px;
+    --profile-fixed-gap: 6px;
 
-    padding-right: 12px;
-    padding-left: 12px;
+    padding-right: 10px;
+    padding-left: 10px;
   }
 
   .pageHeader {
-    right: 12px;
-    left: 12px;
+    right: 10px;
+    left: 10px;
 
     height: var(--profile-header-height);
+
+    gap: 6px;
+
+    padding: 6px 0;
   }
 
   .backButton {
-    min-width: 44px;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
 
-    padding: 7px;
+    padding: 5px;
+
+    justify-content: center;
+
+    border-radius: 8px;
+  }
+
+  .backIcon {
+    width: 24px;
+    height: 24px;
   }
 
   .backText {
@@ -168,10 +187,10 @@
   }
 
   .title {
-    font-size: 17px;
+    font-size: 18px;
   }
 
   .patientName {
-    font-size: 12px;
+    font-size: 11.5px;
   }
 }

@@ -75,16 +75,14 @@ export const useAnamnesisForm = ({
     }
 
     /*
-     * Пустая дата в карточке пациента
-     * не должна очищать дату, которая
-     * уже могла быть сохранена
-     * непосредственно в анамнезе.
+     * Дата рождения теперь редактируется
+     * только в карточке пациента.
+     * В форме анамнеза держим её скрыто
+     * только для возрастных авторасчётов.
      */
-    if (patient.birthDate) {
-      setValue("birthDate", patient.birthDate, {
-        shouldDirty: false,
-      });
-    }
+    setValue("birthDate", patient.birthDate, {
+      shouldDirty: false,
+    });
 
     setValue("fullName", patient.fullName, {
       shouldDirty: false,
@@ -369,23 +367,12 @@ export const useAnamnesisForm = ({
         return;
       }
 
-      /*
-       * Приоритет у даты,
-       * введённой непосредственно
-       * в анамнезе.
-       *
-       * Если её там нет,
-       * используем дату из
-       * карточки пациента.
-       */
-      const effectiveBirthDate = data.birthDate || patient.birthDate;
-
       const payload = mergeAnamnesisWithDefaults({
         ...data,
 
         fullName: patient.fullName,
 
-        birthDate: effectiveBirthDate,
+        birthDate: patient.birthDate,
 
         gender: patient.gender,
       });

@@ -21,6 +21,8 @@ interface PatientCardProps {
 
   onToggle: (patientId: string) => void;
 
+  onEditPatient: (patientId: string) => void;
+
   onDeletePatient: (patientId: string) => void;
 
   onOpenPrimaryAnamnesis: (patientId: string) => void;
@@ -38,6 +40,7 @@ export const PatientCard: React.FC<PatientCardProps> = ({
   patient,
   isExpanded,
   onToggle,
+  onEditPatient,
   onDeletePatient,
   onOpenPrimaryAnamnesis,
   onOpenGlycemicProfile,
@@ -66,7 +69,21 @@ export const PatientCard: React.FC<PatientCardProps> = ({
           </Heading>
 
           <span className={styles.patientMeta}>
-            {birthInfo} • {patient.gender === "male" ? "М" : "Ж"}
+            <span>
+              {birthInfo} • {patient.gender === "male" ? "М" : "Ж"}
+            </span>
+
+            <button
+              type="button"
+              className={styles.patientMetaEditButton}
+              onClick={(event) => {
+                event.stopPropagation();
+
+                onEditPatient(patient.id);
+              }}
+            >
+              Редактировать
+            </button>
           </span>
 
           <span className={styles.anamnesisCount}>

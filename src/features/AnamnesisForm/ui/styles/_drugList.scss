@@ -2,29 +2,26 @@
   display: flex;
   flex-direction: column;
 
-  gap: 9px;
+  gap: 6px;
 }
 
 .drugRow {
   display: flex;
   align-items: flex-end;
 
-  gap: 10px;
+  gap: 7px;
 
-  padding: 12px;
+  padding: 8px;
 
-  background: var(
-                  --bg-surface-soft,
-                  #f8fafb
-  );
+  background: #f7fbfa;
 
-  border: 1px solid var(--border, #dce5e8);
-  border-radius: 12px;
+  border: 1px solid var(--border, #d7e7e4);
+  border-radius: 9px;
 
   > div {
     min-width: 0;
 
-    flex: 1 1 160px;
+    flex: 1 1 150px;
 
     margin-bottom: 0;
   }
@@ -42,22 +39,22 @@
 }
 
 .addDrugButton {
-  min-height: 42px;
+  min-height: 38px;
 
   align-self: flex-start;
 
-  padding: 8px 13px;
+  padding: 6px 10px;
 
-  color: var(--accent, #176b6a);
+  color: var(--accent, #1f7f78);
 
   background: var(--bg-surface, #fff);
 
-  border: 1px dashed #89b9b5;
-  border-radius: 9px;
+  border: 1px dashed #78b9b0;
+  border-radius: 8px;
 
   cursor: pointer;
 
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 650;
 
   transition:
@@ -65,49 +62,43 @@
           border-color 150ms ease;
 
   &:hover {
-    background: var(
-                    --bg-accent-soft,
-                    #edf6f5
-    );
+    background: var(--bg-accent-soft, #e6f6f3);
 
-    border-color: var(--accent, #176b6a);
+    border-color: var(--accent, #1f7f78);
   }
 }
 
 .removeDrugButton {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
 
-  flex: 0 0 42px;
+  flex: 0 0 38px;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  margin-bottom: 18px;
+  margin-bottom: 0;
 
   padding: 0;
 
-  color: var(--danger, #b84a4a);
+  color: var(--danger, #c15459);
 
-  background: var(
-                  --danger-soft,
-                  #fff1f1
-  );
+  background: var(--danger-soft, #fdeeee);
 
-  border: 1px solid #eac1c1;
-  border-radius: 9px;
+  border: 1px solid #edc2c4;
+  border-radius: 8px;
 
   cursor: pointer;
 
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1;
 
   &:hover {
     color: #fff;
 
-    background: var(--danger, #b84a4a);
+    background: var(--danger, #c15459);
 
-    border-color: var(--danger, #b84a4a);
+    border-color: var(--danger, #c15459);
   }
 }

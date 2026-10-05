@@ -3,6 +3,8 @@ import { type FormEvent, useState } from "react";
 import {
   createGlycemicProfileDay,
   type GlycemicProfileDay,
+  type GlycemicProfileTime,
+  normalizeGlycemicProfileDay,
   saveGlycemicProfile,
 } from "@/entities/glycemicProfile";
 
@@ -16,6 +18,8 @@ interface UseGlycemicProfileFormProps {
   onSuccess?: () => void;
 }
 
+type MeasurementField = "glycemia" | "insulinUnits" | "breadUnits" | "note";
+
 export const useGlycemicProfileForm = ({
   patientId,
   initialDays,
@@ -23,7 +27,9 @@ export const useGlycemicProfileForm = ({
 }: UseGlycemicProfileFormProps) => {
   const [days, setDays] = useState<GlycemicProfileDay[]>(() =>
     initialDays && initialDays.length > 0
-      ? structuredClone(initialDays)
+      ? initialDays.map((day) =>
+          normalizeGlycemicProfileDay(structuredClone(day)),
+        )
       : [createGlycemicProfileDay()],
   );
 
@@ -43,6 +49,7 @@ export const useGlycemicProfileForm = ({
         day.id === dayId
           ? {
               ...day,
+
               date,
             }
           : day,
@@ -52,8 +59,8 @@ export const useGlycemicProfileForm = ({
 
   const updateMeasurement = (
     dayId: string,
-    measurementIndex: number,
-    field: "glycemia" | "insulinUnits" | "note",
+    time: GlycemicProfileTime,
+    field: MeasurementField,
     value: number | null | string,
   ) => {
     setDays((previous) =>
@@ -65,15 +72,35 @@ export const useGlycemicProfileForm = ({
         return {
           ...day,
 
-          measurements: day.measurements.map((measurement, index) =>
-            index === measurementIndex
-              ? {
-                  ...measurement,
+          measurements: day.measurements.map((measurement) => {
+            if (measurement.time !== time) {
+              return measurement;
+            }
 
-                  [field]: value,
-                }
-              : measurement,
-          ),
+            if (field === "note") {
+              return {
+                ...measurement,
+
+                note: typeof value === "string" ? value : "",
+              };
+            }
+
+            const numericValue =
+              value === null
+                ? null
+                : typeof value === "number"
+                  ? value
+                  : Number(value);
+
+            return {
+              ...measurement,
+
+              [field]:
+                numericValue !== null && Number.isFinite(numericValue)
+                  ? numericValue
+                  : null,
+            };
+          }),
         };
       }),
     );

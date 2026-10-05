@@ -1,6 +1,11 @@
 import React from "react";
 
-import type { GlycemicProfileDay } from "@/entities/glycemicProfile";
+import {
+  GLYCEMIC_PROFILE_TIMES,
+  type GlycemicProfileDay,
+  type GlycemicProfileMeasurement,
+  type GlycemicProfileTime,
+} from "@/entities/glycemicProfile";
 
 import { Button } from "@/shared/ui/Button";
 
@@ -15,6 +20,87 @@ interface GlycemicProfileFormProps {
 
   onSuccess?: () => void;
 }
+
+type MeasurementField = "glycemia" | "insulinUnits" | "breadUnits" | "note";
+
+interface ProfileRow {
+  field: MeasurementField;
+
+  label: string;
+
+  type: "number" | "text";
+
+  step?: string;
+}
+
+const PROFILE_ROWS: ProfileRow[] = [
+  {
+    field: "glycemia",
+
+    label: "ГК, ммоль/л",
+
+    type: "number",
+
+    step: "0.1",
+  },
+
+  {
+    field: "insulinUnits",
+
+    label: "Инсулин, ЕД",
+
+    type: "number",
+
+    step: "0.5",
+  },
+
+  {
+    field: "breadUnits",
+
+    label: "ХЕ",
+
+    type: "number",
+
+    step: "0.5",
+  },
+
+  {
+    field: "note",
+
+    label: "Примечание",
+
+    type: "text",
+  },
+];
+
+const formatShortDate = (date: string): string => {
+  const [year, month, day] = date.split("-");
+
+  if (!year || !month || !day) {
+    return "Дата";
+  }
+
+  return `${day}.${month}`;
+};
+
+const getMeasurement = (
+  day: GlycemicProfileDay,
+  time: GlycemicProfileTime,
+): GlycemicProfileMeasurement => {
+  return (
+    day.measurements.find((measurement) => measurement.time === time) ?? {
+      time,
+
+      glycemia: null,
+
+      insulinUnits: null,
+
+      breadUnits: null,
+
+      note: "",
+    }
+  );
+};
 
 export const GlycemicProfileForm: React.FC<GlycemicProfileFormProps> = ({
   patientId,
@@ -36,266 +122,150 @@ export const GlycemicProfileForm: React.FC<GlycemicProfileFormProps> = ({
     onSuccess,
   });
 
+  const handleCellChange = (
+    dayId: string,
+    time: GlycemicProfileTime,
+    field: MeasurementField,
+    value: string,
+  ) => {
+    if (field === "note") {
+      updateMeasurement(dayId, time, field, value);
+
+      return;
+    }
+
+    updateMeasurement(dayId, time, field, value === "" ? null : Number(value));
+  };
+
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.toolbar}>
+        <div className={styles.tableHint}>
+          Дата и показатель закреплены. Таблицу можно прокручивать по часам.
+        </div>
+
         <Button type="button" variant="secondary" onClick={addDay}>
-          + Добавить дату
+          + Добавить день
         </Button>
       </div>
 
       {days.length === 0 ? (
         <div className={styles.emptyState}>
-          Нет добавленных дат. Нажмите «Добавить дату».
+          Нет добавленных дней. Нажмите «Добавить день».
         </div>
       ) : (
-        <>
-          <div className={styles.desktopView}>
-            <div className={styles.tableScroll}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>Дата</th>
+        <div className={styles.tableScroll}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th className={styles.dateHeader}>Дата</th>
 
-                    <th>Время</th>
+                <th className={styles.metricHeader}>Показатель</th>
 
-                    <th>Гликемия</th>
+                {GLYCEMIC_PROFILE_TIMES.map((time) => (
+                  <th key={time} className={styles.hourHeader}>
+                    {time}
+                  </th>
+                ))}
+              </tr>
+            </thead>
 
-                    <th>Единицы инсулина</th>
+            <tbody>
+              {days.map((day) =>
+                PROFILE_ROWS.map((row, rowIndex) => (
+                  <tr
+                    key={`${day.id}-${row.field}`}
+                    className={rowIndex === 0 ? styles.dayStart : undefined}
+                  >
+                    {rowIndex === 0 && (
+                      <td
+                        rowSpan={PROFILE_ROWS.length}
+                        className={styles.dateCell}
+                      >
+                        <div className={styles.dateCellContent}>
+                          <label className={styles.datePicker}>
+                            <span>{formatShortDate(day.date)}</span>
 
-                    <th>Примечание</th>
-
-                    <th className={styles.actionsColumn} />
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {days.map((day) =>
-                    day.measurements.map((measurement, measurementIndex) => (
-                      <tr key={`${day.id}-${measurement.time}`}>
-                        {measurementIndex === 0 && (
-                          <td
-                            rowSpan={day.measurements.length}
-                            className={styles.dateCell}
-                          >
                             <input
                               type="date"
                               value={day.date}
                               onChange={(event) =>
                                 updateDayDate(day.id, event.target.value)
                               }
-                              className={styles.dateInput}
+                              aria-label={`Дата ${formatShortDate(day.date)}`}
                             />
-                          </td>
-                        )}
+                          </label>
 
-                        <td className={styles.timeCell}>{measurement.time}</td>
+                          <button
+                            type="button"
+                            className={styles.removeDayButton}
+                            onClick={() => removeDay(day.id)}
+                            aria-label={`Удалить день ${formatShortDate(
+                              day.date,
+                            )}`}
+                            title="Удалить день"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </td>
+                    )}
 
-                        <td>
+                    <th scope="row" className={styles.metricCell}>
+                      {row.label}
+                    </th>
+
+                    {GLYCEMIC_PROFILE_TIMES.map((time) => {
+                      const measurement = getMeasurement(day, time);
+
+                      const value =
+                        row.field === "note"
+                          ? measurement.note
+                          : (measurement[row.field] ?? "");
+
+                      return (
+                        <td
+                          key={`${day.id}-${row.field}-${time}`}
+                          className={styles.valueCell}
+                        >
                           <input
-                            type="number"
-                            step="0.1"
-                            min="0"
-                            value={measurement.glycemia ?? ""}
-                            onChange={(event) =>
-                              updateMeasurement(
-                                day.id,
-                                measurementIndex,
-                                "glycemia",
-                                event.target.value === ""
-                                  ? null
-                                  : Number(event.target.value),
-                              )
+                            type={row.type}
+                            step={row.step}
+                            min={row.type === "number" ? "0" : undefined}
+                            inputMode={
+                              row.type === "number" ? "decimal" : undefined
                             }
-                            className={styles.numberInput}
-                            aria-label={`Гликемия ${measurement.time}`}
-                          />
-                        </td>
-
-                        <td>
-                          <input
-                            type="number"
-                            step="0.5"
-                            min="0"
-                            value={measurement.insulinUnits ?? ""}
+                            value={value}
                             onChange={(event) =>
-                              updateMeasurement(
+                              handleCellChange(
                                 day.id,
-                                measurementIndex,
-                                "insulinUnits",
-                                event.target.value === ""
-                                  ? null
-                                  : Number(event.target.value),
-                              )
-                            }
-                            className={styles.numberInput}
-                            aria-label={`Единицы инсулина ${measurement.time}`}
-                          />
-                        </td>
-
-                        <td>
-                          <input
-                            type="text"
-                            value={measurement.note}
-                            onChange={(event) =>
-                              updateMeasurement(
-                                day.id,
-                                measurementIndex,
-                                "note",
+                                time,
+                                row.field,
                                 event.target.value,
                               )
                             }
-                            className={styles.noteInput}
-                            aria-label={`Примечание ${measurement.time}`}
+                            className={[
+                              styles.cellInput,
+
+                              row.field === "note"
+                                ? styles.noteInput
+                                : undefined,
+                            ]
+                              .filter(Boolean)
+                              .join(" ")}
+                            aria-label={`${row.label}, ${formatShortDate(
+                              day.date,
+                            )}, ${time}`}
                           />
                         </td>
-
-                        {measurementIndex === 0 && (
-                          <td
-                            rowSpan={day.measurements.length}
-                            className={styles.actionsCell}
-                          >
-                            <Button
-                              type="button"
-                              variant="danger"
-                              onClick={() => removeDay(day.id)}
-                            >
-                              Удалить дату
-                            </Button>
-                          </td>
-                        )}
-                      </tr>
-                    )),
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className={styles.mobileView}>
-            {days.map((day) => (
-              <section key={day.id} className={styles.mobileDay}>
-                <div className={styles.mobileDayHeader}>
-                  <input
-                    type="date"
-                    value={day.date}
-                    onChange={(event) =>
-                      updateDayDate(day.id, event.target.value)
-                    }
-                    className={styles.mobileDateInput}
-                    aria-label="Дата гликемического профиля"
-                  />
-
-                  <Button
-                    type="button"
-                    variant="danger"
-                    className={styles.mobileDeleteButton}
-                    onClick={() => removeDay(day.id)}
-                  >
-                    Удалить
-                  </Button>
-                </div>
-
-                <div className={styles.mobileTableWrapper}>
-                  <table className={styles.mobileTable}>
-                    <thead>
-                      <tr>
-                        <th className={styles.mobileTimeHeader}>Время</th>
-
-                        <th
-                          className={styles.mobileNumberHeader}
-                          title="Гликемия"
-                        >
-                          Глик.
-                        </th>
-
-                        <th
-                          className={styles.mobileNumberHeader}
-                          title="Единицы инсулина"
-                        >
-                          Инс.
-                        </th>
-
-                        <th className={styles.mobileNoteHeader}>Примечание</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {day.measurements.map((measurement, measurementIndex) => (
-                        <tr key={`${day.id}-mobile-${measurement.time}`}>
-                          <td className={styles.mobileTimeCell}>
-                            {measurement.time}
-                          </td>
-
-                          <td>
-                            <input
-                              type="number"
-                              step="0.1"
-                              min="0"
-                              inputMode="decimal"
-                              value={measurement.glycemia ?? ""}
-                              onChange={(event) =>
-                                updateMeasurement(
-                                  day.id,
-                                  measurementIndex,
-                                  "glycemia",
-                                  event.target.value === ""
-                                    ? null
-                                    : Number(event.target.value),
-                                )
-                              }
-                              className={styles.mobileNumberInput}
-                              aria-label={`Гликемия ${measurement.time}`}
-                            />
-                          </td>
-
-                          <td>
-                            <input
-                              type="number"
-                              step="0.5"
-                              min="0"
-                              inputMode="decimal"
-                              value={measurement.insulinUnits ?? ""}
-                              onChange={(event) =>
-                                updateMeasurement(
-                                  day.id,
-                                  measurementIndex,
-                                  "insulinUnits",
-                                  event.target.value === ""
-                                    ? null
-                                    : Number(event.target.value),
-                                )
-                              }
-                              className={styles.mobileNumberInput}
-                              aria-label={`Единицы инсулина ${measurement.time}`}
-                            />
-                          </td>
-
-                          <td>
-                            <input
-                              type="text"
-                              value={measurement.note}
-                              onChange={(event) =>
-                                updateMeasurement(
-                                  day.id,
-                                  measurementIndex,
-                                  "note",
-                                  event.target.value,
-                                )
-                              }
-                              className={styles.mobileNoteInput}
-                              aria-label={`Примечание ${measurement.time}`}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-            ))}
-          </div>
-        </>
+                      );
+                    })}
+                  </tr>
+                )),
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
 
       <div className={styles.actions}>

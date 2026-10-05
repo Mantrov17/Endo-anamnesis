@@ -2,17 +2,13 @@
   width: 100%;
   min-width: 0;
 
-  padding: 16px;
+  padding: 12px 13px;
 
-  background: #fafcfc;
+  background: linear-gradient(180deg, #f8fcfb 0%, #f1faf8 100%);
 
-  border-top: 1px solid
-  var(
-                  --border,
-                  #dce5e8
-  );
+  border-top: 1px solid var(--border);
 
-  animation: reveal 180ms ease-out;
+  animation: reveal 160ms ease-out;
 }
 
 .anamnesesHeader {
@@ -23,39 +19,46 @@
   justify-content: space-between;
   align-items: center;
 
-  gap: 14px;
+  gap: 10px;
 
-  margin-bottom: 12px;
+  margin-bottom: 9px;
+
+  > button {
+    min-height: 38px;
+
+    padding: 6px 11px;
+
+    border-radius: 8px;
+
+    box-shadow: none;
+
+    font-size: 13px;
+  }
 }
 
 .anamnesesTitle {
   flex: 1 1 auto;
+
+  color: var(--text-primary);
+
+  font-size: 14px;
+  line-height: 1.25;
 }
 
 .noAnamnesis {
   margin: 0;
 
-  padding: 16px;
+  padding: 12px;
 
-  color: var(
-                  --text-muted,
-                  #7a8b92
-  );
+  color: var(--text-muted);
 
-  background: var(
-                  --bg-surface,
-                  #fff
-  );
+  background: #ffffff;
 
-  border: 1px dashed
-  var(
-                  --border,
-                  #dce5e8
-  );
+  border: 1px dashed var(--border);
 
-  border-radius: 10px;
+  border-radius: 8px;
 
-  font-size: 13px;
+  font-size: 12px;
 
   text-align: center;
 }
@@ -66,7 +69,7 @@
   display: flex;
   flex-direction: column;
 
-  gap: 8px;
+  gap: 7px;
 }
 
 .anamnesisItem {
@@ -77,22 +80,17 @@
   justify-content: space-between;
   align-items: center;
 
-  gap: 14px;
+  gap: 10px;
 
-  padding: 12px 13px;
+  padding: 9px 10px;
 
-  background: var(
-                  --bg-surface,
-                  #fff
-  );
+  background: linear-gradient(180deg, #ffffff 0%, #fcfefe 100%);
 
-  border: 1px solid
-  var(
-                  --border,
-                  #dce5e8
-  );
+  border: 1px solid var(--border);
 
-  border-radius: 11px;
+  border-radius: 9px;
+
+  box-shadow: 0 1px 3px rgba(31, 76, 74, 0.035);
 }
 
 .anamnesisInfo {
@@ -103,27 +101,23 @@
   display: flex;
   flex-direction: column;
 
-  gap: 3px;
+  gap: 2px;
 
   strong {
-    color: var(
-                    --text-primary,
-                    #17252b
-    );
+    color: var(--text-primary);
 
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
+    line-height: 1.3;
 
     overflow-wrap: anywhere;
   }
 
   span {
-    color: var(
-                    --text-muted,
-                    #7a8b92
-    );
+    color: var(--text-muted);
 
-    font-size: 12px;
+    font-size: 11px;
+    line-height: 1.35;
 
     overflow-wrap: anywhere;
   }
@@ -134,7 +128,19 @@
 
   display: flex;
 
-  gap: 7px;
+  gap: 6px;
+
+  > button {
+    min-height: 38px;
+
+    padding: 6px 11px;
+
+    border-radius: 8px;
+
+    box-shadow: none;
+
+    font-size: 13px;
+  }
 }
 
 .primaryFormsActions {
@@ -144,12 +150,21 @@
   flex-direction: column;
   align-items: stretch;
 
-  gap: 8px;
+  gap: 6px;
 
-  min-width: 230px;
+  min-width: 205px;
 
   > button {
     width: 100%;
+    min-height: 38px;
+
+    padding: 6px 11px;
+
+    border-radius: 8px;
+
+    box-shadow: none;
+
+    font-size: 13px;
   }
 }
 

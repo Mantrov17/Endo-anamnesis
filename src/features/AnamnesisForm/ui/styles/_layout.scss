@@ -7,7 +7,7 @@
   display: grid;
 
   grid-template-columns:
-    218px
+    202px
     minmax(0, 1fr);
 
   gap: 0;
@@ -16,72 +16,35 @@
 
   overflow: visible;
 
-  background: var(
-                  --bg-surface,
-                  #fff
-  );
+  background: var(--bg-surface, #fff);
 
-  border: 1px solid
-  var(
-                  --border,
-                  #dce5e8
-  );
+  border: 1px solid var(--border, #d7e7e4);
+  border-radius: 14px;
 
-  border-radius: var(
-                  --radius-lg,
-                  18px
-  );
-
-  box-shadow: var(
-                  --shadow-sm,
-                  0 8px 24px
-                  rgba(
-                                  31,
-                                  52,
-                                  60,
-                                  0.07
-                  )
-  );
+  box-shadow: 0 5px 18px rgba(31, 76, 74, 0.06);
 }
 
-/*
- * DESKTOP:
- *
- * Панель теперь вообще не участвует
- * в вертикальном скролле страницы.
- *
- * Она закреплена относительно viewport.
- */
 .tabsNav {
   position: fixed;
 
   z-index: 90;
 
   top: calc(
-          var(
-                  --anamnesis-page-header-height,
-                  82px
-          ) +
-          var(
-                  --anamnesis-fixed-gap,
-                  12px
-          )
+          var(--anamnesis-page-header-height, 72px) +
+          var(--anamnesis-fixed-gap, 8px)
   );
 
-  bottom: 16px;
+  bottom: 12px;
 
   left: max(
           var(--page-gutter, 24px),
           calc(
-                  (
-                  100vw -
-                  var(--page-max, 1360px)
-                  ) / 2 +
+                  (100vw - var(--page-max, 1360px)) / 2 +
                   var(--page-gutter, 24px)
           )
   );
 
-  width: 218px;
+  width: 202px;
 
   min-width: 0;
 
@@ -95,51 +58,32 @@
   display: flex;
   flex-direction: column;
 
-  gap: 4px;
+  gap: 3px;
 
-  padding: 16px 12px;
+  padding: 12px 9px;
 
   overflow-x: hidden;
   overflow-y: auto;
 
   overscroll-behavior: contain;
 
-  background: #f7faf9;
+  background: #f5fbfa;
 
-  border: 1px solid
-  var(
-                  --border,
-                  #dce5e8
-  );
+  border: 1px solid var(--border, #d7e7e4);
+  border-radius: 14px;
 
-  border-radius: var(
-                  --radius-lg,
-                  18px
-  );
-
-  box-shadow:
-          0
-          8px
-          24px
-          rgba(
-                          31,
-                          52,
-                          60,
-                          0.08
-          );
+  box-shadow: 0 5px 18px rgba(31, 76, 74, 0.07);
 
   scrollbar-width: thin;
 
-  scrollbar-color:
-          #c3d1d4
-          transparent;
+  scrollbar-color: #b9d0cc transparent;
 
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #c3d1d4;
+    background: #b9d0cc;
 
     border-radius: 999px;
   }
@@ -152,32 +96,27 @@
 .tabButton {
   width: 100%;
 
-  min-height: 44px;
+  min-height: 40px;
 
   flex: 0 0 auto;
 
   display: flex;
   align-items: center;
 
-  padding: 9px 11px;
+  padding: 7px 9px;
 
-  color: var(
-                  --text-secondary,
-                  #52656d
-  );
+  color: var(--text-secondary, #556a6d);
 
   background: transparent;
 
-  border: 1px solid
-  transparent;
-
-  border-radius: 9px;
+  border: 1px solid transparent;
+  border-radius: 8px;
 
   cursor: pointer;
 
-  font-size: 15px;
+  font-size: 13.5px;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.25;
 
   text-align: left;
 
@@ -189,40 +128,28 @@
           border-color 150ms ease;
 
   &:hover {
-    color: var(
-                    --accent,
-                    #176b6a
-    );
+    color: var(--accent, #1f7f78);
 
-    background: #edf5f4;
+    background: #eaf7f5;
   }
 
   &.active {
-    color: #0f5554;
+    color: #155e59;
 
-    background: #e1f0ee;
+    background: #dff3ef;
 
-    border-color: #c7e0dd;
+    border-color: #bce0da;
 
     font-weight: 700;
   }
 }
 
-/*
- * Поскольку fixed-панель выпала
- * из CSS Grid, явно говорим,
- * что контент занимает правую колонку.
- */
 .tabContent {
   grid-column: 2;
 
   min-width: 0;
 
-  padding: clamp(
-          20px,
-          3vw,
-          34px
-  );
+  padding: clamp(18px, 2.4vw, 26px);
 }
 
 .form {
@@ -231,21 +158,21 @@
   display: flex;
   flex-direction: column;
 
-  gap: 18px;
+  gap: 12px;
 
-  padding-bottom: 90px;
+  padding-bottom: 72px;
 
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.45;
 
   label {
-    font-size: 16px;
+    font-size: 14px;
   }
 
   input,
   textarea,
   select {
-    font-size: 16px;
+    font-size: 15px;
   }
 }
 
@@ -253,37 +180,22 @@
   min-width: 0;
 
   + .section {
-    margin-top: 8px;
+    margin-top: 6px;
   }
 
   h3 {
-    margin:
-            0
-            0
-            17px;
+    margin: 0 0 12px;
 
-    padding-bottom: 10px;
+    padding-bottom: 7px;
 
-    color: var(
-                    --text-primary,
-                    #17252b
-    );
+    color: var(--text-primary, #203235);
 
-    border-bottom: 1px solid
-    var(
-                    --border,
-                    #dce5e8
-    );
+    border-bottom: 1px solid var(--border, #d7e7e4);
 
-    font-size: clamp(
-            18px,
-            2vw,
-            22px
-    );
-
+    font-size: clamp(16px, 1.6vw, 19px);
     font-weight: 700;
-    line-height: 1.3;
-    letter-spacing: -0.012em;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
   }
 }
 
@@ -293,75 +205,38 @@
   z-index: 110;
 
   right: max(
-          var(
-                          --page-gutter,
-                          24px
-          ),
+          var(--page-gutter, 24px),
           calc(
-                  (
-                  100vw -
-                  var(
-                          --page-max,
-                          1360px
-                  )
-                  ) / 2 +
-                  var(
-                          --page-gutter,
-                          24px
-                  )
+                  (100vw - var(--page-max, 1360px)) / 2 +
+                  var(--page-gutter, 24px)
           )
   );
 
-  bottom: max(
-          16px,
-          env(
-                          safe-area-inset-bottom
-          )
-  );
+  bottom: max(12px, env(safe-area-inset-bottom));
 
   display: flex;
   justify-content: flex-end;
 
-  gap: 10px;
+  gap: 6px;
 
   margin: 0;
 
-  padding: 8px;
+  padding: 5px;
 
-  background: rgba(
-                  255,
-                  255,
-                  255,
-                  0.94
-  );
+  background: rgba(255, 255, 255, 0.94);
 
-  border: 1px solid
-  var(
-                  --border,
-                  #dce5e8
-  );
+  border: 1px solid var(--border, #d7e7e4);
+  border-radius: 10px;
 
-  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(31, 76, 74, 0.14);
 
-  box-shadow:
-          0
-          12px
-          34px
-          rgba(
-                          31,
-                          52,
-                          60,
-                          0.18
-          );
-
-  backdrop-filter:
-          blur(12px);
+  backdrop-filter: blur(10px);
 
   > button {
-    min-width: 190px;
-    min-height: 50px;
+    min-width: 150px;
+    min-height: 42px;
 
-    font-size: 16px;
+    font-size: 13.5px;
   }
 }
 
