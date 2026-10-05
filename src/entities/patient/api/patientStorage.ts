@@ -30,6 +30,8 @@ export const createPatient = (data: PatientFormData): Patient => {
     glycemicProfile: null,
 
     diaryEntries: [],
+
+    plans: [],
   };
 
   patients.push(newPatient);

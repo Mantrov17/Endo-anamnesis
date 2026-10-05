@@ -30,7 +30,7 @@ export const addDiary = (
 
     id: createDiaryId(),
 
-    date: getTodayLocalDate(),
+    date: data.date || getTodayLocalDate(),
 
     createdAt: now,
 
@@ -86,12 +86,16 @@ export const updateDiary = (
     ...data,
 
     /*
-     * ID, дата создания дневника
-     * и createdAt остаются прежними.
+     * Для уже созданного дневника
+     * дату не изменяем.
+     *
+     * План привязывается к дате дневника,
+     * поэтому случайный перенос дневника
+     * на другой день здесь нежелателен.
      */
-    id: currentDiary.id,
-
     date: currentDiary.date,
+
+    id: currentDiary.id,
 
     createdAt: currentDiary.createdAt,
 

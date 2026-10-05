@@ -53,15 +53,17 @@ export const DiaryPage: React.FC = () => {
     }
 
     return {
+      date: diary.date,
+
       complaints: diary.complaints,
 
       bloodPressure: diary.bloodPressure,
 
+      pulse: diary.pulse ?? null,
+
       saturation: diary.saturation,
 
       edema: diary.edema,
-
-      plannedActivities: diary.plannedActivities,
 
       otherData: diary.otherData,
     };
@@ -135,6 +137,15 @@ export const DiaryPage: React.FC = () => {
 
           <div className={styles.patientName}>{patient.fullName}</div>
         </div>
+
+        <Button
+          type="button"
+          variant="secondary"
+          className={styles.plansButton}
+          onClick={() => navigate(`/patient/${patientId}/plans`)}
+        >
+          Планы
+        </Button>
       </div>
 
       <DiaryForm

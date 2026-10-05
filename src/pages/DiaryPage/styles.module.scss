@@ -306,3 +306,31 @@
     font-size: 11.5px;
   }
 }
+
+.plansButton {
+  flex: 0 0 auto;
+
+  min-height: 38px;
+
+  padding: 6px 10px;
+
+  font-size: 12.5px;
+}
+
+@media (max-width: 640px) {
+  .plansButton {
+    min-height: 38px;
+
+    padding: 5px 8px;
+
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 370px) {
+  .plansButton {
+    padding-inline: 6px;
+
+    font-size: 11px;
+  }
+}

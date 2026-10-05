@@ -1,13 +1,19 @@
 export interface DiaryFormData {
+  /*
+   * Дата дневника.
+   * Формат YYYY-MM-DD.
+   */
+  date: string;
+
   complaints: string;
 
   bloodPressure: string;
 
+  pulse: number | null;
+
   saturation: number | null;
 
   edema: string;
-
-  plannedActivities: string;
 
   otherData: string;
 }
@@ -16,10 +22,14 @@ export interface DiaryRecord extends DiaryFormData {
   id: string;
 
   /*
-   * Дата самого дневника.
-   * Формат YYYY-MM-DD.
+   * Старое поле.
+   *
+   * Не используем его в новой форме,
+   * но оставляем в типе записи,
+   * чтобы не уничтожать уже сохранённые
+   * пользовательские данные.
    */
-  date: string;
+  plannedActivities?: string;
 
   createdAt: string;
 

@@ -14,6 +14,8 @@ import { PatientFormPage } from "@/pages/PatientFormPage";
 
 import { PatientsListPage } from "@/pages/PatientsListPage";
 
+import { PlansPage } from "@/pages/PlansPage";
+
 export const App: React.FC = () => {
   return (
     <HashRouter>
@@ -33,6 +35,8 @@ export const App: React.FC = () => {
           path="/patient/:patientId/glycemic-profile"
           element={<GlycemicProfilePage />}
         />
+
+        <Route path="/patient/:patientId/plans" element={<PlansPage />} />
 
         <Route path="/patient/:patientId/diary/new" element={<DiaryPage />} />
 

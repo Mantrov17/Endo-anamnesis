@@ -1,6 +1,11 @@
 import { type FormEvent, useEffect, useState } from "react";
 
-import { addDiary, type DiaryFormData, updateDiary } from "@/entities/diary";
+import {
+  addDiary,
+  type DiaryFormData,
+  getTodayLocalDate,
+  updateDiary,
+} from "@/entities/diary";
 
 import { getStorageWriteErrorMessage } from "@/shared/lib/storage/jsonStorage";
 
@@ -15,15 +20,17 @@ interface UseDiaryFormProps {
 }
 
 const createEmptyDiary = (): DiaryFormData => ({
+  date: getTodayLocalDate(),
+
   complaints: "",
 
   bloodPressure: "",
 
+  pulse: null,
+
   saturation: null,
 
   edema: "",
-
-  plannedActivities: "",
 
   otherData: "",
 });
@@ -67,6 +74,12 @@ export const useDiaryForm = ({
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!formData.date) {
+      window.alert("Укажите дату дневника.");
+
+      return;
+    }
 
     setLoading(true);
 

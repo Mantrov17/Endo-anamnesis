@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import type { DiaryFormData } from "@/entities/diary";
 
+import { getPlansByDate } from "@/entities/plan";
+
 import { Button } from "@/shared/ui/Button";
+
+import { DateInput } from "@/shared/ui/DateInput";
 
 import { Input } from "@/shared/ui/Input";
 
@@ -36,10 +40,32 @@ export const DiaryForm: React.FC<DiaryFormProps> = ({
       onSuccess,
     });
 
+  /*
+   * Главное бизнес-правило:
+   *
+   * План не привязан к дневнику.
+   * Мы просто выбираем планы пациента,
+   * дата которых совпадает с датой
+   * открытого дневника.
+   */
+  const plansForDate = useMemo(
+    () => getPlansByDate(patientId, formData.date),
+    [patientId, formData.date],
+  );
+
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.formSurface}>
         <div className={styles.content}>
+          <div className={styles.field}>
+            <DateInput
+              label="Дата дневника"
+              value={formData.date}
+              onChange={(date) => updateField("date", date)}
+              disabled={Boolean(currentDiaryId)}
+            />
+          </div>
+
           <div className={styles.field}>
             <Textarea
               label="Жалобы"
@@ -65,6 +91,23 @@ export const DiaryForm: React.FC<DiaryFormProps> = ({
 
           <div className={styles.field}>
             <Input
+              label="Пульс"
+              type="number"
+              min={0}
+              step={1}
+              suffix="уд/мин"
+              value={formData.pulse ?? ""}
+              onChange={(event) =>
+                updateField(
+                  "pulse",
+                  event.target.value === "" ? null : Number(event.target.value),
+                )
+              }
+            />
+          </div>
+
+          <div className={styles.field}>
+            <Input
               label="Сатурация"
               type="number"
               min={0}
@@ -83,21 +126,10 @@ export const DiaryForm: React.FC<DiaryFormProps> = ({
 
           <div className={styles.field}>
             <Textarea
-              label="Отеки"
+              label="Отёки"
               value={formData.edema}
               onChange={(event) => updateField("edema", event.target.value)}
               rows={3}
-            />
-          </div>
-
-          <div className={styles.field}>
-            <Textarea
-              label="Планируемые на день мероприятия"
-              value={formData.plannedActivities}
-              onChange={(event) =>
-                updateField("plannedActivities", event.target.value)
-              }
-              rows={4}
             />
           </div>
 
@@ -111,6 +143,28 @@ export const DiaryForm: React.FC<DiaryFormProps> = ({
           </div>
         </div>
       </div>
+
+      <section className={styles.plansSection}>
+        <div className={styles.plansHeader}>
+          <h3>Планы на эту дату</h3>
+
+          <span>{plansForDate.length}</span>
+        </div>
+
+        {plansForDate.length === 0 ? (
+          <div className={styles.plansEmpty}>На эту дату планов нет</div>
+        ) : (
+          <div className={styles.plansList}>
+            {plansForDate.map((plan) => (
+              <div key={plan.id} className={styles.planItem}>
+                <time className={styles.planTime}>{plan.time}</time>
+
+                <div className={styles.planText}>{plan.text}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
       <div className={styles.actions}>
         <Button type="submit" variant="primary" disabled={loading}>

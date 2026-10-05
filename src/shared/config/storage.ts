@@ -8,13 +8,21 @@ export const PATIENTS_STORAGE_VERSION_KEY = "patientsDataSchemaVersion";
  * - Patient.anamneses — массив анамнезов.
  *
  * Версия 2:
- * - массив anamneses удалён;
- * - появился primaryAnamnesis.
+ * - вместо массива anamneses появился
+ *   единственный primaryAnamnesis.
  *
  * Версия 3:
  * - появился массив diaryEntries.
  *
  * Версия 4:
  * - появился единственный glycemicProfile.
+ *
+ * Версия 5:
+ * - появился отдельный массив plans;
+ * - в дневник добавлено поле pulse;
+ * - plannedActivities больше не является
+ *   активным полем формы дневника и
+ *   сохраняется только для совместимости
+ *   со старыми данными.
  */
-export const PATIENTS_STORAGE_VERSION = 4;
+export const PATIENTS_STORAGE_VERSION = 5;

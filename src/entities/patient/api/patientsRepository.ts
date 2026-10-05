@@ -14,13 +14,23 @@ import type { Patient } from "../model/types";
 
 type PrimaryAnamnesisRecord = NonNullable<Patient["primaryAnamnesis"]>;
 
-type StoredDiaryRecord = Patient["diaryEntries"][number];
+type CurrentDiaryRecord = Patient["diaryEntries"][number];
+
+type StoredDiaryRecord = Omit<CurrentDiaryRecord, "pulse"> & {
+  pulse?: number | null;
+};
 
 type StoredGlycemicProfile = NonNullable<Patient["glycemicProfile"]>;
 
+type StoredPlanRecord = Patient["plans"][number];
+
 type StoredPatient = Omit<
   Patient,
-  "createdAt" | "primaryAnamnesis" | "diaryEntries" | "glycemicProfile"
+  | "createdAt"
+  | "primaryAnamnesis"
+  | "diaryEntries"
+  | "glycemicProfile"
+  | "plans"
 > & {
   createdAt?: string;
 
@@ -31,6 +41,8 @@ type StoredPatient = Omit<
   diaryEntries?: StoredDiaryRecord[];
 
   glycemicProfile?: StoredGlycemicProfile | null;
+
+  plans?: StoredPlanRecord[];
 };
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
@@ -86,6 +98,10 @@ const isStoredPatient = (value: unknown): value is StoredPatient => {
     return false;
   }
 
+  if (value.plans !== undefined && !Array.isArray(value.plans)) {
+    return false;
+  }
+
   return true;
 };
 
@@ -129,6 +145,14 @@ const getLatestLegacyAnamnesis = (
   });
 };
 
+const migrateDiaryRecord = (diary: StoredDiaryRecord): CurrentDiaryRecord => {
+  return {
+    ...diary,
+
+    pulse: typeof diary.pulse === "number" ? diary.pulse : null,
+  };
+};
+
 const migrateStoredPatient = (patient: StoredPatient): Patient => {
   const primaryAnamnesis =
     patient.primaryAnamnesis !== undefined
@@ -150,7 +174,9 @@ const migrateStoredPatient = (patient: StoredPatient): Patient => {
 
     glycemicProfile: patient.glycemicProfile ?? null,
 
-    diaryEntries: patient.diaryEntries ?? [],
+    diaryEntries: (patient.diaryEntries ?? []).map(migrateDiaryRecord),
+
+    plans: patient.plans ?? [],
   };
 };
 
@@ -168,7 +194,9 @@ const needsMigration = (
       !("primaryAnamnesis" in patient) ||
       !("glycemicProfile" in patient) ||
       !("diaryEntries" in patient) ||
-      !patient.createdAt,
+      !("plans" in patient) ||
+      !patient.createdAt ||
+      (patient.diaryEntries ?? []).some((diary) => !("pulse" in diary)),
   );
 };
 
