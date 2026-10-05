@@ -361,14 +361,6 @@
     }
   }
 
-  /*
-   * Radio-карточки.
-   *
-   * Важно использовать minmax(0, 1fr),
-   * иначе длинный текст задаёт колонке
-   * собственную минимальную ширину и
-   * выталкивает вторую колонку за экран.
-   */
   .radioGroup {
     width: 100%;
     min-width: 0;
@@ -641,10 +633,20 @@
     }
   }
 
+  /*
+   * На телефоне кнопку сохранения снова
+   * делаем широкой — почти на весь экран.
+   */
   .actions {
-    right: 10px;
+    right: max(10px, env(safe-area-inset-right, 0px));
     bottom: max(8px, env(safe-area-inset-bottom));
-    left: auto;
+    left: max(10px, env(safe-area-inset-left, 0px));
+
+    width: auto;
+
+    box-sizing: border-box;
+
+    display: block;
 
     margin: 0;
 
@@ -653,21 +655,18 @@
     border-radius: 10px;
 
     > button {
-      width: auto;
+      width: 100%;
 
-      min-width: 132px;
+      min-width: 0;
       min-height: 42px;
+
+      padding-inline: 12px;
 
       font-size: 13.5px;
     }
   }
 }
 
-/*
- * На узких телефонах всё ещё оставляем
- * две колонки, просто немного сильнее
- * ужимаем внутренности radio-карточек.
- */
 @media (max-width: 380px) {
   .radioGroup {
     gap: 5px;
@@ -693,11 +692,6 @@
   }
 }
 
-/*
- * Уже только для совсем экстремальной
- * ширины превращаем варианты в одну
- * колонку, чтобы текст не стал нечитаемым.
- */
 @media (max-width: 315px) {
   .radioGroup {
     grid-template-columns: minmax(0, 1fr);
