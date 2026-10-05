@@ -4,6 +4,10 @@ export const tabs = [
     label: "Первичный осмотр",
   },
   {
+    id: "anthropometry",
+    label: "Антропометрия",
+  },
+  {
     id: "therapy",
     label: "Терапия",
   },

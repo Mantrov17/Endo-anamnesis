@@ -36,11 +36,6 @@ export const Type2DiabetesSection: React.FC = () => {
     <div className={styles.section}>
       <h3>Дебют СД 2 типа</h3>
 
-      <Input
-        label="Когда впервые замечено повышение глюкозы? (год)"
-        {...register("type2Diabetes.firstGlucoseElevationYear")}
-      />
-
       <div className={styles.row}>
         <Input
           label="Год постановки диагноза"

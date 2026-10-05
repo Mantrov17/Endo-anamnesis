@@ -17,6 +17,7 @@ import { useAnamnesisForm } from "../model/useAnamnesisForm";
 
 import {
   AdditionalTab,
+  AnthropometryTab,
   ComplicationsTab,
   ExaminationTab,
   H2FPEFTab,
@@ -270,6 +271,14 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                 hidden={activeTab !== "primary"}
               >
                 <PrimaryTab />
+              </div>
+
+              <div
+                id="anamnesis-tab-anthropometry"
+                role="tabpanel"
+                hidden={activeTab !== "anthropometry"}
+              >
+                <AnthropometryTab />
               </div>
 
               <div

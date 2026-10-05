@@ -39,8 +39,6 @@ export interface Type1Diabetes {
 
   diagnosisDetails: string;
 
-  circumstances: string;
-
   glycemiaAtOnset: number | null;
 
   classicSymptoms: {
@@ -164,8 +162,6 @@ export interface Type1Diabetes {
 // ==================== СД 2 типа ====================
 
 export interface Type2Diabetes {
-  firstGlucoseElevationYear: string;
-
   maxGlucoseValues: string;
 
   ageAtDiagnosis: number | null;

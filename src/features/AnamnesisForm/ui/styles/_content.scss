@@ -355,6 +355,140 @@ select {
   }
 }
 
+/*
+ * Компактный список классических
+ * симптомов при дебюте СД 1 типа.
+ */
+.compactSymptomsFieldset {
+  padding: 10px;
+
+  > legend {
+    font-size: 13.5px;
+  }
+}
+
+.compactSymptomsGrid {
+  width: 100%;
+  min-width: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 5px 8px;
+
+  > label {
+    min-width: 0;
+    min-height: 30px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    margin: 0;
+
+    padding: 3px 4px;
+
+    color: var(--text-secondary, #556a6d);
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+    line-height: 1.2;
+
+    transition: background-color 120ms ease;
+
+    &:hover {
+      background: var(--bg-accent-soft, #e6f6f3);
+    }
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+
+      min-width: 16px;
+
+      flex: 0 0 16px;
+
+      margin: 0;
+
+      accent-color: var(--accent, #1f7f78);
+    }
+
+    span {
+      min-width: 0;
+
+      overflow-wrap: anywhere;
+    }
+  }
+}
+
+.compactSymptomsOther {
+  margin-top: 7px;
+
+  > div {
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .compactSymptomsFieldset {
+    margin-top: 4px;
+    margin-bottom: 8px;
+
+    padding: 8px 7px;
+
+    > legend {
+      padding-inline: 5px;
+
+      font-size: 12.5px;
+      line-height: 1.25;
+    }
+  }
+
+  .compactSymptomsGrid {
+    gap: 3px 5px;
+
+    > label {
+      min-height: 27px;
+
+      gap: 5px;
+
+      padding: 2px 3px;
+
+      font-size: 12px;
+      line-height: 1.15;
+
+      input[type="checkbox"] {
+        width: 15px;
+        height: 15px;
+
+        min-width: 15px;
+
+        flex-basis: 15px;
+      }
+    }
+  }
+
+  .compactSymptomsOther {
+    margin-top: 5px;
+  }
+}
+
+@media (max-width: 350px) {
+  .compactSymptomsGrid {
+    gap: 3px;
+
+    > label {
+      font-size: 11.5px;
+    }
+  }
+}
+
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;

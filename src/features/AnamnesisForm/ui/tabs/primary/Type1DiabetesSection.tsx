@@ -133,15 +133,107 @@ export const Type1DiabetesSection: React.FC = () => {
         rows={3}
       />
 
-      <Field
-        hint="Что послужило триггерным фактором?"
-        noteKey="type1Diabetes.circumstances"
-      >
-        <Textarea
-          label="Триггерный фактор"
-          {...register("type1Diabetes.circumstances")}
-          rows={2}
-        />
+      <Field noteKey="type1Diabetes.classicSymptoms">
+        <fieldset
+          className={`${styles.fieldset} ${styles.compactSymptomsFieldset}`}
+        >
+          <legend>Классические симптомы при дебюте</legend>
+
+          <div className={styles.compactSymptomsGrid}>
+            <label>
+              <input
+                type="checkbox"
+                {...register("type1Diabetes.classicSymptoms.polyuria")}
+              />
+              <span>Полиурия</span>
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                {...register("type1Diabetes.classicSymptoms.polydipsia")}
+              />
+              <span>Полидипсия</span>
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                {...register("type1Diabetes.classicSymptoms.weakness")}
+              />
+              <span>Слабость</span>
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                {...register("type1Diabetes.classicSymptoms.weightLoss")}
+              />
+              <span>Снижение веса</span>
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                {...register("type1Diabetes.classicSymptoms.nausea")}
+              />
+              <span>Тошнота</span>
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                {...register("type1Diabetes.classicSymptoms.vomiting")}
+              />
+              <span>Рвота</span>
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                {...register("type1Diabetes.classicSymptoms.abdominalPain")}
+              />
+              <span>Боли в животе</span>
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                {...register("type1Diabetes.classicSymptoms.visionBlur")}
+              />
+              <span>Помутнение зрения</span>
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                {...register(
+                  "type1Diabetes.classicSymptoms.lossOfConsciousness",
+                )}
+              />
+              <span>Потеря сознания</span>
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                {...register("type1Diabetes.classicSymptoms.other")}
+              />
+              <span>Свой вариант</span>
+            </label>
+          </div>
+
+          {otherClassicSymptom && (
+            <div className={styles.compactSymptomsOther}>
+              <Textarea
+                label="Свой вариант"
+                placeholder="Укажите другой симптом"
+                {...register("type1Diabetes.classicSymptoms.otherDetails")}
+                rows={2}
+              />
+            </div>
+          )}
+        </fieldset>
       </Field>
 
       <Input
@@ -151,101 +243,6 @@ export const Type1DiabetesSection: React.FC = () => {
         suffix="ммоль/л"
         {...register("type1Diabetes.glycemiaAtOnset")}
       />
-
-      <Field noteKey="type1Diabetes.classicSymptoms">
-        <fieldset className={styles.fieldset}>
-          <legend>Классические симптомы при дебюте</legend>
-
-          <label>
-            <input
-              type="checkbox"
-              {...register("type1Diabetes.classicSymptoms.polyuria")}
-            />{" "}
-            Полиурия
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              {...register("type1Diabetes.classicSymptoms.polydipsia")}
-            />{" "}
-            Полидипсия
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              {...register("type1Diabetes.classicSymptoms.weakness")}
-            />{" "}
-            Слабость
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              {...register("type1Diabetes.classicSymptoms.weightLoss")}
-            />{" "}
-            Снижение веса
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              {...register("type1Diabetes.classicSymptoms.nausea")}
-            />{" "}
-            Тошнота
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              {...register("type1Diabetes.classicSymptoms.vomiting")}
-            />{" "}
-            Рвота
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              {...register("type1Diabetes.classicSymptoms.abdominalPain")}
-            />{" "}
-            Боли в животе
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              {...register("type1Diabetes.classicSymptoms.visionBlur")}
-            />{" "}
-            Помутнение зрения
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              {...register("type1Diabetes.classicSymptoms.lossOfConsciousness")}
-            />{" "}
-            Потеря сознания
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              {...register("type1Diabetes.classicSymptoms.other")}
-            />{" "}
-            Свой вариант ответа
-          </label>
-
-          {otherClassicSymptom && (
-            <Textarea
-              label="Свой вариант"
-              placeholder="Укажите другой симптом"
-              {...register("type1Diabetes.classicSymptoms.otherDetails")}
-              rows={2}
-            />
-          )}
-        </fieldset>
-      </Field>
 
       <YesNo
         label="Первично поставлен СД 2 типа?"

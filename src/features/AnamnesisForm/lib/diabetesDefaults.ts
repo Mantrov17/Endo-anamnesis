@@ -10,7 +10,6 @@ export const createType1DiabetesDefaults = (): Type1DiabetesData => ({
   diseaseDuration: null,
   howDiagnosed: "",
   diagnosisDetails: "",
-  circumstances: "",
   glycemiaAtOnset: null,
 
   classicSymptoms: {
@@ -109,7 +108,6 @@ export const createType1DiabetesDefaults = (): Type1DiabetesData => ({
 });
 
 export const createType2DiabetesDefaults = (): Type2DiabetesData => ({
-  firstGlucoseElevationYear: "",
   maxGlucoseValues: "",
 
   ageAtDiagnosis: null,

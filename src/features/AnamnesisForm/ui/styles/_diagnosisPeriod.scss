@@ -1,0 +1,128 @@
+/*
+ * Год постановки диагноза /
+ * возраст постановки диагноза /
+ * длительность заболевания.
+ *
+ * На телефоне эти три связанных поля
+ * всегда держим в одной строке.
+ *
+ * Отдельный className в TSX не нужен:
+ * блок однозначно определяется по полям
+ * yearOfDiagnosis.
+ */
+
+@media (max-width: 640px) {
+  .row:has(input[name="type1Diabetes.yearOfDiagnosis"]),
+  .row:has(input[name="type2Diabetes.yearOfDiagnosis"]) {
+    display: grid;
+
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+
+    align-items: end;
+
+    gap: 5px;
+
+    margin-bottom: 8px;
+
+    /*
+     * Input сам обёрнут в div.
+     * Убираем его стандартную минимальную
+     * ширину и нижний отступ.
+     */
+    > div {
+      width: 100%;
+      min-width: 0;
+
+      margin-bottom: 0;
+    }
+
+    /*
+     * Длинные названия разрешаем переносить.
+     * Одинаковая минимальная высота держит
+     * сами input на одной линии.
+     */
+    > div > label {
+      min-height: 32px;
+
+      display: flex;
+      align-items: flex-end;
+
+      margin-bottom: 3px;
+
+      font-size: 10.5px;
+      font-weight: 650;
+      line-height: 1.12;
+
+      overflow-wrap: anywhere;
+    }
+
+    input {
+      width: 100%;
+      min-width: 0;
+      min-height: 38px;
+
+      padding: 5px 6px;
+
+      border-radius: 7px;
+
+      /*
+       * 16px сохраняем, чтобы мобильный
+       * браузер не делал zoom при фокусе.
+       */
+      font-size: 16px;
+    }
+
+    /*
+     * У возраста и длительности есть suffix "лет".
+     * Стандартный Input оставляет под suffix
+     * слишком много места — для узких колонок
+     * уменьшаем этот резерв.
+     */
+    input[type="number"] {
+      padding-right: 27px;
+    }
+
+    /*
+     * suffix находится внутри внутреннего
+     * div компонента Input.
+     */
+    > div > div > span {
+      right: 5px;
+
+      font-size: 9.5px;
+    }
+  }
+}
+
+/*
+ * Совсем узкие экраны.
+ * Galaxy A53 сюда обычно уже не попадает,
+ * но оставляем запас для 320–340 px.
+ */
+@media (max-width: 350px) {
+  .row:has(input[name="type1Diabetes.yearOfDiagnosis"]),
+  .row:has(input[name="type2Diabetes.yearOfDiagnosis"]) {
+    gap: 4px;
+
+    > div > label {
+      min-height: 34px;
+
+      font-size: 10px;
+    }
+
+    input {
+      padding-inline: 5px;
+    }
+
+    input[type="number"] {
+      padding-right: 24px;
+    }
+
+    > div > div > span {
+      right: 4px;
+
+      font-size: 9px;
+    }
+  }
+}
