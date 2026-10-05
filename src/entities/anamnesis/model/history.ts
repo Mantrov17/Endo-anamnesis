@@ -1,6 +1,14 @@
 // ==================== Гипогликемии ====================
 
 export interface Hypoglycemia {
+  /*
+   * Главный вопрос раздела.
+   *
+   * Только при значении true показываются
+   * остальные поля по гипогликемиям.
+   */
+  hasGlucoseBelow39: boolean | null;
+
   frequencyPerWeek: number | null;
 
   severeEpisodes: boolean | null;

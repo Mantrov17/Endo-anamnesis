@@ -73,8 +73,6 @@ export const createType1DiabetesDefaults = (): Type1DiabetesData => ({
       },
     ],
 
-    otherDrugsTaken: null,
-    otherDrugs: "",
     usualGlucoseOnTherapy: null,
   },
 
@@ -83,6 +81,7 @@ export const createType1DiabetesDefaults = (): Type1DiabetesData => ({
       abdomen: false,
       thighs: false,
       buttocks: false,
+      lumbar: false,
       shoulders: false,
     },
 

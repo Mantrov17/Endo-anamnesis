@@ -2,8 +2,6 @@ export { PrimaryTab } from "./PrimaryTab";
 
 export { AnthropometryTab } from "./AnthropometryTab";
 
-export { TherapyTab } from "./TherapyTab";
-
 export { HypoglycemiaTab } from "./HypoglycemiaTab";
 
 export { SelfMonitoringTab } from "./SelfMonitoringTab";

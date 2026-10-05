@@ -4,15 +4,9 @@ import { useFormContext } from "react-hook-form";
 
 import type { AnamnesisFormData } from "@/entities/anamnesis";
 
-import { boolFromString } from "@/shared/lib/boolFromString";
-
 import { Input } from "@/shared/ui/Input";
 
-import { Textarea } from "@/shared/ui/Textarea";
-
 import { DrugList } from "../../DrugList";
-
-import { YesNo } from "../../YesNo";
 
 import styles from "../../styles.module.scss";
 
@@ -20,10 +14,6 @@ export const Type1InitialTherapySection: React.FC = () => {
   const { register, watch, control } = useFormContext<AnamnesisFormData>();
 
   const injectionMethod = watch("type1Diabetes.initialTherapy.injectionMethod");
-
-  const otherDrugsTaken = boolFromString(
-    watch("type1Diabetes.initialTherapy.otherDrugsTaken"),
-  );
 
   return (
     <fieldset className={styles.fieldset}>
@@ -82,7 +72,9 @@ export const Type1InitialTherapySection: React.FC = () => {
         />
       )}
 
-      <fieldset className={styles.fieldset}>
+      <fieldset
+        className={`${styles.fieldset} ${styles.insulinTherapyFieldset}`}
+      >
         <legend>Базальный инсулин</legend>
 
         <DrugList
@@ -91,10 +83,13 @@ export const Type1InitialTherapySection: React.FC = () => {
           name="type1Diabetes.initialTherapy.basalInsulin"
           firstField="drugName"
           nameLabel="Название препарата"
+          doseSuffix="ЕД"
         />
       </fieldset>
 
-      <fieldset className={styles.fieldset}>
+      <fieldset
+        className={`${styles.fieldset} ${styles.insulinTherapyFieldset}`}
+      >
         <legend>Болюсный инсулин</legend>
 
         <DrugList
@@ -103,22 +98,9 @@ export const Type1InitialTherapySection: React.FC = () => {
           name="type1Diabetes.initialTherapy.bolusInsulin"
           firstField="drugName"
           nameLabel="Название препарата"
+          doseSuffix="ЕД"
         />
       </fieldset>
-
-      <YesNo
-        label="Другие сахаропонижающие препараты"
-        name="type1Diabetes.initialTherapy.otherDrugsTaken"
-        register={register}
-      />
-
-      {otherDrugsTaken === true && (
-        <Textarea
-          label="Какие препараты"
-          {...register("type1Diabetes.initialTherapy.otherDrugs")}
-          rows={2}
-        />
-      )}
 
       <Input
         label="Привычные цифры глюкозы на терапии"

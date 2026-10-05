@@ -37,6 +37,14 @@ interface DrugListProps {
   nameLabel?: string;
 
   /**
+   * Фиксированная единица измерения
+   * для поля дозы.
+   *
+   * Например: "ЕД" для инсулина.
+   */
+  doseSuffix?: string;
+
+  /**
    * Показать третье поле —
    * кратность приёма.
    */
@@ -49,6 +57,7 @@ export const DrugList: React.FC<DrugListProps> = ({
   name,
   firstField,
   nameLabel = "Название",
+  doseSuffix,
   showFrequency = false,
 }) => {
   const { fields, append, remove } = useFieldArray({
@@ -96,7 +105,7 @@ export const DrugList: React.FC<DrugListProps> = ({
           <div key={field.id} className={styles.drugRow}>
             <Input label={nameLabel} {...register(firstPath)} />
 
-            <Input label="Доза" {...register(dosePath)} />
+            <Input label="Доза" suffix={doseSuffix} {...register(dosePath)} />
 
             {showFrequency && (
               <Input

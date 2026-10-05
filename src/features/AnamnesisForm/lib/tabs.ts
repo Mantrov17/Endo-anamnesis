@@ -8,10 +8,6 @@ export const tabs = [
     label: "Антропометрия",
   },
   {
-    id: "therapy",
-    label: "Терапия",
-  },
-  {
     id: "hypoglycemia",
     label: "Гипогликемии",
   },

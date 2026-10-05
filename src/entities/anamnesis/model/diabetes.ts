@@ -116,10 +116,6 @@ export interface Type1Diabetes {
       dose: string;
     }[];
 
-    otherDrugsTaken: boolean | null;
-
-    otherDrugs: string;
-
     usualGlucoseOnTherapy: number | null;
   };
 
@@ -128,6 +124,7 @@ export interface Type1Diabetes {
       abdomen: boolean;
       thighs: boolean;
       buttocks: boolean;
+      lumbar: boolean;
       shoulders: boolean;
     };
 

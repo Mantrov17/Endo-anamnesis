@@ -5,6 +5,8 @@ type HypoglycemiaDefaults = NonNullable<AnamnesisFormData["hypoglycemia"]>;
 type SelfMonitoringDefaults = NonNullable<AnamnesisFormData["selfMonitoring"]>;
 
 export const createHypoglycemiaDefaults = (): HypoglycemiaDefaults => ({
+  hasGlucoseBelow39: null,
+
   frequencyPerWeek: null,
 
   severeEpisodes: null,

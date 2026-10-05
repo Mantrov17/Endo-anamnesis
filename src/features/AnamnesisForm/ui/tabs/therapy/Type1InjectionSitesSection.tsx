@@ -47,6 +47,14 @@ export const Type1InjectionSitesSection: React.FC = () => {
         <label>
           <input
             type="checkbox"
+            {...register("type1Diabetes.injectionSitesInfo.sites.lumbar")}
+          />{" "}
+          Поясничная область
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
             {...register("type1Diabetes.injectionSitesInfo.sites.shoulders")}
           />{" "}
           Наружная поверхность плеч

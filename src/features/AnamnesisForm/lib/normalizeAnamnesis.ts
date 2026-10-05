@@ -85,6 +85,87 @@ const deepMergeWithDefaults = <T>(defaults: T, source: unknown): T => {
 };
 
 /**
+ * Проверяем, были ли в старой версии реально
+ * заполнены какие-либо данные по гипогликемиям.
+ *
+ * Это нужно потому, что раньше вопроса
+ * "Были ли понижения глюкозы менее 3,9 ммоль/л?"
+ * не существовало.
+ */
+const hasLegacyHypoglycemiaData = (
+  hypoglycemia: AnamnesisFormData["hypoglycemia"],
+): boolean => {
+  if (!hypoglycemia) {
+    return false;
+  }
+
+  return Boolean(
+    hypoglycemia.frequencyPerWeek !== null ||
+      hypoglycemia.severeEpisodes !== null ||
+      hypoglycemia.severeEpisodesCount !== null ||
+      hypoglycemia.severeEpisodesWhen.trim() ||
+      hypoglycemia.severeEpisodesClinic.trim() ||
+      hypoglycemia.awarenessPreserved !== null ||
+      hypoglycemia.provokingFactors.physicalActivity ||
+      hypoglycemia.provokingFactors.missedMeal ||
+      hypoglycemia.provokingFactors.alcohol ||
+      hypoglycemia.hasGlucagon !== null ||
+      hypoglycemia.familyTrained !== null ||
+      hypoglycemia.nocturnalHypoglycemia !== null ||
+      hypoglycemia.severity !== "" ||
+      hypoglycemia.symptoms.hunger ||
+      hypoglycemia.symptoms.tremor ||
+      hypoglycemia.symptoms.sweating ||
+      hypoglycemia.symptoms.tachycardia ||
+      hypoglycemia.symptoms.anxiety ||
+      hypoglycemia.symptoms.weakness ||
+      hypoglycemia.symptoms.diplopia ||
+      hypoglycemia.symptoms.headache,
+  );
+};
+
+/**
+ * Миграция старых записей гипогликемий.
+ *
+ * Если новое поле уже существует —
+ * ничего не меняем.
+ *
+ * Если поля нет, но старая анкета была
+ * заполнена — считаем ответ "Да".
+ *
+ * Если старая анкета была полностью пустой —
+ * оставляем null, чтобы пользователь сам
+ * выбрал "Да" или "Нет".
+ */
+const normalizeLegacyHypoglycemia = (
+  data: AnamnesisFormData,
+): AnamnesisFormData => {
+  if (!data.hypoglycemia) {
+    return data;
+  }
+
+  const rawHypoglycemia = data.hypoglycemia as typeof data.hypoglycemia & {
+    hasGlucoseBelow39?: boolean | null;
+  };
+
+  if (rawHypoglycemia.hasGlucoseBelow39 !== undefined) {
+    return data;
+  }
+
+  return {
+    ...data,
+
+    hypoglycemia: {
+      ...data.hypoglycemia,
+
+      hasGlucoseBelow39: hasLegacyHypoglycemiaData(data.hypoglycemia)
+        ? true
+        : null,
+    },
+  };
+};
+
+/**
  * Создаём defaults с учётом выбранных типов диабета.
  *
  * В основном getDefaultValues():
@@ -116,9 +197,11 @@ const getDefaultsForData = (data: AnamnesisFormData): AnamnesisFormData => {
 export const mergeAnamnesisWithDefaults = (
   data: AnamnesisFormData,
 ): AnamnesisFormData => {
-  const defaults = getDefaultsForData(data);
+  const normalizedData = normalizeLegacyHypoglycemia(data);
 
-  return deepMergeWithDefaults(defaults, data);
+  const defaults = getDefaultsForData(normalizedData);
+
+  return deepMergeWithDefaults(defaults, normalizedData);
 };
 
 export const normalizeAnamnesisFormData = (

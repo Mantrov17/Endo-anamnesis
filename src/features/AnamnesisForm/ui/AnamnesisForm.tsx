@@ -28,7 +28,6 @@ import {
   PrimaryTab,
   SecondaryAHTab,
   SelfMonitoringTab,
-  TherapyTab,
 } from "./tabs";
 
 import styles from "./styles.module.scss";
@@ -279,14 +278,6 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                 hidden={activeTab !== "anthropometry"}
               >
                 <AnthropometryTab />
-              </div>
-
-              <div
-                id="anamnesis-tab-therapy"
-                role="tabpanel"
-                hidden={activeTab !== "therapy"}
-              >
-                <TherapyTab />
               </div>
 
               <div
