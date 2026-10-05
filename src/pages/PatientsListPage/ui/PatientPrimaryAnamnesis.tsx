@@ -22,7 +22,7 @@ export const PatientPrimaryAnamnesis: React.FC<
   PatientPrimaryAnamnesisProps
 > = ({ patientId, primaryAnamnesis, onOpen, onOpenGlycemicProfile }) => {
   return (
-    <div className={styles.anamnesesSection}>
+    <div className={`${styles.anamnesesSection} ${styles.primarySection}`}>
       <div className={styles.anamnesesHeader}>
         <Heading
           level={3}

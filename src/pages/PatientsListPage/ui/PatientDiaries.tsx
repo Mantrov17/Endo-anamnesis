@@ -1,7 +1,5 @@
 import React from "react";
 
-import { useNavigate } from "react-router-dom";
-
 import { type DiaryRecord, formatDiaryTitle } from "@/entities/diary";
 
 import { Button } from "@/shared/ui/Button";
@@ -29,14 +27,12 @@ export const PatientDiaries: React.FC<PatientDiariesProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const navigate = useNavigate();
-
   const sortedDiaries = [...diaryEntries].sort(
     (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt),
   );
 
   return (
-    <div className={styles.anamnesesSection}>
+    <div className={`${styles.anamnesesSection} ${styles.diariesSection}`}>
       <div className={styles.anamnesesHeader}>
         <Heading
           level={3}
@@ -45,17 +41,6 @@ export const PatientDiaries: React.FC<PatientDiariesProps> = ({
         >
           Дневники
         </Heading>
-
-        <Button
-          variant="secondary"
-          onClick={(event) => {
-            event.stopPropagation();
-
-            navigate(`/patient/${patientId}/plans`);
-          }}
-        >
-          Планы
-        </Button>
 
         <Button
           variant="primary"

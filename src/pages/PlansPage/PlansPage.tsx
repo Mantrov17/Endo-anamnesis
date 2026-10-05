@@ -82,8 +82,6 @@ export const PlansPage: React.FC = () => {
     ? {
         date: editingPlan.date,
 
-        time: editingPlan.time,
-
         text: editingPlan.text,
       }
     : undefined;
@@ -183,8 +181,6 @@ export const PlansPage: React.FC = () => {
             {plans.map((plan) => (
               <article key={plan.id} className={styles.plan}>
                 <div className={styles.planDate}>{formatDate(plan.date)}</div>
-
-                <div className={styles.planTime}>{plan.time}</div>
 
                 <div className={styles.planText}>{plan.text}</div>
 

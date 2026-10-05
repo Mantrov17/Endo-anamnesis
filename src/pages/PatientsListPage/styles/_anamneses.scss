@@ -1,14 +1,55 @@
 .anamnesesSection {
+  --section-bg: #f8fbfb;
+  --section-top-border: var(--border, #dce5e8);
+  --section-card-bg: rgba(255, 255, 255, 0.72);
+  --section-card-border: #dce5e8;
+  --section-empty-bg: rgba(255, 255, 255, 0.72);
+  --section-empty-border: #dce5e8;
+
   width: 100%;
   min-width: 0;
 
-  padding: 12px 13px;
+  padding: 16px;
 
-  background: linear-gradient(180deg, #f8fcfb 0%, #f1faf8 100%);
+  background: var(--section-bg);
 
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--section-top-border);
 
-  animation: reveal 160ms ease-out;
+  animation: reveal 180ms ease-out;
+}
+
+.primarySection {
+  --section-bg:
+          linear-gradient(
+                          180deg,
+                          rgba(242, 249, 251, 0.92) 0%,
+                          rgba(237, 246, 248, 0.98) 100%
+          );
+
+  --section-top-border: #d8e9ee;
+
+  --section-card-bg: rgba(255, 255, 255, 0.76);
+  --section-card-border: #d7e7ec;
+
+  --section-empty-bg: rgba(255, 255, 255, 0.7);
+  --section-empty-border: #d7e7ec;
+}
+
+.diariesSection {
+  --section-bg:
+          linear-gradient(
+                          180deg,
+                          rgba(242, 251, 246, 0.92) 0%,
+                          rgba(234, 247, 239, 0.98) 100%
+          );
+
+  --section-top-border: #cfe6d6;
+
+  --section-card-bg: rgba(255, 255, 255, 0.78);
+  --section-card-border: #d6e8db;
+
+  --section-empty-bg: rgba(255, 255, 255, 0.72);
+  --section-empty-border: #d6e8db;
 }
 
 .anamnesesHeader {
@@ -19,46 +60,32 @@
   justify-content: space-between;
   align-items: center;
 
-  gap: 10px;
+  gap: 14px;
 
-  margin-bottom: 9px;
-
-  > button {
-    min-height: 38px;
-
-    padding: 6px 11px;
-
-    border-radius: 8px;
-
-    box-shadow: none;
-
-    font-size: 13px;
-  }
+  margin-bottom: 12px;
 }
 
 .anamnesesTitle {
   flex: 1 1 auto;
-
-  color: var(--text-primary);
-
-  font-size: 14px;
-  line-height: 1.25;
 }
 
 .noAnamnesis {
   margin: 0;
 
-  padding: 12px;
+  padding: 16px;
 
-  color: var(--text-muted);
+  color: var(
+                  --text-muted,
+                  #7a8b92
+  );
 
-  background: #ffffff;
+  background: var(--section-empty-bg);
 
-  border: 1px dashed var(--border);
+  border: 1px dashed var(--section-empty-border);
 
-  border-radius: 8px;
+  border-radius: 10px;
 
-  font-size: 12px;
+  font-size: 13px;
 
   text-align: center;
 }
@@ -69,7 +96,7 @@
   display: flex;
   flex-direction: column;
 
-  gap: 7px;
+  gap: 8px;
 }
 
 .anamnesisItem {
@@ -80,17 +107,17 @@
   justify-content: space-between;
   align-items: center;
 
-  gap: 10px;
+  gap: 14px;
 
-  padding: 9px 10px;
+  padding: 12px 13px;
 
-  background: linear-gradient(180deg, #ffffff 0%, #fcfefe 100%);
+  background: var(--section-card-bg);
 
-  border: 1px solid var(--border);
+  border: 1px solid var(--section-card-border);
 
-  border-radius: 9px;
+  border-radius: 11px;
 
-  box-shadow: 0 1px 3px rgba(31, 76, 74, 0.035);
+  box-shadow: 0 1px 2px rgba(31, 52, 60, 0.03);
 }
 
 .anamnesisInfo {
@@ -101,23 +128,27 @@
   display: flex;
   flex-direction: column;
 
-  gap: 2px;
+  gap: 3px;
 
   strong {
-    color: var(--text-primary);
+    color: var(
+                    --text-primary,
+                    #17252b
+    );
 
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    line-height: 1.3;
 
     overflow-wrap: anywhere;
   }
 
   span {
-    color: var(--text-muted);
+    color: var(
+                    --text-muted,
+                    #7a8b92
+    );
 
-    font-size: 11px;
-    line-height: 1.35;
+    font-size: 12px;
 
     overflow-wrap: anywhere;
   }
@@ -128,19 +159,7 @@
 
   display: flex;
 
-  gap: 6px;
-
-  > button {
-    min-height: 38px;
-
-    padding: 6px 11px;
-
-    border-radius: 8px;
-
-    box-shadow: none;
-
-    font-size: 13px;
-  }
+  gap: 7px;
 }
 
 .primaryFormsActions {
@@ -150,21 +169,12 @@
   flex-direction: column;
   align-items: stretch;
 
-  gap: 6px;
+  gap: 8px;
 
-  min-width: 205px;
+  min-width: 230px;
 
   > button {
     width: 100%;
-    min-height: 38px;
-
-    padding: 6px 11px;
-
-    border-radius: 8px;
-
-    box-shadow: none;
-
-    font-size: 13px;
   }
 }
 

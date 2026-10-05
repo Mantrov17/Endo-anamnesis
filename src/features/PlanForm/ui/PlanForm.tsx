@@ -6,8 +6,6 @@ import { Button } from "@/shared/ui/Button";
 
 import { DateInput } from "@/shared/ui/DateInput";
 
-import { Input } from "@/shared/ui/Input";
-
 import { Textarea } from "@/shared/ui/Textarea";
 
 import { usePlanForm } from "../model/usePlanForm";
@@ -47,13 +45,6 @@ export const PlanForm: React.FC<PlanFormProps> = ({
           label="Дата"
           value={formData.date}
           onChange={(value) => updateField("date", value)}
-        />
-
-        <Input
-          label="Время"
-          type="time"
-          value={formData.time}
-          onChange={(event) => updateField("time", event.target.value)}
         />
 
         <Textarea

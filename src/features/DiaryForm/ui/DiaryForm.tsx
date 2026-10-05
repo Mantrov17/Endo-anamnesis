@@ -40,14 +40,6 @@ export const DiaryForm: React.FC<DiaryFormProps> = ({
       onSuccess,
     });
 
-  /*
-   * Главное бизнес-правило:
-   *
-   * План не привязан к дневнику.
-   * Мы просто выбираем планы пациента,
-   * дата которых совпадает с датой
-   * открытого дневника.
-   */
   const plansForDate = useMemo(
     () => getPlansByDate(patientId, formData.date),
     [patientId, formData.date],
@@ -157,9 +149,7 @@ export const DiaryForm: React.FC<DiaryFormProps> = ({
           <div className={styles.plansList}>
             {plansForDate.map((plan) => (
               <div key={plan.id} className={styles.planItem}>
-                <time className={styles.planTime}>{plan.time}</time>
-
-                <div className={styles.planText}>{plan.text}</div>
+                {plan.text}
               </div>
             ))}
           </div>

@@ -1,8 +1,6 @@
 export interface PlanFormData {
   date: string;
 
-  time: string;
-
   text: string;
 }
 

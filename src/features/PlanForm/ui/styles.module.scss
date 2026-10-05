@@ -15,7 +15,6 @@
 
   grid-template-columns:
     180px
-    130px
     minmax(220px, 1fr);
 
   align-items: start;
@@ -36,18 +35,6 @@
   margin-top: 9px;
 }
 
-@media (max-width: 760px) {
-  .fields {
-    grid-template-columns:
-      minmax(0, 1fr)
-      minmax(110px, 0.55fr);
-
-    > div:last-child {
-      grid-column: 1 / -1;
-    }
-  }
-}
-
 @media (max-width: 640px) {
   .form {
     padding: 9px;
@@ -56,9 +43,7 @@
   }
 
   .fields {
-    grid-template-columns:
-      minmax(0, 1fr)
-      110px;
+    grid-template-columns: minmax(0, 1fr);
 
     gap: 6px;
   }
@@ -75,11 +60,13 @@
 }
 
 @media (max-width: 360px) {
-  .fields {
+  .actions {
+    display: grid;
+
     grid-template-columns: 1fr;
 
-    > div:last-child {
-      grid-column: auto;
+    > button {
+      width: 100%;
     }
   }
 }

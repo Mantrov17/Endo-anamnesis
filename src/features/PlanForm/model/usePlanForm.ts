@@ -29,8 +29,6 @@ const getTodayLocalDate = (): string => {
 const createEmptyPlan = (): PlanFormData => ({
   date: getTodayLocalDate(),
 
-  time: "",
-
   text: "",
 });
 
@@ -66,12 +64,6 @@ export const usePlanForm = ({
 
     if (!formData.date) {
       window.alert("Укажите дату плана.");
-
-      return;
-    }
-
-    if (!formData.time) {
-      window.alert("Укажите время плана.");
 
       return;
     }

@@ -17,7 +17,7 @@ const sortPlans = (plans: PlanRecord[]): PlanRecord[] => {
       return dateCompare;
     }
 
-    return a.time.localeCompare(b.time);
+    return Date.parse(a.createdAt) - Date.parse(b.createdAt);
   });
 };
 
