@@ -54,6 +54,8 @@ export const PatientCard: React.FC<PatientCardProps> = ({
     ? `${patient.birthDate} (${age})`
     : "Дата рождения не указана";
 
+  const genderLabel = patient.gender === "male" ? "М" : "Ж";
+
   const createdDateTime = new Date(patient.createdAt).toLocaleString("ru-RU");
 
   return (
@@ -64,41 +66,47 @@ export const PatientCard: React.FC<PatientCardProps> = ({
             {isExpanded ? "▼" : "▶"}
           </span>
 
-          <Heading level={2} variant="card" className={styles.patientName}>
-            {patient.fullName}
-          </Heading>
+          <div className={styles.patientMain}>
+            <Heading level={2} variant="card" className={styles.patientName}>
+              {patient.fullName}
+            </Heading>
 
-          <span className={styles.patientMeta}>
-            <span>
-              {birthInfo} • {patient.gender === "male" ? "М" : "Ж"}
-            </span>
+            <div className={styles.patientInfoStack}>
+              <div className={styles.birthRow}>
+                <span className={styles.patientMeta}>
+                  {birthInfo} • {genderLabel}
+                </span>
 
-            <button
-              type="button"
-              className={styles.patientMetaEditButton}
-              onClick={(event) => {
-                event.stopPropagation();
+                <button
+                  type="button"
+                  className={styles.patientMetaEditButton}
+                  onClick={(event) => {
+                    event.stopPropagation();
 
-                onEditPatient(patient.id);
-              }}
-            >
-              Редактировать
-            </button>
-          </span>
+                    onEditPatient(patient.id);
+                  }}
+                >
+                  Редактировать
+                </button>
+              </div>
 
-          <span className={styles.anamnesisCount}>
-            {patient.primaryAnamnesis
-              ? "Первичный анамнез заполнен"
-              : "Первичный анамнез не заполнен"}
-          </span>
+              <div className={styles.badgesRow}>
+                <span className={styles.anamnesisCount}>
+                  {patient.primaryAnamnesis
+                    ? "Первичный анамнез заполнен"
+                    : "Первичный анамнез не заполнен"}
+                </span>
 
-          <span className={styles.anamnesisCount}>
-            Дневников: {patient.diaryEntries.length}
-          </span>
+                <span className={styles.anamnesisCount}>
+                  Дневников: {patient.diaryEntries.length}
+                </span>
+              </div>
 
-          <span className={styles.createdAtMeta}>
-            Добавлен: {createdDateTime}
-          </span>
+              <span className={styles.createdAtMeta}>
+                Добавлен: {createdDateTime}
+              </span>
+            </div>
+          </div>
         </div>
 
         <div

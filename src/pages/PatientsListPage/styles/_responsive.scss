@@ -1,6 +1,10 @@
 @media (max-width: 980px) {
   .filters {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(
+        2,
+                      minmax(0, 1fr)
+      );
 
     > button {
       width: fit-content;
@@ -21,11 +25,15 @@
   }
 
   .headerButtons {
-    max-width: 300px;
+    max-width: 310px;
   }
 
   .cardHeader {
     align-items: flex-start;
+  }
+
+  .patientActions button {
+    min-width: 92px;
   }
 
   .anamnesisItem {
@@ -33,30 +41,25 @@
   }
 }
 
-/*
- * Основной мобильный режим.
- * Расчёт сделан под экраны порядка 360–390 CSS px,
- * то есть под типичный viewport Galaxy A53 и близких устройств.
- */
 @media (max-width: 640px) {
   .container {
     width: 100%;
     max-width: 100%;
 
-    padding-top: 14px;
+    padding-top: 24px;
 
     padding-bottom: calc(
-            26px +
+            34px +
             env(safe-area-inset-bottom, 0px)
     );
 
     padding-left: max(
-            10px,
+            16px,
             env(safe-area-inset-left, 0px)
     );
 
     padding-right: max(
-            10px,
+            16px,
             env(safe-area-inset-right, 0px)
     );
   }
@@ -67,16 +70,13 @@
     flex-direction: column;
     align-items: stretch;
 
-    gap: 9px;
+    gap: 16px;
 
-    margin-bottom: 12px;
+    margin-bottom: 20px;
   }
 
   .pageTitle {
     width: 100%;
-
-    font-size: 21px;
-    line-height: 1.2;
   }
 
   .headerButtons {
@@ -84,59 +84,25 @@
     max-width: none;
 
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
 
-    gap: 7px;
-
-    > button {
+    > * {
       width: 100%;
       min-width: 0;
-      min-height: 38px;
-
-      padding: 6px 8px;
-
-      border-radius: 8px;
-
-      font-size: 12px;
-
-      white-space: normal;
     }
   }
 
   .searchSection {
     width: 100%;
 
-    grid-template-columns:
-      minmax(0, 1fr)
-      auto;
+    grid-template-columns: 1fr;
 
-    gap: 7px;
+    gap: 10px;
   }
 
-  .searchInput {
-    min-height: 40px;
-
-    padding-top: 7px;
-    padding-bottom: 7px;
-
-    border-radius: 8px;
-
-    font-size: 13px;
-  }
-
-  .clearButton {
-    width: 32px;
-    height: 32px;
-  }
-
-  .searchSection .filterToggleButton {
-    width: auto;
-    min-width: 86px;
-    min-height: 40px;
-
-    padding: 6px 9px;
-
-    font-size: 12px;
+  .filterToggleButton {
+    width: 100%;
+    min-width: 0;
   }
 
   .filters {
@@ -144,42 +110,14 @@
 
     grid-template-columns: 1fr;
 
-    gap: 9px;
-
-    padding: 10px;
-
-    border-radius: 9px;
+    padding: 14px;
 
     > button {
-      width: fit-content;
+      width: 100%;
       max-width: 100%;
-      min-height: 38px;
 
       margin-bottom: 0;
-
-      padding: 6px 10px;
-
-      font-size: 12px;
     }
-  }
-
-  .filterGroup {
-    gap: 4px;
-
-    > label {
-      font-size: 11.5px;
-    }
-  }
-
-  .filterSelect,
-  .filterInput {
-    min-height: 38px;
-
-    padding: 6px 9px;
-
-    border-radius: 7px;
-
-    font-size: 12.5px;
   }
 
   .stats {
@@ -188,24 +126,16 @@
     flex-direction: column;
     align-items: stretch;
 
-    gap: 7px;
-
-    margin: 8px 0 10px;
-
-    padding: 7px 8px;
-
-    border-radius: 8px;
-
-    font-size: 11.5px;
+    padding: 12px;
   }
 
   .controls {
     width: 100%;
 
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
 
-    gap: 7px;
+    gap: 10px;
   }
 
   .sortSelector,
@@ -215,172 +145,127 @@
 
     display: grid;
 
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      minmax(90px, auto)
+      minmax(0, 1fr);
 
     align-items: center;
 
-    gap: 3px;
-
-    label {
-      font-size: 10.5px;
-    }
+    gap: 8px;
 
     select {
       width: 100%;
       min-width: 0;
       max-width: 100%;
-      min-height: 34px;
-
-      padding: 4px 24px 4px 7px;
-
-      border-radius: 7px;
-
-      font-size: 11.5px;
+      min-height: 44px;
     }
-  }
-
-  .list {
-    gap: 8px;
   }
 
   .card {
     width: 100%;
 
-    border-radius: 10px;
-
-    box-shadow: none;
+    border-radius: 11px;
   }
 
-  /*
-   * Шапка пациента теперь в две колонки:
-   * данные слева, маленькая кнопка удаления справа.
-   */
   .cardHeader {
     width: 100%;
     min-height: 0;
 
     display: grid;
+
     grid-template-columns:
       minmax(0, 1fr)
       auto;
 
     align-items: start;
 
-    gap: 7px;
+    gap: 8px;
 
-    padding: 10px;
+    padding: 9px;
   }
 
   .patientSummary {
     width: 100%;
     min-width: 0;
 
-    display: grid;
-
-    grid-template-columns:
-      22px
-      minmax(0, 1fr);
-
-    align-items: center;
-
-    gap: 5px 7px;
+    gap: 0 7px;
   }
 
-  .expandIcon {
-    width: 22px;
-    height: 22px;
-
-    flex-basis: 22px;
-
-    border-radius: 6px;
-
-    font-size: 8px;
+  .patientMain {
+    gap: 6px;
   }
 
   .patientName {
     min-width: 0;
     max-width: 100%;
 
-    font-size: 15px;
-    line-height: 1.2;
+    font-size: 14px;
+    line-height: 1.18;
 
     overflow-wrap: anywhere;
   }
 
-  .patientMeta,
-  .anamnesisCount,
-  .createdAtMeta {
-    grid-column: 2;
-
-    max-width: 100%;
-
-    justify-self: start;
-
-    white-space: normal;
+  .patientInfoStack {
+    gap: 5px;
   }
 
-  .patientMeta {
-    padding: 2px 5px;
+  .birthRow,
+  .badgesRow {
+    gap: 5px 6px;
+  }
+
+  .patientMeta,
+  .anamnesisCount {
+    max-width: 100%;
+    min-height: 21px;
+
+    padding: 2px 6px;
 
     font-size: 10.5px;
   }
 
   .patientMetaEditButton {
-    padding: 0 2px;
+    min-height: 20px;
 
-    font-size: 10px;
-  }
-
-  .anamnesisCount {
     padding: 2px 5px;
 
-    font-size: 10.5px;
+    font-size: 9.5px;
   }
 
   .createdAtMeta {
-    padding: 1px 0;
-
     font-size: 10.5px;
   }
 
-  /*
-   * Больше не растягиваем "Удалить"
-   * на всю ширину карточки.
-   */
   .patientActions {
     width: auto;
 
     display: flex;
-    justify-content: flex-end;
 
-    > button {
+    align-self: start;
+
+    > * {
       width: auto;
-      min-width: 68px;
-      min-height: 36px;
+      min-width: 0;
+    }
 
-      padding: 5px 9px;
+    button {
+      min-height: 34px;
 
-      border-radius: 7px;
+      padding: 5px 8px;
 
       font-size: 11.5px;
     }
   }
 
   .anamnesesSection {
-    padding: 9px 10px;
+    padding: 8px;
   }
 
-  /*
-   * Заголовок "Дневники" и кнопка добавления
-   * остаются в одной строке.
-   */
   .anamnesesHeader {
     flex-direction: row;
     align-items: center;
 
-    gap: 7px;
-
-    margin-bottom: 7px;
+    gap: 6px;
 
     > button {
       width: auto;
@@ -389,183 +274,62 @@
 
       padding: 5px 8px;
 
-      border-radius: 7px;
-
       font-size: 11.5px;
-
-      white-space: normal;
     }
-  }
-
-  .anamnesesTitle {
-    font-size: 13.5px;
-  }
-
-  .noAnamnesis {
-    padding: 9px;
-
-    font-size: 11.5px;
-  }
-
-  .anamnesisList {
-    gap: 6px;
   }
 
   .anamnesisItem {
     flex-direction: column;
     align-items: stretch;
 
-    gap: 7px;
-
-    padding: 8px 9px;
-
-    border-radius: 8px;
-  }
-
-  .anamnesisInfo {
-    gap: 2px;
-
-    strong {
-      font-size: 12.5px;
-    }
-
-    span {
-      font-size: 10.5px;
-    }
-  }
-
-  .primaryFormsActions {
-    width: 100%;
-    min-width: 0;
-
     gap: 6px;
 
-    > button {
-      min-height: 37px;
-
-      padding: 5px 8px;
-
-      border-radius: 7px;
-
-      font-size: 12px;
-
-      white-space: normal;
-    }
+    padding: 7px;
   }
 
-  /*
-   * Редактирование и удаление дневника
-   * всегда стараемся держать рядом.
-   */
   .anamnesisActions {
     width: 100%;
 
     display: grid;
+
     grid-template-columns:
       minmax(0, 1fr)
       minmax(0, 1fr);
 
-    gap: 6px;
+    gap: 5px;
 
-    > button {
+    > * {
       width: 100%;
       min-width: 0;
-      min-height: 37px;
-
-      padding: 5px 8px;
-
-      border-radius: 7px;
-
-      font-size: 12px;
     }
   }
 
-  .pagination {
-    gap: 4px;
-
-    margin-top: 12px;
-  }
-
   .pageButton {
-    min-width: 36px;
-    min-height: 36px;
-
-    padding: 4px 7px;
-
-    border-radius: 7px;
-
-    font-size: 11.5px;
+    min-width: 44px;
+    min-height: 44px;
   }
 }
 
 @media (max-width: 390px) {
   .container {
     padding-left: max(
-            8px,
+            12px,
             env(safe-area-inset-left, 0px)
     );
 
     padding-right: max(
-            8px,
+            12px,
             env(safe-area-inset-right, 0px)
     );
   }
 
-  .headerButtons {
-    gap: 6px;
+  .sortSelector,
+  .perPageSelector {
+    grid-template-columns: 1fr;
 
-    > button {
-      padding-inline: 6px;
-
-      font-size: 11.5px;
+    label {
+      margin-bottom: -2px;
     }
-  }
-
-  .patientActions > button {
-    min-width: 64px;
-
-    padding-inline: 7px;
-  }
-
-  /*
-   * В отличие от старой версии не складываем
-   * "Редактировать" и "Удалить" друг под другом:
-   * на A53 это экономит заметную высоту карточки.
-   */
-  .anamnesisActions {
-    grid-template-columns:
-      minmax(0, 1fr)
-      minmax(0, 1fr);
-  }
-}
-
-@media (max-width: 340px) {
-  .headerButtons {
-    grid-template-columns: 1fr;
-  }
-
-  .searchSection {
-    grid-template-columns: 1fr;
-  }
-
-  .searchSection .filterToggleButton {
-    width: 100%;
-  }
-
-  .controls {
-    grid-template-columns: 1fr;
-  }
-
-  .cardHeader {
-    grid-template-columns: 1fr;
-  }
-
-  .patientActions {
-    justify-self: end;
-  }
-
-  .anamnesesHeader {
-    align-items: flex-start;
   }
 
   .anamnesisActions {
