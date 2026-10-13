@@ -1,3 +1,4 @@
+
 .planItem {
   width: 100%;
   min-width: 0;
@@ -24,5 +25,87 @@
     padding: 7px;
 
     font-size: 12.5px;
+  }
+}
+
+/* Ненавязчивое напоминание о предыдущей записи перед новым полем. */
+.previousActivities {
+  min-width: 0;
+  margin: 0 0 10px;
+  padding: 9px 11px;
+
+  color: var(--text-secondary, #52656d);
+  background: #f6faf9;
+  border: 1px solid var(--border, #dce5e8);
+  border-radius: 9px;
+
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.previousActivitiesSummary {
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+}
+
+.previousActivitiesHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.previousActivitiesTitle {
+  min-width: 0;
+  color: var(--text-secondary, #52656d);
+  font-weight: 600;
+}
+
+.previousActivitiesAction {
+  flex-shrink: 0;
+  color: var(--accent, #176b6a);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.previousActivitiesSource {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-muted, #7a8b92);
+  font-size: 11px;
+}
+
+.previousActivitiesPreview {
+  display: -webkit-box;
+  margin-top: 5px;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.previousActivitiesFull {
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border, #dce5e8);
+  color: var(--text-primary, #203235);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.previousActivities[open] .previousActivitiesPreview {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .previousActivities {
+    margin-bottom: 8px;
+    padding: 8px 9px;
+    font-size: 11.5px;
   }
 }

@@ -1,94 +1,111 @@
+
 .form {
   --date-column-width: 76px;
-  --metric-column-width: 118px;
-  --hour-column-width: 72px;
+  --metric-column-width: 146px;
+  --hour-column-width: 80px;
 
   width: 100%;
   min-width: 0;
-
-  padding-bottom: 72px;
+  padding-bottom: 76px;
 }
 
 .toolbar {
-  width: 100%;
-  min-width: 0;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
-
+  flex-wrap: wrap;
   gap: 10px;
+  margin-bottom: 12px;
 
-  margin-bottom: 10px;
+  > button {
+    flex: 0 0 auto;
+    min-height: 40px;
+    font-size: 13px;
+  }
 }
 
 .tableHint {
-  min-width: 0;
-
-  color: var(--text-muted, #76878b);
-
+  flex: 1 1 240px;
+  margin: 0;
+  color: var(--text-secondary, #52656d);
   font-size: 12px;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
-.toolbar > button {
-  flex: 0 0 auto;
+.timeToolbar {
+  margin-bottom: 12px;
+  padding: 12px;
+  background: #f6faf9;
+  border: 1px solid var(--border, #dce5e8);
+  border-radius: 10px;
+}
 
-  min-height: 40px;
-
-  padding: 6px 10px;
-
+.timeLabel {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--text-primary, #203235);
   font-size: 13px;
+  font-weight: 650;
+}
+
+.timeControls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  > button {
+    min-height: 40px;
+    font-size: 13px;
+  }
+}
+
+.timeInput {
+  width: 145px;
+  min-height: 40px;
+  padding: 7px 10px;
+  color: var(--text-primary, #203235);
+  background: #fff;
+  border: 1px solid var(--border-strong, #c8d6da);
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.timeError {
+  margin: 7px 0 0;
+  color: var(--danger, #b84a4a);
+  font-size: 12px;
 }
 
 .emptyState {
   padding: 18px 12px;
-
-  color: var(--text-muted, #76878b);
-
+  color: var(--text-muted, #7a8b92);
   background: #f7fcfb;
-
-  border: 1px dashed var(--border, #d7e7e4);
+  border: 1px dashed var(--border, #dce5e8);
   border-radius: 10px;
-
   text-align: center;
-
   font-size: 13px;
 }
 
 .tableScroll {
   position: relative;
-
   width: 100%;
   min-width: 0;
-
   overflow-x: auto;
-  overflow-y: hidden;
-
-  background: var(--bg-surface, #fff);
-
-  border: 1px solid var(--border, #d7e7e4);
+  background: #fff;
+  border: 1px solid var(--border, #dce5e8);
   border-radius: 10px;
-
   scrollbar-width: thin;
-
-  scrollbar-color: #91bdb6 #edf5f4;
-
+  scrollbar-color: #94b8b5 #e9f2f1;
   overscroll-behavior-x: contain;
-
   -webkit-overflow-scrolling: touch;
 
   &::-webkit-scrollbar {
     height: 7px;
   }
 
-  &::-webkit-scrollbar-track {
-    background: #edf5f4;
-  }
-
   &::-webkit-scrollbar-thumb {
-    background: #91bdb6;
-
+    background: #94b8b5;
     border-radius: 999px;
   }
 }
@@ -96,29 +113,20 @@
 .table {
   width: max-content;
   min-width: 100%;
-
+  table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
-
-  table-layout: fixed;
-
   color: var(--text-primary, #203235);
-
-  background: #ffffff;
-
-  font-size: 12.5px;
+  background: #fff;
+  font-size: 12px;
 
   th,
   td {
-    height: 44px;
-
     box-sizing: border-box;
-
-    padding: 4px;
-
-    border-right: 1px solid var(--border, #d7e7e4);
-    border-bottom: 1px solid var(--border, #d7e7e4);
-
+    height: 39px;
+    padding: 3px;
+    border-right: 1px solid #cddcda;
+    border-bottom: 1px solid #cddcda;
     vertical-align: middle;
   }
 
@@ -135,30 +143,20 @@
 .metricHeader,
 .hourHeader {
   position: sticky;
-
   top: 0;
-
   z-index: 8;
-
-  height: 42px;
-
-  color: #315654;
-
-  background: #eaf7f5;
-
+  height: 42px !important;
+  color: #fff;
+  background: #154c60;
+  text-align: center;
   font-size: 12px;
   font-weight: 700;
-
-  text-align: center;
-
   white-space: nowrap;
 }
 
 .dateHeader {
   left: 0;
-
   z-index: 12;
-
   width: var(--date-column-width);
   min-width: var(--date-column-width);
   max-width: var(--date-column-width);
@@ -166,23 +164,16 @@
 
 .metricHeader {
   left: var(--date-column-width);
-
   z-index: 11;
-
   width: var(--metric-column-width);
   min-width: var(--metric-column-width);
   max-width: var(--metric-column-width);
-
+  padding-left: 8px !important;
   text-align: left;
-
-  box-shadow: 6px 0 10px -10px rgba(31, 76, 74, 0.8);
+  box-shadow: 6px 0 10px -10px #16363b;
 }
 
 .hourHeader {
-  position: sticky;
-
-  top: 0;
-
   width: var(--hour-column-width);
   min-width: var(--hour-column-width);
   max-width: var(--hour-column-width);
@@ -190,191 +181,117 @@
 
 .dateCell {
   position: sticky;
-
   left: 0;
-
   z-index: 6;
-
   width: var(--date-column-width);
   min-width: var(--date-column-width);
   max-width: var(--date-column-width);
-
   padding: 5px !important;
-
-  background: #f5fbfa;
-
+  background: #edf6f4;
   vertical-align: top !important;
 }
 
 .dateCellContent {
-  width: 100%;
-
   display: flex;
   flex-direction: column;
   align-items: stretch;
-
-  gap: 5px;
+  gap: 6px;
 }
 
 .datePicker {
   position: relative;
-
-  width: 100%;
-  min-height: 34px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  padding: 5px 4px;
-
-  color: var(--accent, #1f7f78);
-
-  background: var(--bg-accent-soft, #e6f6f3);
-
-  border: 1px solid #b7ddd7;
+  min-height: 34px;
+  padding: 4px;
+  color: var(--accent, #176b6a);
+  background: #fff;
+  border: 1px solid #badbd5;
   border-radius: 7px;
-
   cursor: pointer;
-
   font-size: 12px;
   font-weight: 700;
-  line-height: 1;
-
-  user-select: none;
-
   overflow: hidden;
 
   input {
     position: absolute;
-
     inset: 0;
-
     width: 100%;
     height: 100%;
-
     opacity: 0;
-
     cursor: pointer;
   }
 }
 
 .removeDayButton {
-  width: 100%;
   min-height: 28px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   padding: 0;
-
-  color: var(--danger, #c15459);
-
-  background: var(--danger-soft, #fdeeee);
-
-  border: 1px solid #efc7c9;
+  color: var(--danger, #b84a4a);
+  background: #fff3f3;
+  border: 1px solid #ebc6c6;
   border-radius: 6px;
-
   cursor: pointer;
-
-  font-family: inherit;
   font-size: 17px;
-  font-weight: 500;
   line-height: 1;
 
-  transition:
-          color 150ms ease,
-          background-color 150ms ease,
-          border-color 150ms ease;
-
   &:hover {
-    color: #ffffff;
-
-    background: var(--danger, #c15459);
-
-    border-color: var(--danger, #c15459);
+    color: #fff;
+    background: var(--danger, #b84a4a);
   }
 }
 
 .metricCell {
   position: sticky;
-
   left: var(--date-column-width);
-
   z-index: 5;
-
   width: var(--metric-column-width);
   min-width: var(--metric-column-width);
   max-width: var(--metric-column-width);
-
-  padding: 6px 8px !important;
-
-  color: var(--text-primary, #203235);
-
-  background: #ffffff;
-
+  padding: 5px 8px !important;
+  background: #f7faf9;
+  text-align: left;
   font-size: 12px;
   font-weight: 650;
-
-  text-align: left;
-
-  white-space: nowrap;
-
-  box-shadow: 6px 0 10px -10px rgba(31, 76, 74, 0.8);
+  line-height: 1.25;
+  white-space: normal;
+  box-shadow: 6px 0 10px -10px #597b7c;
 }
 
 .valueCell {
   width: var(--hour-column-width);
   min-width: var(--hour-column-width);
   max-width: var(--hour-column-width);
-
-  padding: 3px !important;
-
-  background: #ffffff;
+  padding: 2px !important;
+  background: #fff;
 }
 
 .cellInput {
+  display: block;
   width: 100%;
   min-width: 0;
-  height: 36px;
-
+  height: 33px;
   box-sizing: border-box;
-
-  padding: 4px 5px;
-
+  padding: 4px;
   color: var(--text-primary, #203235);
-
-  background: #ffffff;
-
+  background: transparent;
   border: 1px solid transparent;
-  border-radius: 6px;
-
+  border-radius: 4px;
   outline: none;
-
   font-family: inherit;
   font-size: 13px;
-  line-height: 1.2;
-
+  line-height: 1.25;
   text-align: center;
 
-  transition:
-          border-color 120ms ease,
-          background-color 120ms ease,
-          box-shadow 120ms ease;
-
   &:hover {
-    background: #f6fbfa;
-
-    border-color: #d5e7e3;
+    background: #f1f8f6;
+    border-color: #d1e3df;
   }
 
   &:focus {
-    background: #ffffff;
-
-    border-color: var(--accent, #1f7f78);
-
-    box-shadow: 0 0 0 2px rgba(31, 127, 120, 0.12);
+    background: #fff;
+    border-color: var(--accent, #176b6a);
+    box-shadow: 0 0 0 2px rgba(23, 107, 106, 0.15);
   }
 }
 
@@ -382,94 +299,72 @@
   text-align: left;
 }
 
-.dayStart {
-  > * {
-    border-top: 1px solid #a9cec8;
-  }
+.dayStart > * {
+  border-top: 2px solid #8aa9a9;
 }
 
-.dayStart:first-child {
-  > * {
-    border-top: 0;
-  }
+.dayStart:first-child > * {
+  border-top: 0;
+}
+
+.legacyHint {
+  margin: 10px 0 0;
+  color: var(--text-secondary, #52656d);
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .actions {
   position: fixed;
-
   z-index: 110;
-
   right: max(
           var(--page-gutter, 24px),
-          calc(
-                  (100vw - var(--page-max, 1360px)) / 2 +
-                  var(--page-gutter, 24px)
-          )
+          calc((100vw - var(--page-max, 1360px)) / 2 + var(--page-gutter, 24px))
   );
-
   bottom: max(12px, env(safe-area-inset-bottom));
-
-  margin: 0;
-
   padding: 5px;
-
-  background: rgba(255, 255, 255, 0.94);
-
-  border: 1px solid var(--border, #d7e7e4);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--border, #dce5e8);
   border-radius: 10px;
-
   box-shadow: 0 8px 24px rgba(31, 76, 74, 0.14);
-
   backdrop-filter: blur(10px);
 
   > button {
     min-width: 160px;
     min-height: 42px;
-
-    font-size: 13.5px;
+    font-size: 13px;
   }
 }
 
 @media (max-width: 640px) {
   .form {
-    --date-column-width: 64px;
-    --metric-column-width: 96px;
-    --hour-column-width: 62px;
-
-    padding-bottom: 70px;
+    --date-column-width: 63px;
+    --metric-column-width: 104px;
+    --hour-column-width: 69px;
+    padding-bottom: 74px;
   }
 
   .toolbar {
-    align-items: flex-end;
-
-    gap: 7px;
-
-    margin-bottom: 7px;
+    gap: 8px;
   }
 
   .tableHint {
-    font-size: 10.5px;
-    line-height: 1.3;
+    font-size: 11px;
   }
 
-  .toolbar > button {
+  .toolbar > button,
+  .timeControls > button {
     min-height: 38px;
-
-    padding: 5px 8px;
-
-    font-size: 11.5px;
-
-    white-space: nowrap;
+    font-size: 12px;
   }
 
-  .tableScroll {
-    border-radius: 8px;
+  .timeToolbar {
+    padding: 10px;
+  }
 
-    /*
-     * Позволяет пальцем свободно двигать
-     * большую таблицу влево/вправо.
-     */
-    touch-action: pan-x pan-y;
+  .timeInput {
+    width: 126px;
+    min-height: 38px;
   }
 
   .table {
@@ -477,79 +372,39 @@
 
     th,
     td {
-      height: 40px;
-
-      padding: 3px;
+      height: 38px;
     }
   }
 
   .dateHeader,
   .metricHeader,
   .hourHeader {
-    height: 38px;
+    height: 38px !important;
+    font-size: 10px;
+  }
 
+  .metricCell {
+    padding: 4px 5px !important;
     font-size: 10.5px;
   }
 
-  .metricHeader {
-    padding-inline: 6px !important;
-  }
-
   .dateCell {
-    padding: 4px !important;
-  }
-
-  .dateCellContent {
-    gap: 4px;
+    padding: 3px !important;
   }
 
   .datePicker {
     min-height: 30px;
-
-    padding: 4px 2px;
-
-    border-radius: 6px;
-
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .removeDayButton {
-    min-height: 25px;
-
-    border-radius: 5px;
-
-    font-size: 15px;
-  }
-
-  .metricCell {
-    padding: 5px 6px !important;
-
-    font-size: 10.5px;
-    line-height: 1.2;
-
-    white-space: normal;
-  }
-
-  .valueCell {
-    padding: 2px !important;
+    min-height: 26px;
   }
 
   .cellInput {
-    height: 34px;
-
+    height: 33px;
     padding: 3px;
-
-    border-radius: 5px;
-
-    /*
-     * Не уменьшаем ниже 16px:
-     * иначе Safari может приблизить страницу
-     * при фокусе на ячейке.
-     */
-    font-size: 16px;
-  }
-
-  .noteInput {
+    // Без автоувеличения страницы при фокусе в iOS Safari.
     font-size: 16px;
   }
 
@@ -557,40 +412,9 @@
     right: 10px;
     bottom: max(8px, env(safe-area-inset-bottom));
 
-    padding: 5px;
-
     > button {
       min-width: 145px;
-      min-height: 42px;
-
       font-size: 13px;
     }
-  }
-}
-
-@media (max-width: 370px) {
-  .form {
-    --date-column-width: 60px;
-    --metric-column-width: 90px;
-    --hour-column-width: 60px;
-  }
-
-  .toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .tableHint {
-    order: 2;
-  }
-
-  .toolbar > button {
-    align-self: flex-end;
-  }
-
-  .metricCell {
-    padding-inline: 5px !important;
-
-    font-size: 10px;
   }
 }

@@ -1,104 +1,239 @@
+
 .drugList {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
 
+/* Специфичность выше старых общих и мобильных правил .drugRow. */
+.drugList .drugRow {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 9px;
+  background: #f7fbfa;
+  border: 1px solid var(--border, #d7e7e4);
+  border-radius: 9px;
+}
+
+.drugList .drugNameGrid,
+.drugList .drugDetailsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  min-width: 0;
+}
+
+.drugList .drugNameGrid {
+  padding-right: 23px; // Место под крестик в правом верхнем углу.
+  margin-bottom: 6px;
+}
+
+.drugList .drugNameGrid > div,
+.drugList .drugDetailsGrid > div {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin-bottom: 0;
+}
+
+.drugList .drugRow input {
+  min-width: 0;
+  min-height: 36px;
+  padding: 6px 8px;
+  font-size: 16px; // Без автозума Safari при фокусе.
+}
+
+.drugList .drugRow label,
+.drugList .drugFrequencyLabel {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  line-height: 1.3;
+  font-weight: 650;
+}
+
+.drugList .drugDoseField input {
+  padding-right: 40px;
+}
+
+.drugList .drugDoseField span {
+  right: 7px;
+  font-size: 11px;
+}
+
+.drugList .drugFrequencyControls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 91px;
+  gap: 4px;
+  min-width: 0;
+}
+
+.drugList .drugFrequencyControls input,
+.drugList .drugFrequencyControls select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 5px 6px;
+  color: var(--text-primary, #203235);
+  background: #fff;
+  border: 1px solid var(--border-strong, #bfd9d3);
+  border-radius: 7px;
+  font-size: 16px;
+}
+
+.drugList .drugFrequencyControls select {
+  padding-right: 16px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.drugTimeSection {
+  margin-top: 8px;
+}
+
+.drugTimeLabel {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text-secondary, #52656d);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.drugTimeButtons {
+  display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 }
 
-.drugRow {
-  display: flex;
-  align-items: flex-end;
+.drugTimeButton {
+  width: 37px;
+  height: 35px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  color: #5b7272;
+  background: #fff;
+  border: 1px solid #cfdfdc;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 130ms ease, border-color 130ms ease;
 
-  gap: 7px;
-
-  padding: 8px;
-
-  background: #f7fbfa;
-
-  border: 1px solid var(--border, #d7e7e4);
-  border-radius: 9px;
-
-  > div {
-    min-width: 0;
-
-    flex: 1 1 150px;
-
-    margin-bottom: 0;
+  &:hover {
+    background: #eef7f4;
+    border-color: #9fcbc0;
   }
+}
 
-  > div:first-child {
-    flex-grow: 2;
+.drugTimeButtonSelected {
+  background: #d9f2e6;
+  border-color: #75b69e;
+  box-shadow: inset 0 0 0 1px #a0d4bf;
+
+  &:hover {
+    background: #c7ebda;
   }
 }
 
 .addDrugButton,
-.removeDrugButton,
-.noteToggle,
-.fieldIcon {
+.removeDrugButton {
   -webkit-tap-highlight-color: transparent;
 }
 
 .addDrugButton {
   min-height: 38px;
-
   align-self: flex-start;
-
   padding: 6px 10px;
-
   color: var(--accent, #1f7f78);
-
   background: var(--bg-surface, #fff);
-
   border: 1px dashed #78b9b0;
   border-radius: 8px;
-
   cursor: pointer;
-
   font-size: 12.5px;
   font-weight: 650;
 
-  transition:
-          background-color 150ms ease,
-          border-color 150ms ease;
-
   &:hover {
     background: var(--bg-accent-soft, #e6f6f3);
-
     border-color: var(--accent, #1f7f78);
   }
 }
 
-.removeDrugButton {
-  width: 38px;
-  height: 38px;
-
-  flex: 0 0 38px;
-
+.drugList .removeDrugButton {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  z-index: 1;
+  width: 25px;
+  height: 25px;
+  min-width: 25px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  margin-bottom: 0;
-
+  margin: 0;
   padding: 0;
-
-  color: var(--danger, #c15459);
-
-  background: var(--danger-soft, #fdeeee);
-
-  border: 1px solid #edc2c4;
-  border-radius: 8px;
-
+  color: var(--danger, #b84a4a);
+  background: #fff6f6;
+  border: 1px solid #ebc8c8;
+  border-radius: 6px;
   cursor: pointer;
-
-  font-size: 17px;
+  touch-action: manipulation;
+  font-size: 18px;
   line-height: 1;
+}
 
-  &:hover {
-    color: #fff;
+.drugList .removeDrugButtonArmed {
+  color: #fff;
+  background: var(--danger, #b84a4a);
+  border-color: var(--danger, #b84a4a);
 
-    background: var(--danger, #c15459);
+  &::after {
+    position: absolute;
+    top: 2px;
+    right: 30px;
+    content: "Ещё раз";
+    padding: 3px 5px;
+    color: #983f3f;
+    background: #fff2f2;
+    border: 1px solid #ebc8c8;
+    border-radius: 5px;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+}
 
-    border-color: var(--danger, #c15459);
+@media (max-width: 640px) {
+  .drugList .drugRow {
+    padding: 7px;
+  }
+
+  .drugList .drugNameGrid,
+  .drugList .drugDetailsGrid {
+    gap: 5px;
+  }
+
+  .drugList .drugNameGrid {
+    padding-right: 21px;
+  }
+
+  .drugList .drugFrequencyControls {
+    grid-template-columns: minmax(0, 1fr) 87px;
+    gap: 3px;
+  }
+
+  .drugList .drugFrequencyControls select {
+    padding: 5px 2px;
+  }
+
+  .drugList .addDrugButton {
+    width: 100%;
   }
 }

@@ -8,6 +8,7 @@ export type {
 export { GLYCEMIC_PROFILE_TIMES } from "./model/constants";
 
 export {
+  createEmptyMeasurement,
   createGlycemicProfileDay,
   getTodayLocalDate,
   normalizeGlycemicProfileDay,

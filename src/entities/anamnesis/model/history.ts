@@ -11,7 +11,11 @@ export interface Hypoglycemia {
 
   frequencyPerWeek: number | null;
 
+  reliefMethod: string;
+
   severeEpisodes: boolean | null;
+
+  severeEpisodesDetails: string;
 
   severeEpisodesCount: number | null;
 
@@ -52,14 +56,90 @@ export interface Hypoglycemia {
 // ==================== Самоконтроль ====================
 
 export interface SelfMonitoring {
+  /*
+   * Ранее поле hasGlucometer означало
+   * наличие глюкометра (Да/Нет).
+   *
+   * Сохраняем его прежнее название
+   * для совместимости со старыми анкетами.
+   */
+
+  hasGlucometer: boolean | null;
+
+  /*
+   * Дополнительные варианты устройств.
+   *
+   * Глюкометр и датчик можно выбирать вместе.
+   * Вариант "Нет" является взаимоисключающим.
+   */
+  glucoseSensor: boolean;
+
+  noMonitoringDevices: boolean;
+
+  // Регулярность и частота самоконтроля
+
   frequencyRegularity: "regular" | "irregular" | "";
 
   frequency: string;
 
+  // Ведение дневника самоконтроля
+
   diary: boolean | null;
 
-  hasGlucometer: boolean | null;
+  /*
+   * Средние показатели гликемии на фоне
+   * проводимой терапии, ммоль/л.
+   *
+   * Диапазон от минимального до максимального
+   * указанного значения.
+   */
+  averageGlucoseMin: number | null;
 
+  averageGlucoseMax: number | null;
+
+  // Техника инъекций
+
+  injectionTechnique: "correct" | "incorrect" | "";
+
+  // Частота смены места для инъекции
+
+  injectionSiteChangeFrequency: string;
+
+  // Длина игл (множественный выбор)
+
+  needleLengths: {
+    mm4: boolean;
+
+    mm5: boolean;
+
+    mm6: boolean;
+
+    mm12: boolean;
+  };
+
+  // Частота смены игл
+
+  needleChangeFrequency: string;
+
+  // Хранение инсулина
+
+  insulinStorage: "correct" | "incorrect" | "";
+
+  // Питание
+
+  mealRegularity: "regular" | "irregular" | "";
+
+  // Соблюдение диеты
+
+  dietAdherence: boolean | null;
+
+  /*
+   * Старые поля.
+   *
+   * В новой форме не отображаются,
+   * но остаются в модели для сохранения
+   * ранее введённых пользователем данных.
+   */
   calibrationDone: boolean | null;
 
   lastDoctorVisit: string;

@@ -16,6 +16,12 @@ export interface DiaryFormData {
   edema: string;
 
   otherData: string;
+
+  /*
+   * Проведённые мероприятия за дату дневника.
+   * Поле необязательное для совместимости со старыми записями.
+   */
+  performedActivities?: string;
 }
 
 export interface DiaryRecord extends DiaryFormData {

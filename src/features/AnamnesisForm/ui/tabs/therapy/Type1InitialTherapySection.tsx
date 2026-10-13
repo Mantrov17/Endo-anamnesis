@@ -66,41 +66,71 @@ export const Type1InitialTherapySection: React.FC = () => {
       )}
 
       {injectionMethod === "pump" && (
-        <Input
-          label="Модель помпы"
-          {...register("type1Diabetes.initialTherapy.pumpModel")}
-        />
+        <>
+          <Input
+            label="Год установки помпы"
+            type="text"
+            inputMode="numeric"
+            maxLength={4}
+            placeholder="ГГГГ"
+            {...register("type1Diabetes.initialTherapy.pumpInstallationYear")}
+          />
+
+          <Input
+            label="Модель помпы"
+            {...register("type1Diabetes.initialTherapy.pumpModel")}
+          />
+
+          <fieldset
+            className={`${styles.fieldset} ${styles.insulinTherapyFieldset}`}
+          >
+            <legend>Действующий инсулин</legend>
+
+            <DrugList
+              control={control}
+              register={register}
+              name="type1Diabetes.initialTherapy.activeInsulin"
+              firstField="drugName"
+              nameLabel="Название препарата"
+              doseSuffix="ЕД"
+            />
+          </fieldset>
+        </>
       )}
 
-      <fieldset
-        className={`${styles.fieldset} ${styles.insulinTherapyFieldset}`}
-      >
-        <legend>Базальный инсулин</legend>
+      {injectionMethod !== "pump" && (
+        <>
+          <fieldset
+            className={`${styles.fieldset} ${styles.insulinTherapyFieldset}`}
+          >
+            <legend>Базальный инсулин</legend>
 
-        <DrugList
-          control={control}
-          register={register}
-          name="type1Diabetes.initialTherapy.basalInsulin"
-          firstField="drugName"
-          nameLabel="Название препарата"
-          doseSuffix="ЕД"
-        />
-      </fieldset>
+            <DrugList
+              control={control}
+              register={register}
+              name="type1Diabetes.initialTherapy.basalInsulin"
+              firstField="drugName"
+              nameLabel="Название препарата"
+              doseSuffix="ЕД"
+            />
+          </fieldset>
 
-      <fieldset
-        className={`${styles.fieldset} ${styles.insulinTherapyFieldset}`}
-      >
-        <legend>Болюсный инсулин</legend>
+          <fieldset
+            className={`${styles.fieldset} ${styles.insulinTherapyFieldset}`}
+          >
+            <legend>Болюсный инсулин</legend>
 
-        <DrugList
-          control={control}
-          register={register}
-          name="type1Diabetes.initialTherapy.bolusInsulin"
-          firstField="drugName"
-          nameLabel="Название препарата"
-          doseSuffix="ЕД"
-        />
-      </fieldset>
+            <DrugList
+              control={control}
+              register={register}
+              name="type1Diabetes.initialTherapy.bolusInsulin"
+              firstField="drugName"
+              nameLabel="Название препарата"
+              doseSuffix="ЕД"
+            />
+          </fieldset>
+        </>
+      )}
 
       <Input
         label="Привычные цифры глюкозы на терапии"

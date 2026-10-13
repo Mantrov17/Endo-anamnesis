@@ -105,6 +105,8 @@ const hasLegacyHypoglycemiaData = (
       hypoglycemia.severeEpisodesCount !== null ||
       hypoglycemia.severeEpisodesWhen.trim() ||
       hypoglycemia.severeEpisodesClinic.trim() ||
+      hypoglycemia.severeEpisodesDetails?.trim() ||
+      hypoglycemia.reliefMethod?.trim() ||
       hypoglycemia.awarenessPreserved !== null ||
       hypoglycemia.provokingFactors.physicalActivity ||
       hypoglycemia.provokingFactors.missedMeal ||
@@ -166,6 +168,54 @@ const normalizeLegacyHypoglycemia = (
 };
 
 /**
+ * В прежней форме подробности тяжёлых гипогликемий вводились
+ * в три отдельных поля: количество, дата и клиника.
+ *
+ * Новая форма содержит одно текстовое поле. Если оно ещё не
+ * заполнено, собираем в нём старые сведения для отображения.
+ * Исходные три поля не удаляем: они останутся в сохранённой записи.
+ */
+const normalizeLegacySevereEpisodes = (
+  data: AnamnesisFormData,
+): AnamnesisFormData => {
+  const hypoglycemia = data.hypoglycemia;
+
+  if (!hypoglycemia || hypoglycemia.severeEpisodesDetails !== undefined) {
+    return data;
+  }
+
+  const previousDetails: string[] = [];
+
+  if (hypoglycemia.severeEpisodesCount != null) {
+    previousDetails.push(
+      `Количество эпизодов: ${hypoglycemia.severeEpisodesCount}`,
+    );
+  }
+
+  if (hypoglycemia.severeEpisodesWhen?.trim()) {
+    previousDetails.push(`Когда: ${hypoglycemia.severeEpisodesWhen.trim()}`);
+  }
+
+  if (hypoglycemia.severeEpisodesClinic?.trim()) {
+    previousDetails.push(
+      `Клиника: ${hypoglycemia.severeEpisodesClinic.trim()}`,
+    );
+  }
+
+  if (previousDetails.length === 0) {
+    return data;
+  }
+
+  return {
+    ...data,
+    hypoglycemia: {
+      ...hypoglycemia,
+      severeEpisodesDetails: previousDetails.join("\n"),
+    },
+  };
+};
+
+/**
  * Создаём defaults с учётом выбранных типов диабета.
  *
  * В основном getDefaultValues():
@@ -197,7 +247,9 @@ const getDefaultsForData = (data: AnamnesisFormData): AnamnesisFormData => {
 export const mergeAnamnesisWithDefaults = (
   data: AnamnesisFormData,
 ): AnamnesisFormData => {
-  const normalizedData = normalizeLegacyHypoglycemia(data);
+  const normalizedData = normalizeLegacySevereEpisodes(
+    normalizeLegacyHypoglycemia(data),
+  );
 
   const defaults = getDefaultsForData(normalizedData);
 

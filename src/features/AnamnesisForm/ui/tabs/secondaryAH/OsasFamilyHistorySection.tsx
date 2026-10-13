@@ -11,7 +11,9 @@ import { YesNo } from "../../YesNo";
 import styles from "../../styles.module.scss";
 
 export const OsasFamilyHistorySection: React.FC = () => {
-  const { register } = useFormContext<AnamnesisFormData>();
+  const { register, watch } = useFormContext<AnamnesisFormData>();
+
+  const isFemale = watch("gender") === "female";
 
   return (
     <>
@@ -75,11 +77,13 @@ export const OsasFamilyHistorySection: React.FC = () => {
         </fieldset>
       </Field>
 
-      <YesNo
-        label="Женщина: было ли во время беременности повышение давления, преэклампсия или эклампсия?"
-        name="secondaryHypertension.pregnancyHypertension"
-        register={register}
-      />
+      {isFemale && (
+        <YesNo
+          label="Женщина: было ли во время беременности повышение давления, преэклампсия или эклампсия?"
+          name="secondaryHypertension.pregnancyHypertension"
+          register={register}
+        />
+      )}
     </>
   );
 };

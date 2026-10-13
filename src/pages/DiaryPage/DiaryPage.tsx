@@ -66,6 +66,8 @@ export const DiaryPage: React.FC = () => {
       edema: diary.edema,
 
       otherData: diary.otherData,
+
+      performedActivities: diary.performedActivities ?? "",
     };
   }, [diary]);
 
@@ -153,6 +155,7 @@ export const DiaryPage: React.FC = () => {
         patientId={patientId}
         diaryId={diaryId}
         initialData={initialData}
+        diaryEntries={patient.diaryEntries}
         onSuccess={handleSuccess}
       />
 

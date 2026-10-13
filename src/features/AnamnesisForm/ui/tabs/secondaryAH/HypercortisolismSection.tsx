@@ -11,7 +11,9 @@ import { YesNo } from "../../YesNo";
 import styles from "../../styles.module.scss";
 
 export const HypercortisolismSection: React.FC = () => {
-  const { register } = useFormContext<AnamnesisFormData>();
+  const { register, watch } = useFormContext<AnamnesisFormData>();
+
+  const isFemale = watch("gender") === "female";
 
   return (
     <Field noteKey="secondaryHypertension.hypercortisolism">
@@ -66,11 +68,13 @@ export const HypercortisolismSection: React.FC = () => {
           register={register}
         />
 
-        <YesNo
-          label="Аменорея"
-          name="secondaryHypertension.hypercortisolism.amenorrhea"
-          register={register}
-        />
+        {isFemale && (
+          <YesNo
+            label="Аменорея"
+            name="secondaryHypertension.hypercortisolism.amenorrhea"
+            register={register}
+          />
+        )}
       </fieldset>
     </Field>
   );

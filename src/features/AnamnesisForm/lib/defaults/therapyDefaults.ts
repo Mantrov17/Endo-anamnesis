@@ -16,14 +16,32 @@ export const createActualTherapyDefaults = (): ActualTherapyDefaults => ({
   basalInsulin: [
     {
       name: "",
+      tradeName: "",
       dose: "",
+      frequency: "",
+      frequencyPeriod: "day",
+      timesOfDay: {
+        morning: false,
+        day: false,
+        evening: false,
+        night: false,
+      },
     },
   ],
 
   bolusInsulin: [
     {
       name: "",
+      tradeName: "",
       dose: "",
+      frequency: "",
+      frequencyPeriod: "day",
+      timesOfDay: {
+        morning: false,
+        day: false,
+        evening: false,
+        night: false,
+      },
     },
   ],
 
@@ -40,21 +58,48 @@ export const createTherapyDefaults = (): TherapyDefaults => ({
   currentDrugs: [
     {
       name: "",
+      tradeName: "",
       dose: "",
+      frequency: "",
+      frequencyPeriod: "day",
+      timesOfDay: {
+        morning: false,
+        day: false,
+        evening: false,
+        night: false,
+      },
     },
   ],
 
   basalInsulin: [
     {
       name: "",
+      tradeName: "",
       dose: "",
+      frequency: "",
+      frequencyPeriod: "day",
+      timesOfDay: {
+        morning: false,
+        day: false,
+        evening: false,
+        night: false,
+      },
     },
   ],
 
   prandialInsulin: [
     {
       name: "",
+      tradeName: "",
       dose: "",
+      frequency: "",
+      frequencyPeriod: "day",
+      timesOfDay: {
+        morning: false,
+        day: false,
+        evening: false,
+        night: false,
+      },
     },
   ],
 });

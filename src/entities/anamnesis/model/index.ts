@@ -1,5 +1,6 @@
 export type {
   ActualTherapy,
+  GestationalDiabetesDetails,
   PrimaryExam,
   Therapy,
   Type1Diabetes,

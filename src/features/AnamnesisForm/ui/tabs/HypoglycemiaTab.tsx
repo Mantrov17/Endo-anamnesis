@@ -45,62 +45,10 @@ export const HypoglycemiaTab: React.FC = () => {
           />
 
           <YesNo
-            label="Были ли тяжёлые эпизоды?"
-            name="hypoglycemia.severeEpisodes"
-            register={register}
-          />
-
-          {severeEpisodes === true && (
-            <Field noteKey="hypoglycemia.severeEpisodes">
-              <>
-                <Input
-                  label="Количество"
-                  type="number"
-                  suffix="эпиз."
-                  {...register("hypoglycemia.severeEpisodesCount")}
-                />
-
-                <Input
-                  label="Когда (дата)"
-                  {...register("hypoglycemia.severeEpisodesWhen")}
-                />
-
-                <Textarea
-                  label="Клиника"
-                  {...register("hypoglycemia.severeEpisodesClinic")}
-                  rows={2}
-                />
-              </>
-            </Field>
-          )}
-
-          <YesNo
-            label="Сохранено ли распознавание гипогликемии?"
+            label="Сохраняла ли чувствительность к гипогликемиям?"
             name="hypoglycemia.awarenessPreserved"
             register={register}
           />
-
-          <div className={styles.radioGroup}>
-            <label>Тяжесть гипогликемий:</label>
-
-            <label>
-              <input
-                type="radio"
-                value="mild"
-                {...register("hypoglycemia.severity")}
-              />{" "}
-              Лёгкие
-            </label>
-
-            <label>
-              <input
-                type="radio"
-                value="severe"
-                {...register("hypoglycemia.severity")}
-              />{" "}
-              Тяжёлые (требовали помощи)
-            </label>
-          </div>
 
           <fieldset className={styles.fieldset}>
             <legend>Симптомы гипогликемии</legend>
@@ -169,6 +117,28 @@ export const HypoglycemiaTab: React.FC = () => {
               Головная боль
             </label>
           </fieldset>
+
+          <Textarea
+            label="Чем купирует гипогликемию?"
+            {...register("hypoglycemia.reliefMethod")}
+            rows={3}
+          />
+
+          <YesNo
+            label="Были ли тяжёлые гипогликемии?"
+            name="hypoglycemia.severeEpisodes"
+            register={register}
+          />
+
+          {severeEpisodes === true && (
+            <Field noteKey="hypoglycemia.severeEpisodes">
+              <Textarea
+                label="Подробнее о тяжёлых гипогликемиях"
+                {...register("hypoglycemia.severeEpisodesDetails")}
+                rows={3}
+              />
+            </Field>
+          )}
 
           <Field noteKey="hypoglycemia.provokingFactors">
             <fieldset className={styles.fieldset}>

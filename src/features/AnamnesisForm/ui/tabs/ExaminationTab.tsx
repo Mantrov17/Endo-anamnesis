@@ -15,7 +15,9 @@ import { YesNo } from "../YesNo";
 import styles from "../styles.module.scss";
 
 export const ExaminationTab: React.FC = () => {
-  const { register } = useFormContext<AnamnesisFormData>();
+  const { register, watch } = useFormContext<AnamnesisFormData>();
+
+  const isFemale = watch("gender") === "female";
 
   return (
     <div className={styles.section}>
@@ -97,29 +99,31 @@ export const ExaminationTab: React.FC = () => {
         />
       </Field>
 
-      <Field noteKey="examination.reproductive">
-        <fieldset className={styles.fieldset}>
-          <legend>Репродуктивный анамнез (при необходимости)</legend>
+      {isFemale && (
+        <Field noteKey="examination.reproductive">
+          <fieldset className={styles.fieldset}>
+            <legend>Репродуктивный анамнез (при необходимости)</legend>
 
-          <Input
-            label="Беременность"
-            type="number"
-            {...register("examination.pregnancies")}
-          />
+            <Input
+              label="Беременность"
+              type="number"
+              {...register("examination.pregnancies")}
+            />
 
-          <Input
-            label="Роды"
-            type="number"
-            {...register("examination.births")}
-          />
+            <Input
+              label="Роды"
+              type="number"
+              {...register("examination.births")}
+            />
 
-          <Textarea
-            label="Менструальный цикл"
-            {...register("examination.menstrualCycle")}
-            rows={2}
-          />
-        </fieldset>
-      </Field>
+            <Textarea
+              label="Менструальный цикл"
+              {...register("examination.menstrualCycle")}
+              rows={2}
+            />
+          </fieldset>
+        </Field>
+      )}
     </div>
   );
 };

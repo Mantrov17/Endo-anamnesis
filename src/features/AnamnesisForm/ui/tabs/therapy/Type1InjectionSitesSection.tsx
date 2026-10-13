@@ -13,7 +13,10 @@ import { YesNo } from "../../YesNo";
 import styles from "../../styles.module.scss";
 
 export const Type1InjectionSitesSection: React.FC = () => {
-  const { register } = useFormContext<AnamnesisFormData>();
+  const { register, watch } = useFormContext<AnamnesisFormData>();
+
+  const isPump =
+    watch("type1Diabetes.initialTherapy.injectionMethod") === "pump";
 
   return (
     <Field noteKey="type1Diabetes.injectionSitesInfo">
@@ -60,17 +63,39 @@ export const Type1InjectionSitesSection: React.FC = () => {
           Наружная поверхность плеч
         </label>
 
-        <Input
-          label="Частота смены места инъекции"
-          {...register("type1Diabetes.injectionSitesInfo.siteChangeFrequency")}
-        />
+        {isPump ? (
+          <>
+            <Input
+              label="Частота смены игл"
+              {...register(
+                "type1Diabetes.injectionSitesInfo.needleChangeFrequency",
+              )}
+            />
 
-        <Input
-          label="Частота смены игл"
-          {...register(
-            "type1Diabetes.injectionSitesInfo.needleChangeFrequency",
-          )}
-        />
+            <Input
+              label="Частота смены места инъекции"
+              {...register(
+                "type1Diabetes.injectionSitesInfo.siteChangeFrequency",
+              )}
+            />
+          </>
+        ) : (
+          <>
+            <Input
+              label="Частота смены места инъекции"
+              {...register(
+                "type1Diabetes.injectionSitesInfo.siteChangeFrequency",
+              )}
+            />
+
+            <Input
+              label="Частота смены игл"
+              {...register(
+                "type1Diabetes.injectionSitesInfo.needleChangeFrequency",
+              )}
+            />
+          </>
+        )}
 
         <fieldset className={styles.fieldset}>
           <legend>Липодистрофии</legend>

@@ -33,6 +33,8 @@ const createEmptyDiary = (): DiaryFormData => ({
   edema: "",
 
   otherData: "",
+
+  performedActivities: "",
 });
 
 export const useDiaryForm = ({
@@ -45,6 +47,7 @@ export const useDiaryForm = ({
     initialData
       ? {
           ...initialData,
+          performedActivities: initialData.performedActivities ?? "",
         }
       : createEmptyDiary(),
   );

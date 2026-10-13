@@ -5,6 +5,7 @@ export type {
   AnamnesisRecord,
   Complications,
   Examination,
+  GestationalDiabetesDetails,
   H2FPEF,
   HeartFailure,
   Hypoglycemia,

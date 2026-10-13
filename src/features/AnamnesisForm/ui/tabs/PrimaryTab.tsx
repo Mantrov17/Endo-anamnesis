@@ -98,7 +98,7 @@ export const PrimaryTab: React.FC = () => {
             </>
           )}
 
-          <ActualTherapySection />
+          <ActualTherapySection hideTitle={isType2} />
 
           {isType1 && type1Data && <Type1InjectionSitesSection />}
 

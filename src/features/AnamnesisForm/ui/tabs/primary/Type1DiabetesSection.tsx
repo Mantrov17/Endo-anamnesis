@@ -18,6 +18,8 @@ import { YesNo } from "../../YesNo";
 
 import styles from "../../styles.module.scss";
 
+import { GestationalDiabetesSection } from "./GestationalDiabetesSection";
+
 export const Type1DiabetesSection: React.FC = () => {
   const { register, watch, setValue } = useFormContext<AnamnesisFormData>();
 
@@ -125,6 +127,22 @@ export const Type1DiabetesSection: React.FC = () => {
           </label>
         </div>
       </Field>
+
+      <div className={styles.onsetGlycemiaField}>
+        <Input
+          label="Уровень гликемии в дебюте"
+          type="number"
+          inputMode="decimal"
+          min={0}
+          max={60}
+          step="0.1"
+          suffix="ммоль/л"
+          {...register("type1Diabetes.glycemiaAtOnset", {
+            setValueAs: (value: string) =>
+              value === "" ? null : Number(value),
+          })}
+        />
+      </div>
 
       <Textarea
         label="Дополнительная информация"
@@ -235,14 +253,6 @@ export const Type1DiabetesSection: React.FC = () => {
           )}
         </fieldset>
       </Field>
-
-      <Input
-        label="Уровень гликемии в дебюте"
-        type="number"
-        step="0.1"
-        suffix="ммоль/л"
-        {...register("type1Diabetes.glycemiaAtOnset")}
-      />
 
       <YesNo
         label="Первично поставлен СД 2 типа?"
@@ -416,6 +426,8 @@ export const Type1DiabetesSection: React.FC = () => {
           )}
         </fieldset>
       </Field>
+
+      <GestationalDiabetesSection diabetesPath="type1Diabetes" />
 
       <YesNo
         label="Наследственность по сахарному диабету"

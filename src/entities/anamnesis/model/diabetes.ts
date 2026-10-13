@@ -20,6 +20,60 @@ export interface PrimaryExam {
   weightChangeReason: "unmotivated" | "stress" | "diet" | "sport" | "";
 }
 
+// ==================== Гестационный сахарный диабет ====================
+
+export interface GestationalDiabetesDetails {
+  pregnancyType: "singleton" | "multiple" | "";
+
+  diagnosisWeek: number | null;
+
+  glycemiaAtDiagnosis: number | null;
+
+  diagnosisAdditionalInfo: string;
+
+  clinicalManifestations: {
+    weakness: boolean;
+    painfulItchyUrination: boolean;
+    skinItching: boolean;
+    polyuria: boolean;
+    polydipsia: boolean;
+    hunger: boolean;
+  };
+
+  clinicalManifestationsOther: string;
+
+  therapy: string;
+
+  polyhydramnios: boolean | null;
+
+  newbornWeight: number | null;
+
+  childPathologies: string;
+
+  macrosomia: boolean | null;
+
+  deliveryWeek: number | null;
+
+  postpartumGlucoseNormalized: boolean | null;
+
+  additionalInfo: string;
+}
+
+// Общие дополнительные сведения о препарате.
+// Поля необязательные: существующие записи с name/drugName и dose
+// продолжают читаться без миграции или потери данных.
+export interface DrugScheduleDetails {
+  tradeName?: string;
+  frequency?: string;
+  frequencyPeriod?: "day" | "week" | "month";
+  timesOfDay?: {
+    morning?: boolean;
+    day?: boolean;
+    evening?: boolean;
+    night?: boolean;
+  };
+}
+
 // ==================== СД 1 типа ====================
 
 export interface Type1Diabetes {
@@ -106,15 +160,22 @@ export interface Type1Diabetes {
 
     pumpModel: string;
 
-    basalInsulin: {
-      drugName: string;
-      dose: string;
-    }[];
+    pumpInstallationYear: string;
 
-    bolusInsulin: {
+    activeInsulin: ({
       drugName: string;
       dose: string;
-    }[];
+    } & DrugScheduleDetails)[];
+
+    basalInsulin: ({
+      drugName: string;
+      dose: string;
+    } & DrugScheduleDetails)[];
+
+    bolusInsulin: ({
+      drugName: string;
+      dose: string;
+    } & DrugScheduleDetails)[];
 
     usualGlucoseOnTherapy: number | null;
   };
@@ -151,6 +212,10 @@ export interface Type1Diabetes {
 
   initiallyType2: boolean | null;
 
+  gestationalDiabetes: boolean | null;
+
+  gestationalDiabetesDetails: GestationalDiabetesDetails;
+
   familyHistoryDiabetes: boolean | null;
 
   familyHistoryDiabetesDetails: string;
@@ -176,6 +241,8 @@ export interface Type2Diabetes {
 
   diagnosisDetails: string;
 
+  glycemiaAtOnset: number | null;
+
   classicSymptoms: {
     polyuria: boolean;
     polydipsia: boolean;
@@ -189,11 +256,15 @@ export interface Type2Diabetes {
 
   investigatedAfterDetection: boolean | null;
 
-  initialTherapy: {
+  initialTherapy: ({
     drugName: string;
     dose: string;
     frequency: string;
-  }[];
+  } & DrugScheduleDetails)[];
+
+  insulinTherapy: boolean | null;
+
+  insulinTherapyDetails: string;
 
   therapyRegularity: boolean | null;
 
@@ -214,6 +285,10 @@ export interface Type2Diabetes {
     otherDetails: string;
   };
 
+  therapySideEffects: boolean | null;
+
+  therapySideEffectsDetails: string;
+
   usualGlucoseOnTherapy: number | null;
 
   hba1c: {
@@ -226,6 +301,8 @@ export interface Type2Diabetes {
   };
 
   gestationalDiabetes: boolean | null;
+
+  gestationalDiabetesDetails: GestationalDiabetesDetails;
 
   familyHistoryDiabetes: boolean | null;
 
@@ -247,15 +324,15 @@ export interface ActualTherapy {
 
   pumpModel: string;
 
-  basalInsulin: {
+  basalInsulin: ({
     name: string;
     dose: string;
-  }[];
+  } & DrugScheduleDetails)[];
 
-  bolusInsulin: {
+  bolusInsulin: ({
     name: string;
     dose: string;
-  }[];
+  } & DrugScheduleDetails)[];
 
   insulinDoseCoefficient: number | null;
 
@@ -271,18 +348,18 @@ export interface ActualTherapy {
 export interface Therapy {
   targetHba1c: string;
 
-  currentDrugs: {
+  currentDrugs: ({
     name: string;
     dose: string;
-  }[];
+  } & DrugScheduleDetails)[];
 
-  basalInsulin: {
+  basalInsulin: ({
     name: string;
     dose: string;
-  }[];
+  } & DrugScheduleDetails)[];
 
-  prandialInsulin: {
+  prandialInsulin: ({
     name: string;
     dose: string;
-  }[];
+  } & DrugScheduleDetails)[];
 }

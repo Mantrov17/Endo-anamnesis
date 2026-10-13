@@ -1,8 +1,38 @@
-import type { AnamnesisFormData } from "@/entities/anamnesis";
+import type {
+  AnamnesisFormData,
+  GestationalDiabetesDetails,
+} from "@/entities/anamnesis";
 
 type Type1DiabetesData = NonNullable<AnamnesisFormData["type1Diabetes"]>;
 
 type Type2DiabetesData = NonNullable<AnamnesisFormData["type2Diabetes"]>;
+
+export const createGestationalDiabetesDetailsDefaults =
+  (): GestationalDiabetesDetails => ({
+    pregnancyType: "",
+    diagnosisWeek: null,
+    glycemiaAtDiagnosis: null,
+    diagnosisAdditionalInfo: "",
+
+    clinicalManifestations: {
+      weakness: false,
+      painfulItchyUrination: false,
+      skinItching: false,
+      polyuria: false,
+      polydipsia: false,
+      hunger: false,
+    },
+
+    clinicalManifestationsOther: "",
+    therapy: "",
+    polyhydramnios: null,
+    newbornWeight: null,
+    childPathologies: "",
+    macrosomia: null,
+    deliveryWeek: null,
+    postpartumGlucoseNormalized: null,
+    additionalInfo: "",
+  });
 
 export const createType1DiabetesDefaults = (): Type1DiabetesData => ({
   ageAtDiagnosis: null,
@@ -58,18 +88,53 @@ export const createType1DiabetesDefaults = (): Type1DiabetesData => ({
     injectionMethod: "",
     injectionsDevice: "",
     pumpModel: "",
+    pumpInstallationYear: "",
+
+    activeInsulin: [
+      {
+        drugName: "",
+        tradeName: "",
+        dose: "",
+        frequency: "",
+        frequencyPeriod: "day",
+        timesOfDay: {
+          morning: false,
+          day: false,
+          evening: false,
+          night: false,
+        },
+      },
+    ],
 
     basalInsulin: [
       {
         drugName: "",
+        tradeName: "",
         dose: "",
+        frequency: "",
+        frequencyPeriod: "day",
+        timesOfDay: {
+          morning: false,
+          day: false,
+          evening: false,
+          night: false,
+        },
       },
     ],
 
     bolusInsulin: [
       {
         drugName: "",
+        tradeName: "",
         dose: "",
+        frequency: "",
+        frequencyPeriod: "day",
+        timesOfDay: {
+          morning: false,
+          day: false,
+          evening: false,
+          night: false,
+        },
       },
     ],
 
@@ -102,6 +167,9 @@ export const createType1DiabetesDefaults = (): Type1DiabetesData => ({
   investigatedAfterDetection: null,
   initiallyType2: null,
 
+  gestationalDiabetes: null,
+  gestationalDiabetesDetails: createGestationalDiabetesDetailsDefaults(),
+
   familyHistoryDiabetes: null,
   familyHistoryDiabetesDetails: "",
 });
@@ -114,6 +182,7 @@ export const createType2DiabetesDefaults = (): Type2DiabetesData => ({
   diseaseDuration: null,
   howDiagnosed: "",
   diagnosisDetails: "",
+  glycemiaAtOnset: null,
 
   classicSymptoms: {
     polyuria: false,
@@ -131,10 +200,21 @@ export const createType2DiabetesDefaults = (): Type2DiabetesData => ({
   initialTherapy: [
     {
       drugName: "",
+      tradeName: "",
       dose: "",
       frequency: "",
+      frequencyPeriod: "day",
+      timesOfDay: {
+        morning: false,
+        day: false,
+        evening: false,
+        night: false,
+      },
     },
   ],
+
+  insulinTherapy: null,
+  insulinTherapyDetails: "",
 
   therapyRegularity: null,
   missedDosesPerWeek: "",
@@ -149,6 +229,9 @@ export const createType2DiabetesDefaults = (): Type2DiabetesData => ({
     otherDetails: "",
   },
 
+  therapySideEffects: null,
+  therapySideEffectsDetails: "",
+
   usualGlucoseOnTherapy: null,
 
   hba1c: {
@@ -159,6 +242,7 @@ export const createType2DiabetesDefaults = (): Type2DiabetesData => ({
   },
 
   gestationalDiabetes: null,
+  gestationalDiabetesDetails: createGestationalDiabetesDetailsDefaults(),
 
   familyHistoryDiabetes: null,
   familyHistoryDiabetesDetails: "",

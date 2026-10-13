@@ -12,14 +12,20 @@ import { YesNo } from "../../YesNo";
 
 import styles from "../../styles.module.scss";
 
-export const ActualTherapySection: React.FC = () => {
+interface ActualTherapySectionProps {
+  hideTitle?: boolean;
+}
+
+export const ActualTherapySection: React.FC<ActualTherapySectionProps> = ({
+  hideTitle = false,
+}) => {
   const { register, watch } = useFormContext<AnamnesisFormData>();
 
   const sameAsInitial = boolFromString(watch("actualTherapy.sameAsInitial"));
 
   return (
     <fieldset className={styles.fieldset}>
-      <legend>Актуальная терапия</legend>
+      {!hideTitle && <legend>Актуальная терапия</legend>}
 
       <YesNo
         label="Совпадает с терапией в дебюте?"
