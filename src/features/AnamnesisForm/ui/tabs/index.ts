@@ -4,6 +4,8 @@ export { AnthropometryTab } from "./AnthropometryTab";
 
 export { HypoglycemiaTab } from "./HypoglycemiaTab";
 
+export { CardiovascularTab } from "./CardiovascularTab";
+
 export { SelfMonitoringTab } from "./SelfMonitoringTab";
 
 export { ComplicationsTab } from "./ComplicationsTab";

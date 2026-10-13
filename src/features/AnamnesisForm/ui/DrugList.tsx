@@ -25,17 +25,22 @@ export type DrugArrayPath =
   | "therapy.basalInsulin"
   | "therapy.prandialInsulin"
   | "actualTherapy.basalInsulin"
-  | "actualTherapy.bolusInsulin";
+  | "actualTherapy.bolusInsulin"
+  | "lifestyle.actualAntihypertensiveTherapy";
 
 interface DrugListProps {
   control: Control<AnamnesisFormData>;
+
   register: UseFormRegister<AnamnesisFormData>;
+
   name: DrugArrayPath;
+
   firstField: "drugName" | "name";
 
-  /** Сохраняем прежние props, чтобы не менять места использования DrugList. */
   nameLabel?: string;
+
   doseSuffix?: string;
+
   showFrequency?: boolean;
 }
 
@@ -71,10 +76,12 @@ export const DrugList: React.FC<DrugListProps> = ({
 
   const { fields, append, remove } = useFieldArray({
     control,
+
     name: name as FieldArrayPath<AnamnesisFormData>,
   });
 
   const [armedDeleteId, setArmedDeleteId] = useState<string | null>(null);
+
   const deleteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -86,7 +93,6 @@ export const DrugList: React.FC<DrugListProps> = ({
   }, []);
 
   const handleRemove = (id: string, index: number) => {
-    // Два последовательных нажатия, включая касания на смартфоне.
     if (deleteTimer.current !== null) {
       clearTimeout(deleteTimer.current);
       deleteTimer.current = null;
@@ -108,6 +114,7 @@ export const DrugList: React.FC<DrugListProps> = ({
   ) => {
     const path =
       `${name}.${index}.timesOfDay.${key}` as Path<AnamnesisFormData>;
+
     const selected = watch(path) === true;
 
     setValue(path, !selected, {
@@ -121,11 +128,15 @@ export const DrugList: React.FC<DrugListProps> = ({
       {fields.map((field, index) => {
         const firstPath =
           `${name}.${index}.${firstField}` as Path<AnamnesisFormData>;
+
         const tradeNamePath =
           `${name}.${index}.tradeName` as Path<AnamnesisFormData>;
+
         const dosePath = `${name}.${index}.dose` as Path<AnamnesisFormData>;
+
         const frequencyPath =
           `${name}.${index}.frequency` as Path<AnamnesisFormData>;
+
         const frequencyPeriodPath =
           `${name}.${index}.frequencyPeriod` as Path<AnamnesisFormData>;
 
@@ -176,6 +187,7 @@ export const DrugList: React.FC<DrugListProps> = ({
 
               <div className={styles.drugFrequencyField}>
                 <label className={styles.drugFrequencyLabel}>Кратность</label>
+
                 <div className={styles.drugFrequencyControls}>
                   <input
                     type="text"
@@ -184,6 +196,7 @@ export const DrugList: React.FC<DrugListProps> = ({
                     placeholder="1"
                     {...register(frequencyPath)}
                   />
+
                   <select
                     aria-label="Период кратности приёма"
                     defaultValue="day"
@@ -199,10 +212,12 @@ export const DrugList: React.FC<DrugListProps> = ({
 
             <div className={styles.drugTimeSection}>
               <span className={styles.drugTimeLabel}>Время приёма</span>
+
               <div className={styles.drugTimeButtons}>
                 {TIME_OPTIONS.map((option) => {
                   const path =
                     `${name}.${index}.timesOfDay.${option.key}` as Path<AnamnesisFormData>;
+
                   const selected = watch(path) === true;
 
                   return (
@@ -214,7 +229,9 @@ export const DrugList: React.FC<DrugListProps> = ({
                       }`}
                       onClick={() => toggleTime(index, option.key)}
                       title={option.label}
-                      aria-label={`${option.label}: ${selected ? "выбрано" : "не выбрано"}`}
+                      aria-label={`${option.label}: ${
+                        selected ? "выбрано" : "не выбрано"
+                      }`}
                       aria-pressed={selected}
                     >
                       <span aria-hidden="true">{option.icon}</span>

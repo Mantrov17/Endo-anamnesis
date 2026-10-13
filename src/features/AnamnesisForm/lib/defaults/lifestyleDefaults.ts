@@ -33,10 +33,29 @@ export const createLifestyleDefaults = (): LifestyleDefaults => ({
   knownHypertension: "",
   hypertensionFirstDetected: "",
   hypertensionUnderAge35: false,
+
+  hypertensionDetectionEnabled: null,
+  hypertensionDetectionDetails: "",
   hypertensionDetectionMethod: "",
 
   visitedDoctorAfterDetection: null,
   prescribedTherapyThen: "",
+
+  actualAntihypertensiveTherapy: [
+    {
+      name: "",
+      tradeName: "",
+      dose: "",
+      frequency: "",
+      frequencyPeriod: "day",
+      timesOfDay: {
+        morning: false,
+        day: false,
+        evening: false,
+        night: false,
+      },
+    },
+  ],
 
   therapyRegularity: null,
   missedDosesPerWeek: "",
@@ -47,6 +66,7 @@ export const createLifestyleDefaults = (): LifestyleDefaults => ({
 
   selfDiscontinued: null,
   doctorChangedTherapy: null,
+  therapyCorrectionReason: "",
   changedTherapyDetails: "",
 
   measureAtHome: null,
@@ -55,11 +75,45 @@ export const createLifestyleDefaults = (): LifestyleDefaults => ({
 
   maxBPValues: "",
   subjectiveComplaints: "",
+
+  hypertensionSymptoms: {
+    headache: false,
+    tinnitus: false,
+    visualDisturbances: false,
+    palpitations: false,
+    hotFlushes: false,
+    chestPain: false,
+    arrhythmia: false,
+    dizziness: false,
+    nauseaVomiting: false,
+  },
+
+  highBpReliefMedication: "",
+
   atWhatBPReduced: "",
 
   hypertensiveCrisesAmbulance: null,
   crisesCount: "",
   crisesSymptoms: "",
+
+  crisisSigns: {
+    severeHeadache: false,
+    speechDisorder: false,
+    visionDisorder: false,
+    limbWeakness: false,
+    seizures: false,
+    lossOfConsciousness: false,
+  },
+
+  medicationHypertensionTriggers: {
+    glucocorticoids: false,
+    combinedOralContraceptives: false,
+    bronchodilators: false,
+    erythropoietin: false,
+    antiretroviralTherapy: false,
+    licoriceSupplements: false,
+    immunosuppressants: false,
+  },
 
   heartRhythmRegular: null,
   pacemakers: null,

@@ -1,12 +1,6 @@
 // ==================== Гипогликемии ====================
 
 export interface Hypoglycemia {
-  /*
-   * Главный вопрос раздела.
-   *
-   * Только при значении true показываются
-   * остальные поля по гипогликемиям.
-   */
   hasGlucoseBelow39: boolean | null;
 
   frequencyPerWeek: number | null;
@@ -27,9 +21,7 @@ export interface Hypoglycemia {
 
   provokingFactors: {
     physicalActivity: boolean;
-
     missedMeal: boolean;
-
     alcohol: boolean;
   };
 
@@ -56,86 +48,49 @@ export interface Hypoglycemia {
 // ==================== Самоконтроль ====================
 
 export interface SelfMonitoring {
-  /*
-   * Места инъекций.
-   *
-   * Поле общее для СД 1 и СД 2 типа.
-   * Допускается выбор нескольких вариантов.
-   */
   injectionSites: {
     abdomen: boolean;
-
     thighs: boolean;
-
     buttocks: boolean;
-
     lumbar: boolean;
-
     shoulders: boolean;
   };
-
-  // Устройства для самоконтроля
-
-  hasGlucometer: boolean | null;
 
   glucoseSensor: boolean;
 
   noMonitoringDevices: boolean;
 
-  // Регулярность и частота самоконтроля
-
-  frequencyRegularity: "regular" | "irregular" | "";
-
-  frequency: string;
-
-  // Ведение дневника
-
-  diary: boolean | null;
-
-  // Средняя гликемия
-
   averageGlucoseMin: number | null;
 
   averageGlucoseMax: number | null;
-
-  // Техника инъекций
 
   injectionTechnique: "correct" | "incorrect" | "";
 
   injectionSiteChangeFrequency: string;
 
-  // Длина игл
-
   needleLengths: {
     mm4: boolean;
-
     mm5: boolean;
-
     mm6: boolean;
-
     mm12: boolean;
   };
 
   needleChangeFrequency: string;
 
-  // Хранение инсулина
-
   insulinStorage: "correct" | "incorrect" | "";
-
-  // Питание
 
   mealRegularity: "regular" | "irregular" | "";
 
-  // Соблюдение диеты
-
   dietAdherence: boolean | null;
 
-  /*
-   * Старые поля.
-   *
-   * Оставлены для совместимости с ранее
-   * сохранёнными анкетами.
-   */
+  frequencyRegularity: "regular" | "irregular" | "";
+
+  frequency: string;
+
+  diary: boolean | null;
+
+  hasGlucometer: boolean | null;
+
   calibrationDone: boolean | null;
 
   lastDoctorVisit: string;
@@ -195,7 +150,7 @@ export interface Lifestyle {
 
   strongCoffee: boolean | null;
 
-  energyDrinks: boolean | null;
+  energyDrinks: number | null;
 
   occupation: string;
 
@@ -215,11 +170,18 @@ export interface Lifestyle {
 
   copdMeds: string;
 
+  // Артериальная гипертензия
+  // Используем существующие имена полей.
+
   knownHypertension: "yes" | "no" | "notMeasured" | "";
 
   hypertensionFirstDetected: string;
 
   hypertensionUnderAge35: boolean;
+
+  hypertensionDetectionEnabled?: boolean | null;
+
+  hypertensionDetectionDetails?: string;
 
   hypertensionDetectionMethod:
     | "accidental"
@@ -232,6 +194,11 @@ export interface Lifestyle {
   visitedDoctorAfterDetection: boolean | null;
 
   prescribedTherapyThen: string;
+
+  actualAntihypertensiveTherapy?: ({
+    name: string;
+    dose: string;
+  } & import("./diabetes").DrugScheduleDetails)[];
 
   therapyRegularity: boolean | null;
 
@@ -247,6 +214,8 @@ export interface Lifestyle {
 
   doctorChangedTherapy: boolean | null;
 
+  therapyCorrectionReason?: string;
+
   changedTherapyDetails: string;
 
   measureAtHome: boolean | null;
@@ -259,6 +228,20 @@ export interface Lifestyle {
 
   subjectiveComplaints: string;
 
+  hypertensionSymptoms?: {
+    headache: boolean;
+    tinnitus: boolean;
+    visualDisturbances: boolean;
+    palpitations: boolean;
+    hotFlushes: boolean;
+    chestPain: boolean;
+    arrhythmia: boolean;
+    dizziness: boolean;
+    nauseaVomiting: boolean;
+  };
+
+  highBpReliefMedication?: string;
+
   atWhatBPReduced: string;
 
   hypertensiveCrisesAmbulance: boolean | null;
@@ -266,6 +249,25 @@ export interface Lifestyle {
   crisesCount: string;
 
   crisesSymptoms: string;
+
+  crisisSigns?: {
+    severeHeadache: boolean;
+    speechDisorder: boolean;
+    visionDisorder: boolean;
+    limbWeakness: boolean;
+    seizures: boolean;
+    lossOfConsciousness: boolean;
+  };
+
+  medicationHypertensionTriggers?: {
+    glucocorticoids: boolean;
+    combinedOralContraceptives: boolean;
+    bronchodilators: boolean;
+    erythropoietin: boolean;
+    antiretroviralTherapy: boolean;
+    licoriceSupplements: boolean;
+    immunosuppressants: boolean;
+  };
 
   heartRhythmRegular: boolean | null;
 
@@ -302,7 +304,6 @@ export interface AdditionalHistory {
   allergies: {
     what: string;
     how: string;
-
     angioedema: boolean | null;
   };
 

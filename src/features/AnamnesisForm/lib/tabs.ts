@@ -12,6 +12,10 @@ export const tabs = [
     label: "Гипогликемии",
   },
   {
+    id: "cardiovascular",
+    label: "Сердечно-сосудистая система",
+  },
+  {
     id: "selfMonitoring",
     label: "Самоконтроль",
   },
