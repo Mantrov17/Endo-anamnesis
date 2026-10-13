@@ -1,23 +1,23 @@
 export const tabs = [
   {
     id: "primary",
-    label: "Первичный осмотр",
-  },
-  {
-    id: "anthropometry",
-    label: "Антропометрия",
+    label: "Основное заболевание",
   },
   {
     id: "hypoglycemia",
     label: "Гипогликемии",
   },
   {
+    id: "selfMonitoring",
+    label: "Самоконтроль",
+  },
+  {
     id: "cardiovascular",
     label: "Сердечно-сосудистая система",
   },
   {
-    id: "selfMonitoring",
-    label: "Самоконтроль",
+    id: "anthropometry",
+    label: "Антропометрия",
   },
   {
     id: "complications",
