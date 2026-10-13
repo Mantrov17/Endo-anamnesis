@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 
 import {
+  GLYCEMIC_PROFILE_TIMES,
   type GlycemicProfileDay,
   type GlycemicProfileMeasurement,
   type GlycemicProfileTime,
 } from "@/entities/glycemicProfile";
 
 import { Button } from "@/shared/ui/Button";
+
+import { Textarea } from "@/shared/ui/Textarea";
 
 import { useGlycemicProfileForm } from "../model/useGlycemicProfileForm";
 
@@ -18,49 +21,47 @@ interface GlycemicProfileFormProps {
   onSuccess?: () => void;
 }
 
-type MeasurementField =
+type NumericMeasurementField =
   | "glycemia"
   | "breadUnits"
   | "bolusInsulinUnits"
-  | "basalInsulinUnits"
-  | "insulinUnits"
-  | "note";
+  | "basalInsulinUnits";
 
-interface ProfileRow {
-  field: MeasurementField;
-  label: string;
-  type: "number" | "text";
-  step?: string;
-}
-
-const PROFILE_ROWS: ProfileRow[] = [
-  { field: "glycemia", label: "Сахар крови", type: "number", step: "0.1" },
-  { field: "breadUnits", label: "ХЕ/г", type: "number", step: "0.5" },
+const MEASUREMENT_ROWS: {
+  field: NumericMeasurementField;
+  shortLabel: string;
+  fullLabel: string;
+  step: string;
+}[] = [
+  {
+    field: "glycemia",
+    shortLabel: "Сахар",
+    fullLabel: "Сахар крови, ммоль/л",
+    step: "0.1",
+  },
+  {
+    field: "breadUnits",
+    shortLabel: "ХЕ/г",
+    fullLabel: "Хлебные единицы / граммы",
+    step: "0.5",
+  },
   {
     field: "bolusInsulinUnits",
-    label: "Болюсный, ЕД",
-    type: "number",
+    shortLabel: "Болюс",
+    fullLabel: "Болюсный инсулин, ЕД",
     step: "0.5",
   },
   {
     field: "basalInsulinUnits",
-    label: "Базальный, ЕД",
-    type: "number",
+    shortLabel: "Базал",
+    fullLabel: "Базальный инсулин, ЕД",
     step: "0.5",
   },
-  { field: "note", label: "Примечание", type: "text" },
 ];
-
-const LEGACY_ROW: ProfileRow = {
-  field: "insulinUnits",
-  label: "Инсулин, ЕД (старые данные)",
-  type: "number",
-  step: "0.5",
-};
 
 const formatShortDate = (date: string): string => {
   const [year, month, day] = date.split("-");
-  return year && month && day ? `${day}.${month}` : "Дата";
+  return year && month && day ? `${day}.${month}.${year}` : date;
 };
 
 const getMeasurement = (
@@ -89,13 +90,18 @@ export const GlycemicProfileForm: React.FC<GlycemicProfileFormProps> = ({
 
   const [newTime, setNewTime] = useState("");
   const [timeError, setTimeError] = useState("");
+  const [expandedNoteKey, setExpandedNoteKey] = useState<string | null>(null);
 
-  const rows = hasLegacyInsulin ? [...PROFILE_ROWS, LEGACY_ROW] : PROFILE_ROWS;
+  // В основной таблице всегда только шесть времён.
+  // Дополнительные измерения размещаются под ней, чтобы не возникал скролл.
+  const additionalTimes = times.filter(
+    (time) => !GLYCEMIC_PROFILE_TIMES.includes(time),
+  );
 
   const handleAddTime = () => {
     if (!addTime(newTime)) {
       setTimeError(
-        "Выберите новое время между 00:00 и 23:59, которого ещё нет в таблице.",
+        "Выберите новое время с 00:00 до 23:59, которого ещё нет в профиле.",
       );
       return;
     }
@@ -104,26 +110,71 @@ export const GlycemicProfileForm: React.FC<GlycemicProfileFormProps> = ({
     setTimeError("");
   };
 
-  const handleCellChange = (
+  const updateNumericValue = (
     dayId: string,
     time: GlycemicProfileTime,
-    field: MeasurementField,
+    field: NumericMeasurementField | "insulinUnits",
     value: string,
   ) => {
-    updateMeasurement(
-      dayId,
-      time,
-      field,
-      field === "note" ? value : value === "" ? null : Number(value),
-    );
+    updateMeasurement(dayId, time, field, value === "" ? null : Number(value));
   };
+
+  const toggleNote = (dayId: string, time: GlycemicProfileTime) => {
+    const key = `${dayId}:${time}`;
+    setExpandedNoteKey((current) => (current === key ? null : key));
+  };
+
+  const renderNoteEditor = (
+    day: GlycemicProfileDay,
+    time: GlycemicProfileTime,
+    measurement: GlycemicProfileMeasurement | undefined,
+  ) => (
+    <div
+      className={styles.noteEditor}
+      role="region"
+      aria-label={`Примечание к ${time} за ${formatShortDate(day.date)}`}
+    >
+      <Textarea
+        label={`Примечание · ${time}`}
+        className={styles.noteTextarea}
+        rows={2}
+        placeholder="Питание, физическая нагрузка, самочувствие…"
+        value={measurement?.note ?? ""}
+        onChange={(event) =>
+          updateMeasurement(day.id, time, "note", event.target.value)
+        }
+      />
+
+      {hasLegacyInsulin && measurement?.insulinUnits != null && (
+        <label className={styles.legacyEditorField}>
+          <span>Инсулин, ЕД (значение из старого профиля)</span>
+          <input
+            className={styles.legacyInput}
+            type="number"
+            inputMode="decimal"
+            min="0"
+            step="0.5"
+            value={measurement.insulinUnits}
+            onChange={(event) =>
+              updateNumericValue(
+                day.id,
+                time,
+                "insulinUnits",
+                event.target.value,
+              )
+            }
+          />
+        </label>
+      )}
+    </div>
+  );
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.toolbar}>
         <p className={styles.tableHint}>
-          Таблица по дням. Время идёт по порядку, включая 24:00 — конец суток.
-          Для просмотра на телефоне прокручивайте таблицу вбок.
+          Сахар — ммоль/л, инсулин — ЕД. Шесть основных времён помещаются по
+          ширине телефона. Примечания открываются кнопкой ✎.
         </p>
 
         <Button type="button" variant="secondary" onClick={addDay}>
@@ -133,7 +184,7 @@ export const GlycemicProfileForm: React.FC<GlycemicProfileFormProps> = ({
 
       <div className={styles.timeToolbar}>
         <label className={styles.timeLabel} htmlFor="profile-new-time">
-          Дополнительное измерение
+          Дополнительное время измерения
         </label>
 
         <div className={styles.timeControls}>
@@ -168,118 +219,229 @@ export const GlycemicProfileForm: React.FC<GlycemicProfileFormProps> = ({
 
       {days.length === 0 ? (
         <div className={styles.emptyState}>
-          Нет добавленных дней. Нажмите «Добавить день».
+          Пока нет дней. Нажмите «Добавить день».
         </div>
       ) : (
-        <div className={styles.tableScroll}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th className={styles.dateHeader} scope="col">
-                  Дата
-                </th>
-                <th className={styles.metricHeader} scope="col">
-                  Показатели
-                </th>
+        <div className={styles.daysList}>
+          {days.map((day, dayIndex) => {
+            const expandedMainTime = GLYCEMIC_PROFILE_TIMES.find(
+              (time) => expandedNoteKey === `${day.id}:${time}`,
+            );
 
-                {times.map((time) => (
-                  <th key={time} className={styles.hourHeader} scope="col">
-                    {time}
-                  </th>
-                ))}
-              </tr>
-            </thead>
+            return (
+              <section key={day.id} className={styles.dayCard}>
+                <div className={styles.dayHeader}>
+                  <div className={styles.dayInfo}>
+                    <span className={styles.dayTitle}>День {dayIndex + 1}</span>
 
-            <tbody>
-              {days.map((day) =>
-                rows.map((row, rowIndex) => (
-                  <tr
-                    key={`${day.id}-${row.field}`}
-                    className={rowIndex === 0 ? styles.dayStart : undefined}
+                    <input
+                      className={styles.dayDateInput}
+                      type="date"
+                      value={day.date}
+                      onChange={(event) =>
+                        updateDayDate(day.id, event.target.value)
+                      }
+                      aria-label={`Дата дня ${dayIndex + 1}`}
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    className={styles.removeDayButton}
+                    onClick={() => removeDay(day.id)}
+                    aria-label={`Удалить день ${formatShortDate(day.date)}`}
+                    title="Удалить день"
                   >
-                    {rowIndex === 0 && (
-                      <td rowSpan={rows.length} className={styles.dateCell}>
-                        <div className={styles.dateCellContent}>
-                          <label className={styles.datePicker}>
-                            <span>{formatShortDate(day.date)}</span>
-                            <input
-                              type="date"
-                              value={day.date}
-                              onChange={(event) =>
-                                updateDayDate(day.id, event.target.value)
+                    ×
+                  </button>
+                </div>
+
+                <table className={styles.table}>
+                  <colgroup>
+                    <col className={styles.metricColumn} />
+                    {GLYCEMIC_PROFILE_TIMES.map((time) => (
+                      <col key={time} className={styles.hourColumn} />
+                    ))}
+                  </colgroup>
+
+                  <thead>
+                    <tr>
+                      <th scope="col" title="Показатели">
+                        Показ.
+                      </th>
+
+                      {GLYCEMIC_PROFILE_TIMES.map((time) => (
+                        <th scope="col" key={time}>
+                          {time}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {MEASUREMENT_ROWS.map((row) => (
+                      <tr key={row.field}>
+                        <th scope="row" title={row.fullLabel}>
+                          {row.shortLabel}
+                        </th>
+
+                        {GLYCEMIC_PROFILE_TIMES.map((time) => {
+                          const measurement = getMeasurement(day, time);
+
+                          return (
+                            <td key={time} className={styles.valueCell}>
+                              <input
+                                className={styles.cellInput}
+                                type="number"
+                                inputMode="decimal"
+                                min="0"
+                                step={row.step}
+                                value={measurement?.[row.field] ?? ""}
+                                onChange={(event) =>
+                                  updateNumericValue(
+                                    day.id,
+                                    time,
+                                    row.field,
+                                    event.target.value,
+                                  )
+                                }
+                                aria-label={`${row.fullLabel}, ${formatShortDate(day.date)}, ${time}`}
+                              />
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+
+                    <tr>
+                      <th scope="row" title="Примечания к измерениям">
+                        Прим.
+                      </th>
+
+                      {GLYCEMIC_PROFILE_TIMES.map((time) => {
+                        const measurement = getMeasurement(day, time);
+                        const hasStoredDetails = Boolean(
+                          measurement?.note?.trim() ||
+                            measurement?.insulinUnits != null,
+                        );
+                        const isOpen = expandedNoteKey === `${day.id}:${time}`;
+
+                        return (
+                          <td key={time} className={styles.noteCell}>
+                            <button
+                              type="button"
+                              className={`${styles.noteButton} ${
+                                hasStoredDetails
+                                  ? styles.noteButtonHasValue
+                                  : ""
+                              } ${isOpen ? styles.noteButtonOpen : ""}`}
+                              onClick={() => toggleNote(day.id, time)}
+                              aria-expanded={isOpen}
+                              aria-label={`Примечание, ${formatShortDate(day.date)}, ${time}`}
+                              title={
+                                hasStoredDetails
+                                  ? "Посмотреть или изменить запись"
+                                  : "Добавить примечание"
                               }
-                              aria-label={`Дата ${formatShortDate(day.date)}`}
-                            />
-                          </label>
+                            >
+                              ✎
+                            </button>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  </tbody>
+                </table>
 
-                          <button
-                            type="button"
-                            className={styles.removeDayButton}
-                            onClick={() => removeDay(day.id)}
-                            aria-label={`Удалить день ${formatShortDate(day.date)}`}
-                            title="Удалить день"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      </td>
-                    )}
+                {expandedMainTime &&
+                  renderNoteEditor(
+                    day,
+                    expandedMainTime,
+                    getMeasurement(day, expandedMainTime),
+                  )}
 
-                    <th scope="row" className={styles.metricCell}>
-                      {row.label}
-                    </th>
+                {additionalTimes.length > 0 && (
+                  <div className={styles.extraSection}>
+                    <h3 className={styles.extraTitle}>
+                      Дополнительные измерения
+                    </h3>
+                    <p className={styles.extraHint}>
+                      Время отсортировано по возрастанию.
+                    </p>
 
-                    {times.map((time) => {
+                    {additionalTimes.map((time) => {
                       const measurement = getMeasurement(day, time);
-                      const value =
-                        row.field === "note"
-                          ? (measurement?.note ?? "")
-                          : (measurement?.[row.field] ?? "");
+                      const isOpen = expandedNoteKey === `${day.id}:${time}`;
+                      const hasStoredDetails = Boolean(
+                        measurement?.note?.trim() ||
+                          measurement?.insulinUnits != null,
+                      );
 
                       return (
-                        <td
-                          key={`${day.id}-${row.field}-${time}`}
-                          className={styles.valueCell}
-                        >
-                          <input
-                            type={row.type}
-                            step={row.step}
-                            min={row.type === "number" ? "0" : undefined}
-                            inputMode={
-                              row.type === "number" ? "decimal" : undefined
-                            }
-                            value={value}
-                            onChange={(event) =>
-                              handleCellChange(
-                                day.id,
-                                time,
-                                row.field,
-                                event.target.value,
-                              )
-                            }
-                            className={`${styles.cellInput} ${
-                              row.field === "note" ? styles.noteInput : ""
-                            }`}
-                            aria-label={`${row.label}, ${formatShortDate(
-                              day.date,
-                            )}, ${time}`}
-                          />
-                        </td>
+                        <div key={time} className={styles.extraMeasurement}>
+                          <div className={styles.extraHeader}>
+                            <span className={styles.extraTime}>{time}</span>
+                            <button
+                              type="button"
+                              className={`${styles.extraNoteButton} ${
+                                hasStoredDetails
+                                  ? styles.extraNoteButtonHasValue
+                                  : ""
+                              }`}
+                              onClick={() => toggleNote(day.id, time)}
+                              aria-expanded={isOpen}
+                              aria-label={`Примечание для ${time}`}
+                            >
+                              ✎ Примечание
+                            </button>
+                          </div>
+
+                          <div className={styles.extraFields}>
+                            {MEASUREMENT_ROWS.map((row) => (
+                              <label
+                                key={row.field}
+                                className={styles.extraField}
+                              >
+                                <span title={row.fullLabel}>
+                                  {row.shortLabel}
+                                </span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step={row.step}
+                                  inputMode="decimal"
+                                  value={measurement?.[row.field] ?? ""}
+                                  onChange={(event) =>
+                                    updateNumericValue(
+                                      day.id,
+                                      time,
+                                      row.field,
+                                      event.target.value,
+                                    )
+                                  }
+                                  aria-label={`${row.fullLabel}, ${formatShortDate(day.date)}, ${time}`}
+                                />
+                              </label>
+                            ))}
+                          </div>
+
+                          {isOpen && renderNoteEditor(day, time, measurement)}
+                        </div>
                       );
                     })}
-                  </tr>
-                )),
-              )}
-            </tbody>
-          </table>
+                  </div>
+                )}
+              </section>
+            );
+          })}
         </div>
       )}
 
       {hasLegacyInsulin && (
         <p className={styles.legacyHint}>
-          Строка «Инсулин, ЕД (старые данные)» сохранена из предыдущей версии.
-          Эти значения не распределены автоматически между базальным и болюсным
-          инсулином.
+          Значения старого общего поля «Инсулин, ЕД» сохранены без распределения
+          на базальный и болюсный. Откройте ✎ у нужного времени, чтобы увидеть
+          их.
         </p>
       )}
 
