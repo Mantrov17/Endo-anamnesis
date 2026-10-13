@@ -191,6 +191,11 @@ export const createType2DiabetesDefaults = (): Type2DiabetesData => ({
     weightLoss: false,
     visionBlur: false,
 
+    skinItching: false,
+    urinaryInfection: false,
+    fingerParesthesia: false,
+    hunger: false,
+
     other: false,
     otherDetails: "",
   },

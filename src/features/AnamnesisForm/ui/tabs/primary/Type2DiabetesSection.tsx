@@ -27,9 +27,6 @@ export const Type2DiabetesSection: React.FC = () => {
 
   const hba1cUnknownType2 = watch("type2Diabetes.hba1c.unknown") === true;
 
-  const otherClassicSymptom =
-    watch("type2Diabetes.classicSymptoms.other") === true;
-
   const familyHistoryDiabetes = boolFromString(
     watch("type2Diabetes.familyHistoryDiabetes"),
   );
@@ -126,25 +123,14 @@ export const Type2DiabetesSection: React.FC = () => {
         rows={3}
       />
 
+      {/* =========================
+          Симптомы при дебюте СД 2 типа
+          ========================= */}
+
       <fieldset className={styles.fieldset}>
         <legend>Симптомы при дебюте</legend>
 
-        <label>
-          <input
-            type="checkbox"
-            {...register("type2Diabetes.classicSymptoms.polyuria")}
-          />{" "}
-          Полиурия
-        </label>
-
-        <label>
-          <input
-            type="checkbox"
-            {...register("type2Diabetes.classicSymptoms.polydipsia")}
-          />{" "}
-          Полидипсия
-        </label>
-
+        {/* 1. Слабость */}
         <label>
           <input
             type="checkbox"
@@ -153,14 +139,7 @@ export const Type2DiabetesSection: React.FC = () => {
           Слабость
         </label>
 
-        <label>
-          <input
-            type="checkbox"
-            {...register("type2Diabetes.classicSymptoms.weightLoss")}
-          />{" "}
-          Снижение веса
-        </label>
-
+        {/* 2. Нечёткость зрения */}
         <label>
           <input
             type="checkbox"
@@ -169,23 +148,82 @@ export const Type2DiabetesSection: React.FC = () => {
           Нечёткость зрения
         </label>
 
+        {/* 3. Кожный зуд */}
         <label>
           <input
             type="checkbox"
-            {...register("type2Diabetes.classicSymptoms.other")}
+            {...register("type2Diabetes.classicSymptoms.skinItching")}
           />{" "}
-          Свой вариант ответа
+          Кожный зуд
         </label>
 
-        {otherClassicSymptom && (
-          <Textarea
-            label="Свой вариант"
-            placeholder="Укажите другой симптом"
-            {...register("type2Diabetes.classicSymptoms.otherDetails")}
-            rows={2}
-          />
-        )}
+        {/* 4. Полидипсия */}
+        <label>
+          <input
+            type="checkbox"
+            {...register("type2Diabetes.classicSymptoms.polydipsia")}
+          />{" "}
+          Полидипсия
+        </label>
+
+        {/* 5. Полиурия */}
+        <label>
+          <input
+            type="checkbox"
+            {...register("type2Diabetes.classicSymptoms.polyuria")}
+          />{" "}
+          Полиурия
+        </label>
+
+        {/* 6. Мочевая инфекция */}
+        <label>
+          <input
+            type="checkbox"
+            {...register("type2Diabetes.classicSymptoms.urinaryInfection")}
+          />{" "}
+          Мочевая инфекция
+        </label>
+
+        {/* 7. Онемение/парестезии пальцев конечностей */}
+        <label>
+          <input
+            type="checkbox"
+            {...register("type2Diabetes.classicSymptoms.fingerParesthesia")}
+          />{" "}
+          Онемение/парестезии пальцев конечностей
+        </label>
+
+        {/* 8. Чувство голода */}
+        <label>
+          <input
+            type="checkbox"
+            {...register("type2Diabetes.classicSymptoms.hunger")}
+          />{" "}
+          Чувство голода
+        </label>
+
+        {/* 9. Изменение массы тела
+            Сохраняем старый ключ weightLoss
+            для совместимости со старыми анкетами.
+        */}
+        <label>
+          <input
+            type="checkbox"
+            {...register("type2Diabetes.classicSymptoms.weightLoss")}
+          />{" "}
+          Изменение массы тела
+        </label>
       </fieldset>
+
+      {/* Поле теперь доступно всегда.
+          Старые данные otherDetails сохраняются.
+      */}
+      <Textarea
+        label="Подробнее о клинических проявлениях"
+        placeholder="Уточните симптомы и другие клинические проявления"
+        {...register("type2Diabetes.classicSymptoms.otherDetails")}
+        rows={3}
+      />
 
       <Field noteKey="type2Diabetes.maxGlucoseValues">
         <Textarea

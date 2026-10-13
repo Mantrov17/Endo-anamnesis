@@ -59,13 +59,21 @@ export interface GestationalDiabetesDetails {
   additionalInfo: string;
 }
 
-// Общие дополнительные сведения о препарате.
-// Поля необязательные: существующие записи с name/drugName и dose
-// продолжают читаться без миграции или потери данных.
+// ==================== Общие поля препаратов ====================
+
+/**
+ * Дополнительные сведения о препарате.
+ *
+ * Поля необязательные для совместимости
+ * с ранее сохранёнными анкетами.
+ */
 export interface DrugScheduleDetails {
   tradeName?: string;
+
   frequency?: string;
+
   frequencyPeriod?: "day" | "week" | "month";
+
   timesOfDay?: {
     morning?: boolean;
     day?: boolean;
@@ -244,11 +252,22 @@ export interface Type2Diabetes {
   glycemiaAtOnset: number | null;
 
   classicSymptoms: {
+    // Существующие поля
+
     polyuria: boolean;
     polydipsia: boolean;
     weakness: boolean;
     weightLoss: boolean;
     visionBlur: boolean;
+
+    // Новые клинические проявления
+
+    skinItching: boolean;
+    urinaryInfection: boolean;
+    fingerParesthesia: boolean;
+    hunger: boolean;
+
+    // Сохраняем старые данные свободного ответа
 
     other: boolean;
     otherDetails: string;
