@@ -57,21 +57,27 @@ export interface Hypoglycemia {
 
 export interface SelfMonitoring {
   /*
-   * Ранее поле hasGlucometer означало
-   * наличие глюкометра (Да/Нет).
+   * Места инъекций.
    *
-   * Сохраняем его прежнее название
-   * для совместимости со старыми анкетами.
+   * Поле общее для СД 1 и СД 2 типа.
+   * Допускается выбор нескольких вариантов.
    */
+  injectionSites: {
+    abdomen: boolean;
+
+    thighs: boolean;
+
+    buttocks: boolean;
+
+    lumbar: boolean;
+
+    shoulders: boolean;
+  };
+
+  // Устройства для самоконтроля
 
   hasGlucometer: boolean | null;
 
-  /*
-   * Дополнительные варианты устройств.
-   *
-   * Глюкометр и датчик можно выбирать вместе.
-   * Вариант "Нет" является взаимоисключающим.
-   */
   glucoseSensor: boolean;
 
   noMonitoringDevices: boolean;
@@ -82,17 +88,12 @@ export interface SelfMonitoring {
 
   frequency: string;
 
-  // Ведение дневника самоконтроля
+  // Ведение дневника
 
   diary: boolean | null;
 
-  /*
-   * Средние показатели гликемии на фоне
-   * проводимой терапии, ммоль/л.
-   *
-   * Диапазон от минимального до максимального
-   * указанного значения.
-   */
+  // Средняя гликемия
+
   averageGlucoseMin: number | null;
 
   averageGlucoseMax: number | null;
@@ -101,11 +102,9 @@ export interface SelfMonitoring {
 
   injectionTechnique: "correct" | "incorrect" | "";
 
-  // Частота смены места для инъекции
-
   injectionSiteChangeFrequency: string;
 
-  // Длина игл (множественный выбор)
+  // Длина игл
 
   needleLengths: {
     mm4: boolean;
@@ -116,8 +115,6 @@ export interface SelfMonitoring {
 
     mm12: boolean;
   };
-
-  // Частота смены игл
 
   needleChangeFrequency: string;
 
@@ -136,9 +133,8 @@ export interface SelfMonitoring {
   /*
    * Старые поля.
    *
-   * В новой форме не отображаются,
-   * но остаются в модели для сохранения
-   * ранее введённых пользователем данных.
+   * Оставлены для совместимости с ранее
+   * сохранёнными анкетами.
    */
   calibrationDone: boolean | null;
 

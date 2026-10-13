@@ -66,7 +66,7 @@ const formatShortDate = (date: string): string => {
     return date;
   }
 
-  return `${day}.${month}.${year.slice(-2)}`;
+  return `${day}.${month}`;
 };
 
 const formatFullDate = (date: string): string => {
@@ -113,11 +113,9 @@ export const GlycemicProfileForm: React.FC<GlycemicProfileFormProps> = ({
   const [expandedNoteKey, setExpandedNoteKey] = useState<string | null>(null);
 
   /*
-   * Основные шесть времён всегда располагаются
-   * в единой таблице.
-   *
-   * Дополнительные времена оставляем отдельно
-   * внутри группы соответствующего дня.
+   * Основные времена остаются в общей таблице.
+   * Дополнительные времена отображаются после
+   * показателей соответствующего дня.
    */
   const additionalTimes = times.filter(
     (time) => !GLYCEMIC_PROFILE_TIMES.includes(time),
@@ -152,14 +150,14 @@ export const GlycemicProfileForm: React.FC<GlycemicProfileFormProps> = ({
   };
 
   /*
-   * Общий компактный элемент даты.
+   * Компактная дата.
    *
-   * Первый день находится в шапке таблицы.
-   * Остальные дни — в первом столбце тонкой
-   * разделительной строки.
+   * Первый день — в верхнем левом углу.
+   * Последующие дни — непосредственно
+   * в ячейке "Сахар".
    *
-   * Дата отображается коротко, но остаётся
-   * доступной для редактирования.
+   * Это позволяет отказаться от отдельной
+   * строки с датой между днями.
    */
   const renderDateControls = (
     day: GlycemicProfileDay,
@@ -301,7 +299,7 @@ export const GlycemicProfileForm: React.FC<GlycemicProfileFormProps> = ({
               ))}
             </colgroup>
 
-            {/* Одна общая шапка для всех дней */}
+            {/* Заголовки часов отображаются только один раз. */}
             <thead>
               <tr>
                 <th scope="col" className={styles.firstHeaderDate}>
@@ -316,47 +314,57 @@ export const GlycemicProfileForm: React.FC<GlycemicProfileFormProps> = ({
               </tr>
             </thead>
 
-            <tbody>
-              {days.map((day, dayIndex) => {
-                const dayColorClass =
-                  dayIndex % 2 === 0 ? styles.dayOdd : styles.dayEven;
+            {/*
+             * Используем отдельный tbody для каждого дня.
+             *
+             * Визуально таблица единая:
+             * нет повторных шапок и строк с датой.
+             *
+             * Цветовые переменные задаются на tbody
+             * и применяются ко всем его строкам.
+             */}
+            {days.map((day, dayIndex) => {
+              const dayColorClass =
+                dayIndex % 2 === 0 ? styles.dayOdd : styles.dayEven;
 
-                const expandedMainTime = GLYCEMIC_PROFILE_TIMES.find(
-                  (time) => expandedNoteKey === `${day.id}:${time}`,
-                );
+              const expandedMainTime = GLYCEMIC_PROFILE_TIMES.find(
+                (time) => expandedNoteKey === `${day.id}:${time}`,
+              );
 
-                return (
-                  <React.Fragment key={day.id}>
-                    {/*
-                      Для первого дня дата уже находится
-                      в верхней левой ячейке таблицы.
+              return (
+                <tbody key={day.id} className={dayColorClass}>
+                  {MEASUREMENT_ROWS.map((row) => {
+                    const isFirstRow = row.field === "glycemia";
 
-                      Для остальных создаём компактную
-                      разделительную строку — без повторения
-                      заголовков времён.
-                    */}
-                    {dayIndex > 0 && (
-                      <tr className={`${styles.dayDivider} ${dayColorClass}`}>
-                        <th scope="rowgroup" className={styles.dayDateCell}>
-                          {renderDateControls(day, dayIndex)}
-                        </th>
-
-                        <td colSpan={6} className={styles.dayDividerFill} />
-                      </tr>
-                    )}
-
-                    {/* Числовые показатели дня */}
-                    {MEASUREMENT_ROWS.map((row) => (
+                    return (
                       <tr
                         key={`${day.id}-${row.field}`}
-                        className={dayColorClass}
+                        className={
+                          dayIndex > 0 && isFirstRow
+                            ? styles.dayFirstRow
+                            : undefined
+                        }
                       >
                         <th
                           scope="row"
                           className={styles.metricCell}
                           title={row.fullLabel}
                         >
-                          {row.shortLabel}
+                          <div className={styles.metricLabel}>
+                            {row.shortLabel}
+                          </div>
+
+                          {/*
+                           * Дата второго и последующих дней
+                           * находится под словом "Сахар".
+                           *
+                           * Новая строка таблицы не создаётся.
+                           */}
+                          {dayIndex > 0 && isFirstRow && (
+                            <div className={styles.inlineDayDate}>
+                              {renderDateControls(day, dayIndex)}
+                            </div>
+                          )}
                         </th>
 
                         {GLYCEMIC_PROFILE_TIMES.map((time) => {
@@ -387,157 +395,155 @@ export const GlycemicProfileForm: React.FC<GlycemicProfileFormProps> = ({
                           );
                         })}
                       </tr>
-                    ))}
+                    );
+                  })}
 
-                    {/* Примечания для каждого времени */}
-                    <tr className={dayColorClass}>
-                      <th scope="row" className={styles.metricCell}>
-                        Прим.
-                      </th>
+                  {/* Примечания для каждого времени */}
+                  <tr>
+                    <th scope="row" className={styles.metricCell}>
+                      <div className={styles.metricLabel}>Прим.</div>
+                    </th>
 
-                      {GLYCEMIC_PROFILE_TIMES.map((time) => {
-                        const measurement = getMeasurement(day, time);
+                    {GLYCEMIC_PROFILE_TIMES.map((time) => {
+                      const measurement = getMeasurement(day, time);
 
-                        const hasStoredDetails = Boolean(
-                          measurement?.note?.trim() ||
-                            measurement?.insulinUnits != null,
-                        );
+                      const hasStoredDetails = Boolean(
+                        measurement?.note?.trim() ||
+                          measurement?.insulinUnits != null,
+                      );
 
-                        const isOpen = expandedNoteKey === `${day.id}:${time}`;
+                      const isOpen = expandedNoteKey === `${day.id}:${time}`;
 
-                        return (
-                          <td key={time} className={styles.noteCell}>
-                            <button
-                              type="button"
-                              className={`${styles.noteButton} ${
-                                hasStoredDetails
-                                  ? styles.noteButtonHasValue
-                                  : ""
-                              } ${isOpen ? styles.noteButtonOpen : ""}`}
-                              onClick={() => toggleNote(day.id, time)}
-                              aria-expanded={isOpen}
-                              aria-label={`Примечание, ${formatFullDate(
-                                day.date,
-                              )}, ${time}`}
-                              title={
-                                hasStoredDetails
-                                  ? "Посмотреть или изменить запись"
-                                  : "Добавить примечание"
-                              }
-                            >
-                              ✎
-                            </button>
-                          </td>
-                        );
-                      })}
+                      return (
+                        <td key={time} className={styles.noteCell}>
+                          <button
+                            type="button"
+                            className={`${styles.noteButton} ${
+                              hasStoredDetails ? styles.noteButtonHasValue : ""
+                            } ${isOpen ? styles.noteButtonOpen : ""}`}
+                            onClick={() => toggleNote(day.id, time)}
+                            aria-expanded={isOpen}
+                            aria-label={`Примечание, ${formatFullDate(
+                              day.date,
+                            )}, ${time}`}
+                            title={
+                              hasStoredDetails
+                                ? "Посмотреть или изменить запись"
+                                : "Добавить примечание"
+                            }
+                          >
+                            ✎
+                          </button>
+                        </td>
+                      );
+                    })}
+                  </tr>
+
+                  {/* Раскрытое примечание */}
+                  {expandedMainTime && (
+                    <tr className={styles.detailRow}>
+                      <td colSpan={7}>
+                        {renderNoteEditor(
+                          day,
+                          expandedMainTime,
+                          getMeasurement(day, expandedMainTime),
+                        )}
+                      </td>
                     </tr>
+                  )}
 
-                    {/* Раскрытое примечание */}
-                    {expandedMainTime && (
-                      <tr className={`${styles.detailRow} ${dayColorClass}`}>
-                        <td colSpan={7}>
-                          {renderNoteEditor(
-                            day,
-                            expandedMainTime,
-                            getMeasurement(day, expandedMainTime),
-                          )}
-                        </td>
-                      </tr>
-                    )}
-
-                    {/*
-                      Дополнительные измерения сохраняем
-                      внутри общей таблицы после текущего дня.
-                    */}
-                    {additionalTimes.length > 0 && (
-                      <tr className={`${styles.extraRow} ${dayColorClass}`}>
-                        <td colSpan={7}>
-                          <div className={styles.extraSection}>
-                            <div className={styles.extraTitle}>
-                              Дополнительные измерения
-                            </div>
-
-                            {additionalTimes.map((time) => {
-                              const measurement = getMeasurement(day, time);
-
-                              const isOpen =
-                                expandedNoteKey === `${day.id}:${time}`;
-
-                              const hasStoredDetails = Boolean(
-                                measurement?.note?.trim() ||
-                                  measurement?.insulinUnits != null,
-                              );
-
-                              return (
-                                <div
-                                  key={time}
-                                  className={styles.extraMeasurement}
-                                >
-                                  <div className={styles.extraHeader}>
-                                    <span className={styles.extraTime}>
-                                      {time}
-                                    </span>
-
-                                    <button
-                                      type="button"
-                                      className={`${styles.extraNoteButton} ${
-                                        hasStoredDetails
-                                          ? styles.extraNoteButtonHasValue
-                                          : ""
-                                      }`}
-                                      onClick={() => toggleNote(day.id, time)}
-                                      aria-expanded={isOpen}
-                                      aria-label={`Примечание для ${time}`}
-                                    >
-                                      ✎ Примечание
-                                    </button>
-                                  </div>
-
-                                  <div className={styles.extraFields}>
-                                    {MEASUREMENT_ROWS.map((row) => (
-                                      <label
-                                        key={row.field}
-                                        className={styles.extraField}
-                                      >
-                                        <span title={row.fullLabel}>
-                                          {row.shortLabel}
-                                        </span>
-
-                                        <input
-                                          type="number"
-                                          min="0"
-                                          step={row.step}
-                                          inputMode="decimal"
-                                          value={measurement?.[row.field] ?? ""}
-                                          onChange={(event) =>
-                                            updateNumericValue(
-                                              day.id,
-                                              time,
-                                              row.field,
-                                              event.target.value,
-                                            )
-                                          }
-                                          aria-label={`${row.fullLabel}, ${formatFullDate(
-                                            day.date,
-                                          )}, ${time}`}
-                                        />
-                                      </label>
-                                    ))}
-                                  </div>
-
-                                  {isOpen &&
-                                    renderNoteEditor(day, time, measurement)}
-                                </div>
-                              );
-                            })}
+                  {/*
+                   * Дополнительные измерения
+                   * остаются внутри группы своего дня.
+                   */}
+                  {additionalTimes.length > 0 && (
+                    <tr className={styles.extraRow}>
+                      <td colSpan={7}>
+                        <div className={styles.extraSection}>
+                          <div className={styles.extraTitle}>
+                            Дополнительные измерения
                           </div>
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </tbody>
+
+                          {additionalTimes.map((time) => {
+                            const measurement = getMeasurement(day, time);
+
+                            const isOpen =
+                              expandedNoteKey === `${day.id}:${time}`;
+
+                            const hasStoredDetails = Boolean(
+                              measurement?.note?.trim() ||
+                                measurement?.insulinUnits != null,
+                            );
+
+                            return (
+                              <div
+                                key={time}
+                                className={styles.extraMeasurement}
+                              >
+                                <div className={styles.extraHeader}>
+                                  <span className={styles.extraTime}>
+                                    {time}
+                                  </span>
+
+                                  <button
+                                    type="button"
+                                    className={`${styles.extraNoteButton} ${
+                                      hasStoredDetails
+                                        ? styles.extraNoteButtonHasValue
+                                        : ""
+                                    }`}
+                                    onClick={() => toggleNote(day.id, time)}
+                                    aria-expanded={isOpen}
+                                    aria-label={`Примечание для ${time}`}
+                                  >
+                                    ✎ Примечание
+                                  </button>
+                                </div>
+
+                                <div className={styles.extraFields}>
+                                  {MEASUREMENT_ROWS.map((row) => (
+                                    <label
+                                      key={row.field}
+                                      className={styles.extraField}
+                                    >
+                                      <span title={row.fullLabel}>
+                                        {row.shortLabel}
+                                      </span>
+
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        step={row.step}
+                                        inputMode="decimal"
+                                        value={measurement?.[row.field] ?? ""}
+                                        onChange={(event) =>
+                                          updateNumericValue(
+                                            day.id,
+                                            time,
+                                            row.field,
+                                            event.target.value,
+                                          )
+                                        }
+                                        aria-label={`${row.fullLabel}, ${formatFullDate(
+                                          day.date,
+                                        )}, ${time}`}
+                                      />
+                                    </label>
+                                  ))}
+                                </div>
+
+                                {isOpen &&
+                                  renderNoteEditor(day, time, measurement)}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              );
+            })}
           </table>
         </div>
       )}

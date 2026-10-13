@@ -21,47 +21,7 @@ export const Type1InjectionSitesSection: React.FC = () => {
   return (
     <Field noteKey="type1Diabetes.injectionSitesInfo">
       <fieldset className={styles.fieldset}>
-        <legend>Место инъекций</legend>
-
-        <label>
-          <input
-            type="checkbox"
-            {...register("type1Diabetes.injectionSitesInfo.sites.abdomen")}
-          />{" "}
-          Живот (околопупочная область)
-        </label>
-
-        <label>
-          <input
-            type="checkbox"
-            {...register("type1Diabetes.injectionSitesInfo.sites.thighs")}
-          />{" "}
-          Наружная поверхность бедер
-        </label>
-
-        <label>
-          <input
-            type="checkbox"
-            {...register("type1Diabetes.injectionSitesInfo.sites.buttocks")}
-          />{" "}
-          Верхний наружный квадрант ягодиц
-        </label>
-
-        <label>
-          <input
-            type="checkbox"
-            {...register("type1Diabetes.injectionSitesInfo.sites.lumbar")}
-          />{" "}
-          Поясничная область
-        </label>
-
-        <label>
-          <input
-            type="checkbox"
-            {...register("type1Diabetes.injectionSitesInfo.sites.shoulders")}
-          />{" "}
-          Наружная поверхность плеч
-        </label>
+        <legend>Состояние мест инъекций</legend>
 
         {isPump ? (
           <>

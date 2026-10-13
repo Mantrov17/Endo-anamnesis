@@ -2,6 +2,8 @@ import type { AnamnesisFormData, AnamnesisRecord } from "@/entities/anamnesis";
 
 import { getDefaultValues } from "./defaultValues";
 
+import { createSelfMonitoringDefaults } from "./defaults/diabetesCareDefaults";
+
 import {
   createType1DiabetesDefaults,
   createType2DiabetesDefaults,
@@ -18,9 +20,6 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> =>
  *
  * Преобразование выполняем только в тех местах,
  * где default имеет boolean/null-семантику.
- *
- * Благодаря этому обычные текстовые поля со строками
- * не затрагиваются.
  */
 const normalizeBooleanString = (
   defaultValue: unknown,
@@ -64,13 +63,10 @@ const deepMergeWithDefaults = <T>(defaults: T, source: unknown): T => {
       result[key] = deepMergeWithDefaults(defaults[key], normalizedSource[key]);
     }
 
-    /**
+    /*
      * Не выбрасываем неизвестные старые/новые поля.
      *
-     * Это важно для обратной совместимости:
-     * если схема изменилась, но поле ещё отсутствует
-     * в defaults текущей версии, данные пользователя
-     * всё равно сохраняются.
+     * Это важно для обратной совместимости.
      */
     for (const key of Object.keys(normalizedSource)) {
       if (!(key in defaults)) {
@@ -85,12 +81,8 @@ const deepMergeWithDefaults = <T>(defaults: T, source: unknown): T => {
 };
 
 /**
- * Проверяем, были ли в старой версии реально
+ * Проверяем, были ли в старой версии
  * заполнены какие-либо данные по гипогликемиям.
- *
- * Это нужно потому, что раньше вопроса
- * "Были ли понижения глюкозы менее 3,9 ммоль/л?"
- * не существовало.
  */
 const hasLegacyHypoglycemiaData = (
   hypoglycemia: AnamnesisFormData["hypoglycemia"],
@@ -103,8 +95,8 @@ const hasLegacyHypoglycemiaData = (
     hypoglycemia.frequencyPerWeek !== null ||
       hypoglycemia.severeEpisodes !== null ||
       hypoglycemia.severeEpisodesCount !== null ||
-      hypoglycemia.severeEpisodesWhen.trim() ||
-      hypoglycemia.severeEpisodesClinic.trim() ||
+      hypoglycemia.severeEpisodesWhen?.trim() ||
+      hypoglycemia.severeEpisodesClinic?.trim() ||
       hypoglycemia.severeEpisodesDetails?.trim() ||
       hypoglycemia.reliefMethod?.trim() ||
       hypoglycemia.awarenessPreserved !== null ||
@@ -129,15 +121,8 @@ const hasLegacyHypoglycemiaData = (
 /**
  * Миграция старых записей гипогликемий.
  *
- * Если новое поле уже существует —
+ * Если новое поле уже существует,
  * ничего не меняем.
- *
- * Если поля нет, но старая анкета была
- * заполнена — считаем ответ "Да".
- *
- * Если старая анкета была полностью пустой —
- * оставляем null, чтобы пользователь сам
- * выбрал "Да" или "Нет".
  */
 const normalizeLegacyHypoglycemia = (
   data: AnamnesisFormData,
@@ -168,12 +153,11 @@ const normalizeLegacyHypoglycemia = (
 };
 
 /**
- * В прежней форме подробности тяжёлых гипогликемий вводились
- * в три отдельных поля: количество, дата и клиника.
+ * В прежней форме подробности тяжёлых гипогликемий
+ * вводились в три отдельных поля.
  *
- * Новая форма содержит одно текстовое поле. Если оно ещё не
- * заполнено, собираем в нём старые сведения для отображения.
- * Исходные три поля не удаляем: они останутся в сохранённой записи.
+ * Если новое поле ещё отсутствует,
+ * объединяем старые сведения в один текст.
  */
 const normalizeLegacySevereEpisodes = (
   data: AnamnesisFormData,
@@ -208,9 +192,59 @@ const normalizeLegacySevereEpisodes = (
 
   return {
     ...data,
+
     hypoglycemia: {
       ...hypoglycemia,
+
       severeEpisodesDetails: previousDetails.join("\n"),
+    },
+  };
+};
+
+/**
+ * Перенос мест инъекций из СД 1 типа в Самоконтроль.
+ *
+ * Старый путь:
+ * type1Diabetes.injectionSitesInfo.sites
+ *
+ * Новый общий путь:
+ * selfMonitoring.injectionSites
+ *
+ * Копируем данные только если нового поля
+ * ещё не было в сохранённой анкете.
+ *
+ * Старый объект type1Diabetes не изменяем,
+ * чтобы сохранить совместимость с прежними данными.
+ */
+const normalizeLegacyInjectionSites = (
+  data: AnamnesisFormData,
+): AnamnesisFormData => {
+  const legacySites = data.type1Diabetes?.injectionSitesInfo?.sites;
+
+  if (!legacySites) {
+    return data;
+  }
+
+  // Новое поле уже существует — ничего не перезаписываем.
+  if (data.selfMonitoring?.injectionSites !== undefined) {
+    return data;
+  }
+
+  return {
+    ...data,
+
+    selfMonitoring: {
+      ...createSelfMonitoringDefaults(),
+
+      ...data.selfMonitoring,
+
+      injectionSites: {
+        abdomen: legacySites.abdomen,
+        thighs: legacySites.thighs,
+        buttocks: legacySites.buttocks,
+        lumbar: legacySites.lumbar,
+        shoulders: legacySites.shoulders,
+      },
     },
   };
 };
@@ -223,12 +257,8 @@ const normalizeLegacySevereEpisodes = (
  * type1Diabetes = null
  * type2Diabetes = null
  *
- * Это правильно для новой формы, но недостаточно
- * для deep merge уже существующего анамнеза.
- *
- * Если в записи существует объект СД1/СД2,
- * подставляем полноценную структуру соответствующего
- * типа и уже с ней выполняем deep merge.
+ * Для существующих записей подставляем
+ * соответствующие структуры перед deep merge.
  */
 const getDefaultsForData = (data: AnamnesisFormData): AnamnesisFormData => {
   const defaults = getDefaultValues();
@@ -247,8 +277,8 @@ const getDefaultsForData = (data: AnamnesisFormData): AnamnesisFormData => {
 export const mergeAnamnesisWithDefaults = (
   data: AnamnesisFormData,
 ): AnamnesisFormData => {
-  const normalizedData = normalizeLegacySevereEpisodes(
-    normalizeLegacyHypoglycemia(data),
+  const normalizedData = normalizeLegacyInjectionSites(
+    normalizeLegacySevereEpisodes(normalizeLegacyHypoglycemia(data)),
   );
 
   const defaults = getDefaultsForData(normalizedData);

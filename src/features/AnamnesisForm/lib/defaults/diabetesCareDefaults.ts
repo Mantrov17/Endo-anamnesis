@@ -59,6 +59,20 @@ export const createHypoglycemiaDefaults = (): HypoglycemiaDefaults => ({
 });
 
 export const createSelfMonitoringDefaults = (): SelfMonitoringDefaults => ({
+  // Место инъекций
+
+  injectionSites: {
+    abdomen: false,
+
+    thighs: false,
+
+    buttocks: false,
+
+    lumbar: false,
+
+    shoulders: false,
+  },
+
   // Устройства для самоконтроля
 
   hasGlucometer: null,

@@ -12,10 +12,6 @@ import { YesNo } from "../YesNo";
 
 import styles from "../styles.module.scss";
 
-/**
- * Пустое числовое поле сохраняем как null,
- * а не как пустую строку или NaN.
- */
 const toNullableNumber = (value: unknown): number | null => {
   if (value === "" || value === null || value === undefined) {
     return null;
@@ -28,10 +24,6 @@ const toNullableNumber = (value: unknown): number | null => {
 
 export const SelfMonitoringTab: React.FC = () => {
   const { register, watch, setValue } = useFormContext<AnamnesisFormData>();
-
-  // ====================
-  // Устройства самоконтроля
-  // ====================
 
   const hasGlucometer = watch("selfMonitoring.hasGlucometer") === true;
 
@@ -85,7 +77,59 @@ export const SelfMonitoringTab: React.FC = () => {
       <h3>Самоконтроль</h3>
 
       {/* ====================
-          1. Устройства
+          1. Место инъекций
+          ==================== */}
+
+      <fieldset className={styles.fieldset}>
+        <legend>Место инъекций</legend>
+
+        <div
+          className={`${styles.selfMonitoringChoiceGrid} ${styles.selfMonitoringDeviceOptions}`}
+        >
+          <label>
+            <input
+              type="checkbox"
+              {...register("selfMonitoring.injectionSites.abdomen")}
+            />
+            <span>Живот</span>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              {...register("selfMonitoring.injectionSites.thighs")}
+            />
+            <span>Наружная поверхность бедер</span>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              {...register("selfMonitoring.injectionSites.buttocks")}
+            />
+            <span>Верхний наружный квадрант ягодиц</span>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              {...register("selfMonitoring.injectionSites.lumbar")}
+            />
+            <span>Поясничная область</span>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              {...register("selfMonitoring.injectionSites.shoulders")}
+            />
+            <span>Наружная поверхность плеча</span>
+          </label>
+        </div>
+      </fieldset>
+
+      {/* ====================
+          2. Устройства
           ==================== */}
 
       <fieldset className={styles.fieldset}>
@@ -129,7 +173,7 @@ export const SelfMonitoringTab: React.FC = () => {
       </fieldset>
 
       {/* ====================
-          2. Регулярность
+          3. Регулярность
           ==================== */}
 
       <div className={styles.radioGroup}>
@@ -155,7 +199,7 @@ export const SelfMonitoringTab: React.FC = () => {
       </div>
 
       {/* ====================
-          3. Частота
+          4. Частота
           ==================== */}
 
       <div className={styles.selfMonitoringNarrowField}>
@@ -167,7 +211,7 @@ export const SelfMonitoringTab: React.FC = () => {
       </div>
 
       {/* ====================
-          4. Дневник самоконтроля
+          5. Дневник
           ==================== */}
 
       <YesNo
@@ -177,7 +221,7 @@ export const SelfMonitoringTab: React.FC = () => {
       />
 
       {/* ====================
-          5. Средняя гликемия
+          6. Средняя гликемия
           ==================== */}
 
       <div className={styles.selfMonitoringRange}>
@@ -217,7 +261,7 @@ export const SelfMonitoringTab: React.FC = () => {
       </div>
 
       {/* ====================
-          6. Техника инъекций
+          7. Техника инъекций
           ==================== */}
 
       <div className={styles.radioGroup}>
@@ -243,7 +287,7 @@ export const SelfMonitoringTab: React.FC = () => {
       </div>
 
       {/* ====================
-          7. Смена места инъекции
+          8. Смена места инъекции
           ==================== */}
 
       <div className={styles.selfMonitoringNarrowField}>
@@ -255,7 +299,7 @@ export const SelfMonitoringTab: React.FC = () => {
       </div>
 
       {/* ====================
-          8. Длина игл
+          9. Длина игл
           ==================== */}
 
       <fieldset className={styles.fieldset}>
@@ -297,7 +341,7 @@ export const SelfMonitoringTab: React.FC = () => {
       </fieldset>
 
       {/* ====================
-          9. Частота смены игл
+          10. Частота смены игл
           ==================== */}
 
       <div className={styles.selfMonitoringNarrowField}>
@@ -309,7 +353,7 @@ export const SelfMonitoringTab: React.FC = () => {
       </div>
 
       {/* ====================
-          10. Хранение инсулина
+          11. Хранение инсулина
           ==================== */}
 
       <div className={styles.radioGroup}>
@@ -335,7 +379,7 @@ export const SelfMonitoringTab: React.FC = () => {
       </div>
 
       {/* ====================
-          11. Питание
+          12. Питание
           ==================== */}
 
       <div className={styles.radioGroup}>
@@ -361,7 +405,7 @@ export const SelfMonitoringTab: React.FC = () => {
       </div>
 
       {/* ====================
-          12. Диета
+          13. Диета
           ==================== */}
 
       <YesNo
@@ -370,10 +414,6 @@ export const SelfMonitoringTab: React.FC = () => {
         register={register}
         yesNoLabels={["Придерживается", "Нет"]}
       />
-
-      {/* ====================
-          Примечание по самоконтролю
-          ==================== */}
 
       <Field
         noteKey="selfMonitoring.general"
