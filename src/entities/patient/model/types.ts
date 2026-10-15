@@ -16,6 +16,16 @@ export interface PatientBase {
 
 export type PatientFormData = PatientBase;
 
+export interface PatientDepartureChecklist {
+  suppliesPrepared: boolean;
+
+  injectionCompleted: boolean;
+
+  recommendationsGiven: boolean;
+}
+
+export type PatientDepartureProcedureKey = keyof PatientDepartureChecklist;
+
 export interface Patient extends PatientBase {
   id: string;
 
@@ -35,4 +45,10 @@ export interface Patient extends PatientBase {
    * только по совпадению даты.
    */
   plans: PlanRecord[];
+
+  /*
+   * Чек-лист выполненных процедур
+   * перед уходом врача.
+   */
+  departureChecklist: PatientDepartureChecklist;
 }

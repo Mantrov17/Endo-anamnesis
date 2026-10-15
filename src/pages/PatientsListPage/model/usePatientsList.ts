@@ -7,7 +7,9 @@ import { deleteDiary } from "@/entities/diary";
 import {
   deletePatient,
   getAllPatients,
+  togglePatientDepartureProcedure,
   type Patient,
+  type PatientDepartureProcedureKey,
 } from "@/entities/patient";
 
 import { getStorageWriteErrorMessage } from "@/shared/lib/storage/jsonStorage";
@@ -155,6 +157,27 @@ export const usePatientsList = () => {
     }
   };
 
+  const handleToggleDepartureProcedure = (
+    patientId: string,
+    procedureKey: PatientDepartureProcedureKey,
+  ) => {
+    try {
+      const success = togglePatientDepartureProcedure(patientId, procedureKey);
+
+      if (!success) {
+        window.alert("Пациент не найден.");
+
+        return;
+      }
+
+      refreshPatients();
+    } catch (error) {
+      console.error("Ошибка обновления чек-листа пациента:", error);
+
+      window.alert(getStorageWriteErrorMessage(error));
+    }
+  };
+
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
 
@@ -280,6 +303,8 @@ export const usePatientsList = () => {
     handleAddDiary,
     handleEditDiary,
     handleDeleteDiary,
+
+    handleToggleDepartureProcedure,
 
     handleSearchChange,
     clearSearch,

@@ -45,6 +45,8 @@ export const PatientsListPage: React.FC = () => {
     handleEditDiary,
     handleDeleteDiary,
 
+    handleToggleDepartureProcedure,
+
     handleSearchChange,
     clearSearch,
 
@@ -118,6 +120,7 @@ export const PatientsListPage: React.FC = () => {
                 onAddDiary={handleAddDiary}
                 onEditDiary={handleEditDiary}
                 onDeleteDiary={handleDeleteDiary}
+                onToggleDepartureProcedure={handleToggleDepartureProcedure}
               />
             ))}
           </div>

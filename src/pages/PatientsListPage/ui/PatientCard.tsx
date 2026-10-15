@@ -1,10 +1,17 @@
 import React from "react";
 
-import type { Patient } from "@/entities/patient";
+import type { Patient, PatientDepartureProcedureKey } from "@/entities/patient";
 
 import { Button } from "@/shared/ui/Button";
 
 import { Heading } from "@/shared/ui/Heading";
+
+import boxIcon from "@/shared/assets/patientProcedures/box.png";
+import boxIconActive from "@/shared/assets/patientProcedures/box-active.png";
+import syringeIcon from "@/shared/assets/patientProcedures/syringe.png";
+import syringeIconActive from "@/shared/assets/patientProcedures/syringe-active.png";
+import memoIcon from "@/shared/assets/patientProcedures/memo.png";
+import memoIconActive from "@/shared/assets/patientProcedures/memo-active.png";
 
 import { getPatientAgeLabel } from "../lib/patientsList";
 
@@ -34,7 +41,38 @@ interface PatientCardProps {
   onEditDiary: (patientId: string, diaryId: string) => void;
 
   onDeleteDiary: (patientId: string, diaryId: string) => void;
+
+  onToggleDepartureProcedure: (
+    patientId: string,
+    procedureKey: PatientDepartureProcedureKey,
+  ) => void;
 }
+
+const procedureIcons: {
+  key: PatientDepartureProcedureKey;
+  label: string;
+  inactiveIcon: string;
+  activeIcon: string;
+}[] = [
+  {
+    key: "suppliesPrepared",
+    label: "Расходные материалы / набор подготовлены",
+    inactiveIcon: boxIcon,
+    activeIcon: boxIconActive,
+  },
+  {
+    key: "injectionCompleted",
+    label: "Инъекция выполнена",
+    inactiveIcon: syringeIcon,
+    activeIcon: syringeIconActive,
+  },
+  {
+    key: "recommendationsGiven",
+    label: "Рекомендации / памятка выданы",
+    inactiveIcon: memoIcon,
+    activeIcon: memoIconActive,
+  },
+];
 
 export const PatientCard: React.FC<PatientCardProps> = ({
   patient,
@@ -47,6 +85,7 @@ export const PatientCard: React.FC<PatientCardProps> = ({
   onAddDiary,
   onEditDiary,
   onDeleteDiary,
+  onToggleDepartureProcedure,
 }) => {
   const age = getPatientAgeLabel(patient.birthDate);
 
@@ -57,6 +96,11 @@ export const PatientCard: React.FC<PatientCardProps> = ({
   const genderLabel = patient.gender === "male" ? "М" : "Ж";
 
   const createdDateTime = new Date(patient.createdAt).toLocaleString("ru-RU");
+
+  const departureChecklist = patient.departureChecklist;
+
+  const isDepartureChecklistCompleted =
+    Object.values(departureChecklist).every(Boolean);
 
   return (
     <article className={styles.card}>
@@ -100,6 +144,62 @@ export const PatientCard: React.FC<PatientCardProps> = ({
                 <span className={styles.anamnesisCount}>
                   Дневников: {patient.diaryEntries.length}
                 </span>
+              </div>
+
+              <div
+                className={styles.departureChecklistRow}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <span
+                  className={[
+                    styles.departureStatusDot,
+                    isDepartureChecklistCompleted
+                      ? styles.departureStatusDone
+                      : styles.departureStatusPending,
+                  ].join(" ")}
+                  title={
+                    isDepartureChecklistCompleted
+                      ? "Все процедуры выполнены"
+                      : "Не все процедуры выполнены"
+                  }
+                  aria-label={
+                    isDepartureChecklistCompleted
+                      ? "Все процедуры выполнены"
+                      : "Не все процедуры выполнены"
+                  }
+                />
+
+                <div className={styles.departureChecklistButtons}>
+                  {procedureIcons.map((item) => {
+                    const isActive = departureChecklist[item.key];
+
+                    return (
+                      <button
+                        key={item.key}
+                        type="button"
+                        className={[
+                          styles.departureChecklistButton,
+                          isActive ? styles.departureChecklistButtonActive : "",
+                        ]
+                          .filter(Boolean)
+                          .join(" ")}
+                        onClick={() =>
+                          onToggleDepartureProcedure(patient.id, item.key)
+                        }
+                        title={item.label}
+                        aria-label={item.label}
+                        aria-pressed={isActive}
+                      >
+                        <img
+                          src={isActive ? item.activeIcon : item.inactiveIcon}
+                          alt=""
+                          className={styles.departureChecklistIcon}
+                          aria-hidden="true"
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               <span className={styles.createdAtMeta}>

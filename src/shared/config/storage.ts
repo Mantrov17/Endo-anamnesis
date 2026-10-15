@@ -24,5 +24,9 @@ export const PATIENTS_STORAGE_VERSION_KEY = "patientsDataSchemaVersion";
  *   активным полем формы дневника и
  *   сохраняется только для совместимости
  *   со старыми данными.
+ *
+ * Версия 6:
+ * - у пациента появился чек-лист выполненных
+ *   процедур перед уходом врача.
  */
-export const PATIENTS_STORAGE_VERSION = 5;
+export const PATIENTS_STORAGE_VERSION = 6;

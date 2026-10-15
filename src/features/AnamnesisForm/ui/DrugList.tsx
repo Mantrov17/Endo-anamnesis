@@ -13,6 +13,11 @@ import type { AnamnesisFormData } from "@/entities/anamnesis";
 
 import { Input } from "@/shared/ui/Input";
 
+import morningIcon from "@/shared/assets/daytimeIcons/morning.png";
+import dayIcon from "@/shared/assets/daytimeIcons/day.png";
+import eveningIcon from "@/shared/assets/daytimeIcons/evening.png";
+import nightIcon from "@/shared/assets/daytimeIcons/night.png";
+
 import styles from "./styles.module.scss";
 
 export type DrugArrayPath =
@@ -30,25 +35,19 @@ export type DrugArrayPath =
 
 interface DrugListProps {
   control: Control<AnamnesisFormData>;
-
   register: UseFormRegister<AnamnesisFormData>;
-
   name: DrugArrayPath;
-
   firstField: "drugName" | "name";
-
   nameLabel?: string;
-
   doseSuffix?: string;
-
   showFrequency?: boolean;
 }
 
 const TIME_OPTIONS = [
-  { key: "morning", icon: "🌅", label: "Утро" },
-  { key: "day", icon: "☀️", label: "День" },
-  { key: "evening", icon: "🌇", label: "Вечер" },
-  { key: "night", icon: "🌙", label: "Ночь" },
+  { key: "morning", iconSrc: morningIcon, label: "Утро" },
+  { key: "day", iconSrc: dayIcon, label: "День" },
+  { key: "evening", iconSrc: eveningIcon, label: "Вечер" },
+  { key: "night", iconSrc: nightIcon, label: "Ночь" },
 ] as const;
 
 const createEmptyDrug = (firstField: "drugName" | "name") => ({
@@ -76,7 +75,6 @@ export const DrugList: React.FC<DrugListProps> = ({
 
   const { fields, append, remove } = useFieldArray({
     control,
-
     name: name as FieldArrayPath<AnamnesisFormData>,
   });
 
@@ -234,7 +232,12 @@ export const DrugList: React.FC<DrugListProps> = ({
                       }`}
                       aria-pressed={selected}
                     >
-                      <span aria-hidden="true">{option.icon}</span>
+                      <img
+                        src={option.iconSrc}
+                        alt=""
+                        className={styles.drugTimeIcon}
+                        aria-hidden="true"
+                      />
                     </button>
                   );
                 })}

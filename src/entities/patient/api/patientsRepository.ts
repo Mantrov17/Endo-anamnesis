@@ -10,7 +10,7 @@ import {
   writeJsonStorage,
 } from "@/shared/lib/storage/jsonStorage";
 
-import type { Patient } from "../model/types";
+import type { Patient, PatientDepartureChecklist } from "../model/types";
 
 type PrimaryAnamnesisRecord = NonNullable<Patient["primaryAnamnesis"]>;
 
@@ -24,6 +24,8 @@ type StoredGlycemicProfile = NonNullable<Patient["glycemicProfile"]>;
 
 type StoredPlanRecord = Patient["plans"][number];
 
+type StoredDepartureChecklist = Partial<PatientDepartureChecklist>;
+
 type StoredPatient = Omit<
   Patient,
   | "createdAt"
@@ -31,6 +33,7 @@ type StoredPatient = Omit<
   | "diaryEntries"
   | "glycemicProfile"
   | "plans"
+  | "departureChecklist"
 > & {
   createdAt?: string;
 
@@ -43,10 +46,69 @@ type StoredPatient = Omit<
   glycemicProfile?: StoredGlycemicProfile | null;
 
   plans?: StoredPlanRecord[];
+
+  departureChecklist?: StoredDepartureChecklist;
 };
+
+const createDefaultDepartureChecklist = (): PatientDepartureChecklist => ({
+  suppliesPrepared: false,
+  injectionCompleted: false,
+  recommendationsGiven: false,
+});
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+};
+
+const isStoredDepartureChecklist = (
+  value: unknown,
+): value is StoredDepartureChecklist => {
+  if (value === undefined) {
+    return true;
+  }
+
+  if (!isObject(value)) {
+    return false;
+  }
+
+  const allowedKeys = [
+    "suppliesPrepared",
+    "injectionCompleted",
+    "recommendationsGiven",
+  ] as const;
+
+  return allowedKeys.every((key) => {
+    const field = value[key];
+
+    return field === undefined || typeof field === "boolean";
+  });
+};
+
+const normalizeDepartureChecklist = (
+  value: unknown,
+): PatientDepartureChecklist => {
+  const defaults = createDefaultDepartureChecklist();
+
+  if (!isObject(value)) {
+    return defaults;
+  }
+
+  return {
+    suppliesPrepared:
+      typeof value.suppliesPrepared === "boolean"
+        ? value.suppliesPrepared
+        : defaults.suppliesPrepared,
+
+    injectionCompleted:
+      typeof value.injectionCompleted === "boolean"
+        ? value.injectionCompleted
+        : defaults.injectionCompleted,
+
+    recommendationsGiven:
+      typeof value.recommendationsGiven === "boolean"
+        ? value.recommendationsGiven
+        : defaults.recommendationsGiven,
+  };
 };
 
 const isStoredPatient = (value: unknown): value is StoredPatient => {
@@ -99,6 +161,10 @@ const isStoredPatient = (value: unknown): value is StoredPatient => {
   }
 
   if (value.plans !== undefined && !Array.isArray(value.plans)) {
+    return false;
+  }
+
+  if (!isStoredDepartureChecklist(value.departureChecklist)) {
     return false;
   }
 
@@ -177,6 +243,8 @@ const migrateStoredPatient = (patient: StoredPatient): Patient => {
     diaryEntries: (patient.diaryEntries ?? []).map(migrateDiaryRecord),
 
     plans: patient.plans ?? [],
+
+    departureChecklist: normalizeDepartureChecklist(patient.departureChecklist),
   };
 };
 
@@ -196,6 +264,8 @@ const needsMigration = (
       !("diaryEntries" in patient) ||
       !("plans" in patient) ||
       !patient.createdAt ||
+      !("departureChecklist" in patient) ||
+      !isStoredDepartureChecklist(patient.departureChecklist) ||
       (patient.diaryEntries ?? []).some((diary) => !("pulse" in diary)),
   );
 };
