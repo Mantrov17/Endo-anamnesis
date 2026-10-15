@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { type SubmitHandler, useForm } from "react-hook-form";
 
@@ -27,6 +27,12 @@ import {
   parseDiagnosisYear,
 } from "../lib/calculations";
 
+import {
+  clearAnamnesisDraft,
+  getInitialAnamnesisData,
+  saveAnamnesisDraft,
+} from "../lib/anamnesisDraft";
+
 import { mergeAnamnesisWithDefaults } from "../lib/normalizeAnamnesis";
 
 interface UseAnamnesisFormProps {
@@ -49,13 +55,72 @@ export const useAnamnesisForm = ({
     string | undefined
   >(anamnesisId);
 
-  const formMethods = useForm<AnamnesisFormData>({
-    defaultValues: mergeAnamnesisWithDefaults(initialData ?? {}),
+  /*
+   * Сначала восстанавливаем сохранённый черновик.
+   *
+   * Это происходит ДО создания react-hook-form,
+   * поэтому поля с самого начала получают
+   * восстановленные значения.
+   */
+  const [startingValues] = useState(() =>
+    getInitialAnamnesisData(patientId, initialData),
+  );
 
+  const formMethods = useForm<AnamnesisFormData>({
+    defaultValues: startingValues,
     shouldUnregister: false,
   });
 
-  const { handleSubmit, watch, setValue } = formMethods;
+  const { handleSubmit, watch, setValue, getValues, reset } = formMethods;
+
+  // ====================
+  // Автосохранение
+  // ====================
+
+  const draftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const draftPendingRef = useRef(false);
+
+  const draftErrorShownRef = useRef(false);
+
+  const cancelDraftTimer = useCallback(() => {
+    if (draftTimerRef.current !== null) {
+      clearTimeout(draftTimerRef.current);
+      draftTimerRef.current = null;
+    }
+  }, []);
+
+  /*
+   * Немедленное сохранение полного состояния формы.
+   *
+   * Вызывается по истечении задержки, при сворачивании
+   * страницы и при её закрытии.
+   */
+  const persistDraft = useCallback(() => {
+    if (!draftPendingRef.current) {
+      return;
+    }
+
+    cancelDraftTimer();
+
+    try {
+      saveAnamnesisDraft(patientId, getValues());
+
+      draftPendingRef.current = false;
+      draftErrorShownRef.current = false;
+    } catch (error) {
+      console.error("Ошибка автосохранения черновика:", error);
+
+      if (!draftErrorShownRef.current) {
+        draftErrorShownRef.current = true;
+
+        window.alert(
+          "Не удалось автоматически сохранить черновик. " +
+            getStorageWriteErrorMessage(error),
+        );
+      }
+    }
+  }, [patientId, getValues, cancelDraftTimer]);
 
   useEffect(() => {
     if (anamnesisId) {
@@ -75,14 +140,14 @@ export const useAnamnesisForm = ({
     }
 
     /*
-     * Дата рождения теперь редактируется
-     * только в карточке пациента.
-     * В форме анамнеза держим её скрыто
-     * только для возрастных авторасчётов.
+     * Пустая дата рождения в карточке пациента
+     * не должна очищать ранее сохранённую дату.
      */
-    setValue("birthDate", patient.birthDate, {
-      shouldDirty: false,
-    });
+    if (patient.birthDate) {
+      setValue("birthDate", patient.birthDate, {
+        shouldDirty: false,
+      });
+    }
 
     setValue("fullName", patient.fullName, {
       shouldDirty: false,
@@ -129,15 +194,9 @@ export const useAnamnesisForm = ({
       return;
     }
 
-    setValue(
-      "therapy.targetHba1c",
-
-      calculateTargetHba1c(currentAge),
-
-      {
-        shouldDirty: false,
-      },
-    );
+    setValue("therapy.targetHba1c", calculateTargetHba1c(currentAge), {
+      shouldDirty: false,
+    });
   }, [currentAge, setValue]);
 
   // ====================
@@ -165,7 +224,6 @@ export const useAnamnesisForm = ({
 
     setValue(
       "type1Diabetes.diseaseDuration",
-
       calculateDiseaseDuration(diagnosisYear),
     );
   }, [t1Year, birthDate, setValue]);
@@ -215,7 +273,6 @@ export const useAnamnesisForm = ({
 
     setValue(
       "type2Diabetes.diseaseDuration",
-
       calculateDiseaseDuration(diagnosisYear),
     );
   }, [t2Year, birthDate, setValue]);
@@ -253,7 +310,6 @@ export const useAnamnesisForm = ({
   useEffect(() => {
     setValue(
       "actualTherapy.calculatedDailyInsulinDose",
-
       calculateDailyInsulinDose(
         actualBase,
         actualBolus,
@@ -272,7 +328,6 @@ export const useAnamnesisForm = ({
   useEffect(() => {
     setValue(
       "actualTherapy.insulinDoseCoefficient",
-
       calculateInsulinDoseCoefficient(diseaseDurationForCoefficient),
     );
   }, [diseaseDurationForCoefficient, setValue]);
@@ -288,7 +343,6 @@ export const useAnamnesisForm = ({
   useEffect(() => {
     setValue(
       "measurements.pulsePressure",
-
       calculatePulsePressure(leftSystolic, leftDiastolic),
     );
   }, [leftSystolic, leftDiastolic, setValue]);
@@ -306,17 +360,9 @@ export const useAnamnesisForm = ({
   const armRight = watch("measurements.bpArms.rightSystolic");
 
   useEffect(() => {
-    setValue(
-      "measurements.abiIndex.left",
+    setValue("measurements.abiIndex.left", calculateAbi(legLeft, armLeft));
 
-      calculateAbi(legLeft, armLeft),
-    );
-
-    setValue(
-      "measurements.abiIndex.right",
-
-      calculateAbi(legRight, armRight),
-    );
+    setValue("measurements.abiIndex.right", calculateAbi(legRight, armRight));
   }, [legLeft, legRight, armLeft, armRight, setValue]);
 
   // ====================
@@ -326,9 +372,7 @@ export const useAnamnesisForm = ({
   useEffect(() => {
     setValue(
       "h2fpef.elderly60",
-
       currentAge !== null ? currentAge > 60 : false,
-
       {
         shouldDirty: false,
       },
@@ -346,15 +390,66 @@ export const useAnamnesisForm = ({
       return;
     }
 
-    setValue(
-      "h2fpef.totalScore",
-
-      calculateH2FPEFScore(h2fpef),
-    );
+    setValue("h2fpef.totalScore", calculateH2FPEFScore(h2fpef));
   }, [h2fpef, setValue]);
 
   // ====================
-  // Сохранение
+  // Подписка на все поля
+  // ====================
+
+  useEffect(() => {
+    /*
+     * Если пользователь изменил поле, ожидаем
+     * 700 мс с момента последнего изменения.
+     *
+     * watch отслеживает изменения всей формы,
+     * включая скрытые вкладки и поля с setValue().
+     */
+    const subscription = watch(() => {
+      draftPendingRef.current = true;
+
+      cancelDraftTimer();
+
+      draftTimerRef.current = setTimeout(persistDraft, 700);
+    });
+
+    /*
+     * Событие visibilitychange срабатывает,
+     * когда пользователь переходит в другое
+     * приложение или вкладка становится скрытой.
+     */
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        persistDraft();
+      }
+    };
+
+    /*
+     * Дополнительная страховка на случай
+     * закрытия/выгрузки страницы.
+     */
+    const handlePageHide = () => {
+      persistDraft();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    window.addEventListener("pagehide", handlePageHide);
+
+    return () => {
+      subscription.unsubscribe();
+
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+
+      window.removeEventListener("pagehide", handlePageHide);
+
+      persistDraft();
+      cancelDraftTimer();
+    };
+  }, [watch, persistDraft, cancelDraftTimer]);
+
+  // ====================
+  // Основное сохранение
   // ====================
 
   const onSubmit: SubmitHandler<AnamnesisFormData> = (data) => {
@@ -367,13 +462,16 @@ export const useAnamnesisForm = ({
         return;
       }
 
+      /*
+       * Дата рождения из анамнеза имеет
+       * приоритет над датой карточки пациента.
+       */
+      const effectiveBirthDate = data.birthDate || patient.birthDate;
+
       const payload = mergeAnamnesisWithDefaults({
         ...data,
-
         fullName: patient.fullName,
-
-        birthDate: patient.birthDate,
-
+        birthDate: effectiveBirthDate,
         gender: patient.gender,
       });
 
@@ -386,11 +484,33 @@ export const useAnamnesisForm = ({
           return;
         }
 
+        /*
+         * Официальное сохранение прошло успешно.
+         * Обновляем базовое состояние react-hook-form
+         * и удаляем временный черновик.
+         */
+        reset(payload);
+
+        cancelDraftTimer();
+
+        draftPendingRef.current = false;
+
+        try {
+          clearAnamnesisDraft(patientId);
+        } catch (error) {
+          console.warn("Не удалось удалить сохранённый черновик:", error);
+        }
+
         onSuccess?.(currentAnamnesisId);
 
         return;
       }
 
+      /*
+       * Пациент ещё не имеет первичного анамнеза.
+       * Создаём его только при основном сохранении,
+       * а не при сохранении черновика.
+       */
       const newRecord = addAnamnesis(patientId, payload);
 
       if (!newRecord) {
@@ -401,19 +521,48 @@ export const useAnamnesisForm = ({
 
       setCurrentAnamnesisId(newRecord.id);
 
+      reset(payload);
+
+      cancelDraftTimer();
+
+      draftPendingRef.current = false;
+
+      try {
+        clearAnamnesisDraft(patientId);
+      } catch (error) {
+        console.warn("Не удалось удалить сохранённый черновик:", error);
+      }
+
       onSuccess?.(newRecord.id);
     } catch (error) {
       console.error("Ошибка сохранения анамнеза:", error);
 
-      window.alert(getStorageWriteErrorMessage(error));
+      /*
+       * Если основное сохранение завершилось
+       * ошибкой, пробуем сохранить хотя бы
+       * актуальный черновик.
+       */
+      let draftFailureMessage = "";
+
+      try {
+        saveAnamnesisDraft(patientId, getValues());
+
+        cancelDraftTimer();
+
+        draftPendingRef.current = false;
+      } catch (draftError) {
+        console.error("Не удалось сохранить даже черновик:", draftError);
+
+        draftFailureMessage = " Черновик также не удалось сохранить.";
+      }
+
+      window.alert(getStorageWriteErrorMessage(error) + draftFailureMessage);
     }
   };
 
   return {
     formMethods,
-
     submitForm: handleSubmit(onSubmit),
-
     currentAnamnesisId,
   };
 };

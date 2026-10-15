@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
-
-import type { AnamnesisFormData } from "@/entities/anamnesis";
 
 import { getPatientById } from "@/entities/patient";
 
@@ -28,79 +26,70 @@ export const AnamnesisPage: React.FC = () => {
 
   const [isSaved, setIsSaved] = useState(false);
 
-  const [initialData, setInitialData] = useState<AnamnesisFormData | undefined>(
-    undefined,
+  const successTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /*
+   * localStorage — синхронное хранилище.
+   *
+   * Поэтому читаем данные пациента сразу,
+   * а не ждём useEffect с loading=true.
+   */
+  const patient = useMemo(
+    () => (patientId ? getPatientById(patientId) : undefined),
+    [patientId],
   );
 
-  const [primaryAnamnesisId, setPrimaryAnamnesisId] = useState<
-    string | undefined
-  >(undefined);
-
-  const [error, setError] = useState<string | null>(null);
-
-  const [loading, setLoading] = useState(true);
+  /*
+   * Нормализуем официально сохранённый анамнез.
+   *
+   * Более свежий черновик при необходимости
+   * восстановит useAnamnesisForm.
+   */
+  const initialData = useMemo(
+    () =>
+      patient?.primaryAnamnesis
+        ? normalizeAnamnesisFormData(patient.primaryAnamnesis)
+        : undefined,
+    [patient],
+  );
 
   useEffect(() => {
     if (!patientId) {
       navigate("/", {
         replace: true,
       });
-
-      return;
     }
-
-    const patient = getPatientById(patientId);
-
-    if (!patient) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setError("Пациент не найден");
-
-      setLoading(false);
-
-      return;
-    }
-
-    if (patient.primaryAnamnesis) {
-      const formData = normalizeAnamnesisFormData(patient.primaryAnamnesis);
-
-      setInitialData(formData);
-
-      setPrimaryAnamnesisId(patient.primaryAnamnesis.id);
-    } else {
-      setInitialData(undefined);
-
-      setPrimaryAnamnesisId(undefined);
-    }
-
-    setLoading(false);
   }, [patientId, navigate]);
+
+  useEffect(() => {
+    return () => {
+      if (successTimeoutRef.current !== null) {
+        clearTimeout(successTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleFormSuccess = () => {
     setIsSaved(true);
 
-    window.setTimeout(() => {
+    if (successTimeoutRef.current !== null) {
+      clearTimeout(successTimeoutRef.current);
+    }
+
+    successTimeoutRef.current = setTimeout(() => {
       setIsSaved(false);
+      successTimeoutRef.current = null;
     }, 3000);
   };
 
-  if (loading) {
-    return <div className={styles.container}>Загрузка...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.error}>{error}</div>
-
-        <Button onClick={() => navigate("/")}>Вернуться к списку</Button>
-      </div>
-    );
-  }
-
   if (!patientId) {
+    return null;
+  }
+
+  if (!patient) {
     return (
       <div className={styles.container}>
-        <div className={styles.error}>ID пациента не указан</div>
+        <div className={styles.error}>Пациент не найден</div>
 
         <Button onClick={() => navigate("/")}>Вернуться к списку</Button>
       </div>
@@ -128,9 +117,10 @@ export const AnamnesisPage: React.FC = () => {
       </div>
 
       <AnamnesisForm
+        key={patientId}
         patientId={patientId}
         initialData={initialData}
-        anamnesisId={primaryAnamnesisId}
+        anamnesisId={patient.primaryAnamnesis?.id}
         onSuccess={handleFormSuccess}
       />
 

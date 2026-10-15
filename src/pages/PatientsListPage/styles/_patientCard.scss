@@ -262,16 +262,29 @@
    ========================= */
 
 /*
- * Красная/зелёная точка и три иконки
- * располагаются строго горизонтально.
+ * ИСПРАВЛЕНО:
+ *
+ * Раньше width: 100% растягивал контейнер
+ * чек-листа на всю ширину карточки.
+ *
+ * При этом в PatientCard.tsx используется
+ * event.stopPropagation(), из-за чего вся
+ * пустая область контейнера не позволяла
+ * раскрывать карточку пациента.
+ *
+ * Теперь контейнер занимает только место
+ * под точку и три иконки.
  */
 .card .departureChecklistRow {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  align-self: flex-start;
 
-  width: 100%;
+  width: max-content;
+  max-width: 100%;
   min-width: 0;
 
+  flex: 0 0 auto;
   flex-wrap: nowrap;
 
   gap: 7px;
@@ -390,7 +403,7 @@
    ========================= */
 
 /*
- * Теперь кнопка находится поверх правой части
+ * Кнопка находится поверх правой части
  * первой строки, но не влияет на ширину
  * остальных элементов.
  */
@@ -468,7 +481,20 @@
     font-size: 9.5px;
   }
 
+  /*
+   * На телефоне сохраняем компактную ширину
+   * контейнера, а не растягиваем его на 100%.
+   */
   .card .departureChecklistRow {
+    display: inline-flex;
+    align-self: flex-start;
+
+    width: max-content;
+    max-width: 100%;
+
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+
     gap: 6px;
     margin-top: 1px;
   }
