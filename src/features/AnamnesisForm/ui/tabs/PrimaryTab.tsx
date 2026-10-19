@@ -82,7 +82,7 @@ export const PrimaryTab: React.FC = () => {
           {isType1 && type1Data && (
             <>
               <YesNo
-                label="Вы обратились к эндокринологу после обнаружения повышенного результата?"
+                label="Первичное обращение к эндокринологу"
                 name="type1Diabetes.investigatedAfterDetection"
                 register={register}
               />
@@ -94,7 +94,7 @@ export const PrimaryTab: React.FC = () => {
           {isType2 && type2Data && (
             <>
               <YesNo
-                label="Вы обратились к эндокринологу после обнаружения повышенного результата?"
+                label="Первичное обращение к эндокринологу"
                 name="type2Diabetes.investigatedAfterDetection"
                 register={register}
               />

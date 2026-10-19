@@ -20,6 +20,8 @@ import { YesNo } from "../../YesNo";
 
 import styles from "../../styles.module.scss";
 
+import { FamilyHistoryTree } from "./FamilyHistoryTree";
+
 import { GestationalDiabetesSection } from "./GestationalDiabetesSection";
 
 export const Type1DiabetesSection: React.FC = () => {
@@ -55,10 +57,6 @@ export const Type1DiabetesSection: React.FC = () => {
     <div className={styles.section}>
       <h3>Дебют СД 1 типа</h3>
 
-      {/* =====================================
-          Дата постановки диагноза
-          ===================================== */}
-
       <div className={styles.row}>
         <Input
           label="Год постановки диагноза"
@@ -83,10 +81,6 @@ export const Type1DiabetesSection: React.FC = () => {
           {...register("type1Diabetes.diseaseDuration")}
         />
       </div>
-
-      {/* =====================================
-          Обстоятельства выявления
-          ===================================== */}
 
       <Field noteKey="type1Diabetes.howDiagnosed">
         <div className={styles.radioGroup}>
@@ -162,9 +156,7 @@ export const Type1DiabetesSection: React.FC = () => {
         rows={3}
       />
 
-      {/* =====================================
-          Классические симптомы при дебюте
-          ===================================== */}
+      {/* Классические симптомы при дебюте */}
 
       <Field noteKey="type1Diabetes.classicSymptoms">
         <fieldset
@@ -275,9 +267,7 @@ export const Type1DiabetesSection: React.FC = () => {
         register={register}
       />
 
-      {/* =====================================
-          Островковые аутоантитела
-          ===================================== */}
+      {/* Островковые аутоантитела */}
 
       <fieldset className={styles.fieldset}>
         <legend>Островковые аутоантитела</legend>
@@ -380,9 +370,7 @@ export const Type1DiabetesSection: React.FC = () => {
         )}
       </fieldset>
 
-      {/* =====================================
-          C-пептид
-          ===================================== */}
+      {/* C-пептид */}
 
       <Field noteKey="type1Diabetes.cPeptide">
         <fieldset className={styles.fieldset}>
@@ -433,9 +421,7 @@ export const Type1DiabetesSection: React.FC = () => {
         </fieldset>
       </Field>
 
-      {/* =====================================
-          Гликированный гемоглобин
-          ===================================== */}
+      {/* Гликированный гемоглобин */}
 
       <Field noteKey="type1Diabetes.hba1c">
         <fieldset className={styles.fieldset}>
@@ -487,15 +473,11 @@ export const Type1DiabetesSection: React.FC = () => {
         </fieldset>
       </Field>
 
-      {/* =====================================
-          Гестационный сахарный диабет
-          ===================================== */}
+      {/* Гестационный сахарный диабет */}
 
       <GestationalDiabetesSection diabetesPath="type1Diabetes" />
 
-      {/* =====================================
-          Наследственность
-          ===================================== */}
+      {/* Наследственность по сахарному диабету */}
 
       <YesNo
         label="Наследственность по сахарному диабету"
@@ -504,12 +486,16 @@ export const Type1DiabetesSection: React.FC = () => {
       />
 
       {familyHistoryDiabetes === true && (
-        <Textarea
-          label="Уточните наследственность"
-          placeholder="Например: мать — СД 2 типа, отец — СД 1 типа"
-          {...register("type1Diabetes.familyHistoryDiabetesDetails")}
-          rows={3}
-        />
+        <>
+          <FamilyHistoryTree />
+
+          <Textarea
+            label="Уточните наследственность"
+            placeholder="Дополнительная информация о родственниках"
+            {...register("type1Diabetes.familyHistoryDiabetesDetails")}
+            rows={3}
+          />
+        </>
       )}
     </div>
   );

@@ -1,0 +1,184 @@
+
+.container {
+  min-width: 0;
+
+  margin: 12px 0;
+  padding: 10px;
+
+  background: #f7fbfa;
+  border: 1px solid #cfe3dc;
+  border-radius: 10px;
+}
+
+.heading {
+  margin: 0 0 6px;
+
+  color: var(--text-primary, #203235);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.instruction {
+  margin: 0 0 10px;
+
+  color: var(--text-secondary, #52656d);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.inlineLegend {
+  display: block;
+  margin-top: 2px;
+}
+
+.diagramWrap {
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+
+  background: #fff;
+  border: 1px solid #d9e6e1;
+  border-radius: 8px;
+
+  padding: 6px;
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+
+  user-select: none;
+}
+
+.lines {
+  pointer-events: none;
+}
+
+.relative {
+  cursor: pointer;
+  outline: none;
+
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover .shape {
+    stroke-width: 3.6px;
+  }
+
+  &:focus-visible .shape {
+    stroke: #0b7db4;
+    stroke-width: 4.2px;
+  }
+}
+
+.shape {
+  transition:
+          fill 140ms ease,
+          stroke 140ms ease,
+          stroke-width 140ms ease;
+}
+
+/* Единые полные подписи родственников */
+.relativeLabel {
+  fill: #24383c;
+  font-size: 18px;
+  font-weight: 800;
+
+  pointer-events: none;
+}
+
+/* Надписи СД1 / СД2 внутри фигур */
+.statusText {
+  fill: #163f37;
+  font-size: 17px;
+  font-weight: 900;
+
+  pointer-events: none;
+}
+
+/* Легенда */
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  gap: 8px 14px;
+  margin-top: 10px;
+
+  color: #52656d;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+
+  > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  i {
+    display: inline-block;
+
+    width: 13px;
+    height: 13px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #93b2a8;
+    border-radius: 3px;
+  }
+}
+
+.legendNone {
+  background: #fff;
+}
+
+.legendType1 {
+  background: #dff3ea;
+}
+
+.legendType2 {
+  background: #fff0dc;
+}
+
+/* Мобильная адаптация */
+
+@media (max-width: 640px) {
+  .container {
+    padding: 8px;
+  }
+
+  .heading {
+    font-size: 15px;
+  }
+
+  .instruction {
+    font-size: 12px;
+  }
+
+  .diagramWrap {
+    padding: 4px;
+  }
+
+  .relativeLabel {
+    font-size: 16px;
+  }
+
+  .statusText {
+    font-size: 16px;
+  }
+
+  .legend {
+    gap: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shape {
+    transition: none;
+  }
+}

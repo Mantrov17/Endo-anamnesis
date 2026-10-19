@@ -20,6 +20,8 @@ import { YesNo } from "../../YesNo";
 
 import styles from "../../styles.module.scss";
 
+import { FamilyHistoryTree } from "./FamilyHistoryTree";
+
 import { GestationalDiabetesSection } from "./GestationalDiabetesSection";
 
 export const Type2DiabetesSection: React.FC = () => {
@@ -126,14 +128,11 @@ export const Type2DiabetesSection: React.FC = () => {
         rows={3}
       />
 
-      {/* =========================
-          Симптомы при дебюте СД 2 типа
-          ========================= */}
+      {/* Симптомы при дебюте СД 2 типа */}
 
       <fieldset className={styles.fieldset}>
         <legend>Симптомы при дебюте</legend>
 
-        {/* 1. Слабость */}
         <label>
           <input
             type="checkbox"
@@ -142,7 +141,6 @@ export const Type2DiabetesSection: React.FC = () => {
           Слабость
         </label>
 
-        {/* 2. Нечёткость зрения */}
         <label>
           <input
             type="checkbox"
@@ -151,7 +149,6 @@ export const Type2DiabetesSection: React.FC = () => {
           Нечёткость зрения
         </label>
 
-        {/* 3. Кожный зуд */}
         <label>
           <input
             type="checkbox"
@@ -160,7 +157,6 @@ export const Type2DiabetesSection: React.FC = () => {
           Кожный зуд
         </label>
 
-        {/* 4. Полидипсия */}
         <label>
           <input
             type="checkbox"
@@ -169,7 +165,6 @@ export const Type2DiabetesSection: React.FC = () => {
           Полидипсия
         </label>
 
-        {/* 5. Полиурия */}
         <label>
           <input
             type="checkbox"
@@ -178,7 +173,6 @@ export const Type2DiabetesSection: React.FC = () => {
           Полиурия
         </label>
 
-        {/* 6. Мочевая инфекция */}
         <label>
           <input
             type="checkbox"
@@ -187,7 +181,6 @@ export const Type2DiabetesSection: React.FC = () => {
           Мочевая инфекция
         </label>
 
-        {/* 7. Онемение/парестезии пальцев конечностей */}
         <label>
           <input
             type="checkbox"
@@ -196,7 +189,6 @@ export const Type2DiabetesSection: React.FC = () => {
           Онемение/парестезии пальцев конечностей
         </label>
 
-        {/* 8. Чувство голода */}
         <label>
           <input
             type="checkbox"
@@ -205,10 +197,6 @@ export const Type2DiabetesSection: React.FC = () => {
           Чувство голода
         </label>
 
-        {/* 9. Изменение массы тела.
-            Сохраняем старый ключ weightLoss
-            для совместимости со старыми анкетами.
-        */}
         <label>
           <input
             type="checkbox"
@@ -218,9 +206,6 @@ export const Type2DiabetesSection: React.FC = () => {
         </label>
       </fieldset>
 
-      {/* Поле теперь доступно всегда.
-          Старые данные otherDetails сохраняются.
-      */}
       <Textarea
         label="Подробнее о клинических проявлениях"
         placeholder="Уточните симптомы и другие клинические проявления"
@@ -236,7 +221,7 @@ export const Type2DiabetesSection: React.FC = () => {
         />
       </Field>
 
-      {/* Гликированный гемоглобин — новый переключатель Вкл/Выкл. */}
+      {/* Гликированный гемоглобин */}
 
       <fieldset className={styles.fieldset}>
         <legend>Гликированный гемоглобин</legend>
@@ -252,6 +237,8 @@ export const Type2DiabetesSection: React.FC = () => {
               checked={boolFromString(field.value) === true}
               onChange={(checked) => field.onChange(checked)}
               onBlur={field.onBlur}
+              onLabel="Да"
+              offLabel="Нет"
             />
           )}
         />
@@ -287,6 +274,8 @@ export const Type2DiabetesSection: React.FC = () => {
 
       <GestationalDiabetesSection diabetesPath="type2Diabetes" />
 
+      {/* Наследственность по сахарному диабету */}
+
       <YesNo
         label="Наследственность по сахарному диабету"
         name="type2Diabetes.familyHistoryDiabetes"
@@ -294,12 +283,16 @@ export const Type2DiabetesSection: React.FC = () => {
       />
 
       {familyHistoryDiabetes === true && (
-        <Textarea
-          label="Уточните наследственность"
-          placeholder="Например: мать — СД 2 типа, бабушка — сахарный диабет"
-          {...register("type2Diabetes.familyHistoryDiabetesDetails")}
-          rows={3}
-        />
+        <>
+          <FamilyHistoryTree />
+
+          <Textarea
+            label="Уточните наследственность"
+            placeholder="Дополнительная информация о родственниках"
+            {...register("type2Diabetes.familyHistoryDiabetesDetails")}
+            rows={3}
+          />
+        </>
       )}
     </div>
   );

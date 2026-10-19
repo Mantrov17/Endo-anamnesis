@@ -16,6 +16,7 @@ import type {
 } from "./diabetes.ts";
 
 import type { GravesDisease } from "./graves.ts";
+
 import type { Eyes } from "./eyes.ts";
 
 import type {
@@ -25,6 +26,36 @@ import type {
   Lifestyle,
   SelfMonitoring,
 } from "./history.ts";
+
+/*
+ * Родственники на интерактивной родословной.
+ *
+ * Отцовская и материнская линии хранятся
+ * раздельно, чтобы не путать родственников.
+ */
+export type FamilyRelativeId =
+  | "paternalGrandfather"
+  | "paternalGrandmother"
+  | "paternalUncle"
+  | "paternalAunt"
+  | "father"
+  | "maternalGrandfather"
+  | "maternalGrandmother"
+  | "maternalUncle"
+  | "maternalAunt"
+  | "mother"
+  | "sister"
+  | "brother";
+
+/*
+ * Отсутствие ключа означает:
+ * сахарный диабет не отмечен.
+ */
+export type FamilyDiabetesStatus = "type1" | "type2";
+
+export type FamilyHistoryTree = Partial<
+  Record<FamilyRelativeId, FamilyDiabetesStatus>
+>;
 
 export interface AnamnesisFormData {
   fullName?: string;
@@ -44,6 +75,15 @@ export interface AnamnesisFormData {
   gravesDisease?: GravesDisease | null;
 
   eyes?: Eyes;
+
+  /*
+   * Интерактивная родословная.
+   *
+   * Общая для СД 1 и СД 2 типа.
+   * Необязательная для совместимости
+   * с ранее сохранёнными анамнезами.
+   */
+  familyHistoryTree?: FamilyHistoryTree;
 
   actualTherapy?: ActualTherapy;
 
