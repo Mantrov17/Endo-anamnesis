@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 
 import type { AnamnesisFormData } from "@/entities/anamnesis";
 
@@ -12,6 +12,8 @@ import { Input } from "@/shared/ui/Input";
 
 import { Textarea } from "@/shared/ui/Textarea";
 
+import { ToggleSwitch } from "@/shared/ui/ToggleSwitch";
+
 import { Field } from "../../Field";
 
 import { YesNo } from "../../YesNo";
@@ -21,7 +23,8 @@ import styles from "../../styles.module.scss";
 import { GestationalDiabetesSection } from "./GestationalDiabetesSection";
 
 export const Type2DiabetesSection: React.FC = () => {
-  const { register, watch, setValue } = useFormContext<AnamnesisFormData>();
+  const { register, watch, setValue, control } =
+    useFormContext<AnamnesisFormData>();
 
   const hba1cTestedType2 = boolFromString(watch("type2Diabetes.hba1c.tested"));
 
@@ -202,7 +205,7 @@ export const Type2DiabetesSection: React.FC = () => {
           Чувство голода
         </label>
 
-        {/* 9. Изменение массы тела
+        {/* 9. Изменение массы тела.
             Сохраняем старый ключ weightLoss
             для совместимости со старыми анкетами.
         */}
@@ -233,13 +236,24 @@ export const Type2DiabetesSection: React.FC = () => {
         />
       </Field>
 
+      {/* Гликированный гемоглобин — новый переключатель Вкл/Выкл. */}
+
       <fieldset className={styles.fieldset}>
         <legend>Гликированный гемоглобин</legend>
 
-        <YesNo
-          label="Определялся гликированный гемоглобин?"
+        <Controller
           name="type2Diabetes.hba1c.tested"
-          register={register}
+          control={control}
+          render={({ field }) => (
+            <ToggleSwitch
+              ref={field.ref}
+              name={field.name}
+              label="Определялся гликированный гемоглобин?"
+              checked={boolFromString(field.value) === true}
+              onChange={(checked) => field.onChange(checked)}
+              onBlur={field.onBlur}
+            />
+          )}
         />
 
         {hba1cTestedType2 === true && (

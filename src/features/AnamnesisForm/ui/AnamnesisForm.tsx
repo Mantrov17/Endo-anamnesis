@@ -21,6 +21,7 @@ import {
   CardiovascularTab,
   ComplicationsTab,
   ExaminationTab,
+  EyesTab,
   H2FPEFTab,
   HeartFailureTab,
   HypoglycemiaTab,
@@ -271,6 +272,14 @@ export const AnamnesisForm: React.FC<AnamnesisFormProps> = ({
                 hidden={activeTab !== "primary"}
               >
                 <PrimaryTab />
+              </div>
+
+              <div
+                id="anamnesis-tab-eyes"
+                role="tabpanel"
+                hidden={activeTab !== "eyes"}
+              >
+                <EyesTab />
               </div>
 
               <div

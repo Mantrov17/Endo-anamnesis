@@ -6,6 +6,8 @@ export { HypoglycemiaTab } from "./HypoglycemiaTab";
 
 export { CardiovascularTab } from "./CardiovascularTab";
 
+export { EyesTab } from "./EyesTab";
+
 export { SelfMonitoringTab } from "./SelfMonitoringTab";
 
 export { ComplicationsTab } from "./ComplicationsTab";

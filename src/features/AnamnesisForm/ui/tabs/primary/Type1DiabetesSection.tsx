@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 
 import type { AnamnesisFormData } from "@/entities/anamnesis";
 
@@ -12,6 +12,8 @@ import { Input } from "@/shared/ui/Input";
 
 import { Textarea } from "@/shared/ui/Textarea";
 
+import { ToggleSwitch } from "@/shared/ui/ToggleSwitch";
+
 import { Field } from "../../Field";
 
 import { YesNo } from "../../YesNo";
@@ -21,7 +23,8 @@ import styles from "../../styles.module.scss";
 import { GestationalDiabetesSection } from "./GestationalDiabetesSection";
 
 export const Type1DiabetesSection: React.FC = () => {
-  const { register, watch, setValue } = useFormContext<AnamnesisFormData>();
+  const { register, watch, setValue, control } =
+    useFormContext<AnamnesisFormData>();
 
   const autoantibodiesTested = boolFromString(
     watch("type1Diabetes.autoantibodies.tested"),
@@ -52,6 +55,10 @@ export const Type1DiabetesSection: React.FC = () => {
     <div className={styles.section}>
       <h3>Дебют СД 1 типа</h3>
 
+      {/* =====================================
+          Дата постановки диагноза
+          ===================================== */}
+
       <div className={styles.row}>
         <Input
           label="Год постановки диагноза"
@@ -76,6 +83,10 @@ export const Type1DiabetesSection: React.FC = () => {
           {...register("type1Diabetes.diseaseDuration")}
         />
       </div>
+
+      {/* =====================================
+          Обстоятельства выявления
+          ===================================== */}
 
       <Field noteKey="type1Diabetes.howDiagnosed">
         <div className={styles.radioGroup}>
@@ -150,6 +161,10 @@ export const Type1DiabetesSection: React.FC = () => {
         {...register("type1Diabetes.diagnosisDetails")}
         rows={3}
       />
+
+      {/* =====================================
+          Классические симптомы при дебюте
+          ===================================== */}
 
       <Field noteKey="type1Diabetes.classicSymptoms">
         <fieldset
@@ -260,13 +275,28 @@ export const Type1DiabetesSection: React.FC = () => {
         register={register}
       />
 
-      <fieldset className={styles.fieldset}>
-        <legend>Исследовались ли островковые аутоантитела?</legend>
+      {/* =====================================
+          Островковые аутоантитела
+          ===================================== */}
 
-        <YesNo
-          label=""
+      <fieldset className={styles.fieldset}>
+        <legend>Островковые аутоантитела</legend>
+
+        <Controller
           name="type1Diabetes.autoantibodies.tested"
-          register={register}
+          control={control}
+          render={({ field }) => (
+            <ToggleSwitch
+              ref={field.ref}
+              name={field.name}
+              label="Исследовались ли островковые аутоантитела?"
+              checked={boolFromString(field.value) === true}
+              onChange={(checked) => field.onChange(checked)}
+              onBlur={field.onBlur}
+              onLabel="Да"
+              offLabel="Нет"
+            />
+          )}
         />
 
         {autoantibodiesTested === true && (
@@ -350,14 +380,29 @@ export const Type1DiabetesSection: React.FC = () => {
         )}
       </fieldset>
 
+      {/* =====================================
+          C-пептид
+          ===================================== */}
+
       <Field noteKey="type1Diabetes.cPeptide">
         <fieldset className={styles.fieldset}>
           <legend>C-пептид</legend>
 
-          <YesNo
-            label="Определялся C-пептид?"
+          <Controller
             name="type1Diabetes.cPeptide.tested"
-            register={register}
+            control={control}
+            render={({ field }) => (
+              <ToggleSwitch
+                ref={field.ref}
+                name={field.name}
+                label="Определялся C-пептид?"
+                checked={boolFromString(field.value) === true}
+                onChange={(checked) => field.onChange(checked)}
+                onBlur={field.onBlur}
+                onLabel="Да"
+                offLabel="Нет"
+              />
+            )}
           />
 
           {cPeptideTested === true && (
@@ -388,14 +433,29 @@ export const Type1DiabetesSection: React.FC = () => {
         </fieldset>
       </Field>
 
+      {/* =====================================
+          Гликированный гемоглобин
+          ===================================== */}
+
       <Field noteKey="type1Diabetes.hba1c">
         <fieldset className={styles.fieldset}>
           <legend>Гликированный гемоглобин</legend>
 
-          <YesNo
-            label="Определялся гликированный гемоглобин?"
+          <Controller
             name="type1Diabetes.hba1c.tested"
-            register={register}
+            control={control}
+            render={({ field }) => (
+              <ToggleSwitch
+                ref={field.ref}
+                name={field.name}
+                label="Определялся гликированный гемоглобин?"
+                checked={boolFromString(field.value) === true}
+                onChange={(checked) => field.onChange(checked)}
+                onBlur={field.onBlur}
+                onLabel="Да"
+                offLabel="Нет"
+              />
+            )}
           />
 
           {hba1cTestedType1 === true && (
@@ -427,7 +487,15 @@ export const Type1DiabetesSection: React.FC = () => {
         </fieldset>
       </Field>
 
+      {/* =====================================
+          Гестационный сахарный диабет
+          ===================================== */}
+
       <GestationalDiabetesSection diabetesPath="type1Diabetes" />
+
+      {/* =====================================
+          Наследственность
+          ===================================== */}
 
       <YesNo
         label="Наследственность по сахарному диабету"

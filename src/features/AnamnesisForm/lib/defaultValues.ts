@@ -1,5 +1,7 @@
 import type { AnamnesisFormData } from "@/entities/anamnesis";
 
+import { createEyesDefaults } from "./defaults/eyesDefaults";
+
 import {
   createActualTherapyDefaults,
   createTherapyDefaults,
@@ -49,6 +51,8 @@ export const getDefaultValues = (): AnamnesisFormData => ({
   type2Diabetes: null,
 
   gravesDisease: null,
+
+  eyes: createEyesDefaults(),
 
   actualTherapy: createActualTherapyDefaults(),
 

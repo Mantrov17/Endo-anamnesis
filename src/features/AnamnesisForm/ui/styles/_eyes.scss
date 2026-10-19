@@ -1,0 +1,931 @@
+
+/* =========================================
+   Вкладка «Глаза»
+   ========================================= */
+
+.eyesSection {
+  min-width: 0;
+}
+
+.eyesSection .fieldset {
+  min-width: 0;
+}
+
+/* =========================================
+   Острота зрения и OS / OD / OU
+   ========================================= */
+
+.eyesAcuityRow {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+
+  gap: 10px;
+  margin: 3px 0 9px;
+}
+
+.eyesSignGroup,
+.eyesSideGroup {
+  min-width: 0;
+
+  margin: 0 0 12px;
+  padding: 0;
+  border: 0;
+
+  > legend {
+    margin-bottom: 5px;
+    padding: 0;
+
+    color: var(--text-primary, #203235);
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.3;
+  }
+}
+
+.eyesSignGroup {
+  margin: 0;
+}
+
+.eyesSignOptions,
+.eyesSideOptions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+
+  > label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    box-sizing: border-box;
+
+    min-height: 39px;
+    padding: 7px 10px;
+
+    border: 1px solid var(--border, #d7e7e4);
+    border-radius: 8px;
+
+    background: #f7fbfa;
+    color: var(--text-secondary, #52656d);
+
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1.3;
+
+    &:has(input:checked) {
+      color: #176b6a;
+      background: #e4f4ef;
+      border-color: #a5d0c4;
+    }
+  }
+
+  input[type="radio"] {
+    flex: 0 0 17px;
+    width: 17px;
+    height: 17px;
+    margin: 0;
+
+    accent-color: var(--accent, #1f7f78);
+  }
+}
+
+.eyesSignOptions > label {
+  min-width: 47px;
+  justify-content: center;
+
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.eyesAcuityValue {
+  width: 130px;
+  min-width: 0;
+
+  > div {
+    margin-bottom: 0;
+  }
+}
+
+.eyesDetails {
+  margin-top: 12px;
+  padding-top: 12px;
+
+  border-top: 1px solid var(--border, #d7e7e4);
+}
+
+.eyesDateRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+
+  gap: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.eyesDateField {
+  width: 100%;
+  max-width: 270px;
+  min-width: 0;
+}
+
+.eyesAgeInfo {
+  display: block;
+  margin-bottom: 10px;
+
+  color: var(--text-secondary, #52656d);
+
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+/* =========================================
+   Множественный выбор
+   ========================================= */
+
+.eyesChoiceGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 6px;
+  margin: 3px 0 10px;
+
+  min-width: 0;
+
+  > label {
+    display: flex;
+    align-items: center;
+
+    min-width: 0;
+    min-height: 39px;
+
+    box-sizing: border-box;
+
+    gap: 8px;
+    padding: 7px 9px;
+
+    background: #fff;
+    border: 1px solid var(--border, #d7e7e4);
+    border-radius: 8px;
+
+    color: var(--text-secondary, #52656d);
+
+    cursor: pointer;
+
+    font-size: 13px;
+    line-height: 1.3;
+
+    &:has(input:checked) {
+      border-color: #a5d0c4;
+      background: #e4f4ef;
+    }
+
+    input[type="checkbox"] {
+      flex: 0 0 17px;
+
+      width: 17px;
+      height: 17px;
+
+      margin: 0;
+
+      accent-color: var(--accent, #1f7f78);
+    }
+
+    span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+  }
+}
+
+.eyesColorField {
+  width: 100%;
+  max-width: 250px;
+  min-width: 0;
+
+  margin-top: 10px;
+}
+
+/* =========================================
+   Симптомы с выбором стороны
+   ========================================= */
+
+.eyesSymptomList {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+  min-width: 0;
+}
+
+.eyesSymptomItem {
+  min-width: 0;
+}
+
+.eyesCheckboxCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+
+  box-sizing: border-box;
+
+  padding: 8px 10px;
+
+  background: #fff;
+  border: 1px solid #d7e7e4;
+  border-radius: 8px;
+
+  color: #435b5e;
+  font-size: 13px;
+  line-height: 1.3;
+
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    flex: 0 0 17px;
+    width: 17px;
+    height: 17px;
+    margin: 0;
+
+    accent-color: #217e78;
+  }
+
+  > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.eyesCheckboxSelected {
+  background: #e8f6f1;
+  border-color: #a6d2c5;
+}
+
+.eyesInlineSide {
+  margin: 6px 0 8px 10px;
+  padding: 7px 9px;
+
+  background: #f4faf8;
+  border-left: 3px solid #9bcfbc;
+  border-radius: 6px;
+
+  .eyesSideGroup {
+    margin-bottom: 0;
+  }
+}
+
+.eyesPoint {
+  color: #b16c26;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.eyesPointInfo {
+  margin: -2px 0 12px;
+
+  color: #9a6b32;
+  font-size: 12px;
+}
+
+.eyesMuted {
+  margin: 5px 0 10px;
+
+  color: #708486;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* =========================================
+   Инъекция сосудов
+   ========================================= */
+
+.eyesInjectionIllustration {
+  width: 100%;
+  max-width: 390px;
+
+  margin: 5px auto 12px;
+
+  overflow: hidden;
+
+  background: #fff;
+  border: 1px solid #dce6e2;
+  border-radius: 10px;
+
+  img {
+    display: block;
+
+    width: 100%;
+    height: auto;
+
+    object-fit: contain;
+  }
+}
+
+.eyesInjectionOptions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 7px;
+}
+
+.eyesInjectionOptions > label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  min-width: 0;
+  min-height: 42px;
+
+  box-sizing: border-box;
+
+  padding: 8px 10px;
+
+  background: #fff;
+  border: 1px solid #d7e7e4;
+  border-radius: 8px;
+
+  color: #435b5e;
+  font-size: 13px;
+  line-height: 1.3;
+
+  cursor: pointer;
+
+  input[type="radio"] {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
+    margin: 0;
+
+    accent-color: #217e78;
+  }
+}
+
+.eyesInjectionOptions > .eyesSelectedOption {
+  background: #e4f5ef;
+  border-color: #8ac5b4;
+}
+
+/* =========================================
+   Определение полей зрения
+   ========================================= */
+
+.eyesSingleChoice {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+  margin-top: 9px;
+
+  > label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    min-height: 38px;
+    min-width: 0;
+
+    padding: 7px 9px;
+
+    background: #fff;
+    border: 1px solid #d7e7e4;
+    border-radius: 8px;
+
+    color: #435b5e;
+    font-size: 13px;
+
+    cursor: pointer;
+
+    &:has(input:checked) {
+      background: #e4f5ef;
+      border-color: #8ac5b4;
+    }
+
+    input {
+      flex: 0 0 17px;
+      width: 17px;
+      height: 17px;
+      margin: 0;
+
+      accent-color: #217e78;
+    }
+  }
+}
+
+/* =========================================
+   Хирургическое лечение
+   ========================================= */
+
+.eyesSurgeryDetails {
+  margin: 6px 0 10px 9px;
+  padding: 9px 10px;
+
+  background: #f4faf8;
+  border: 1px solid #dae9e3;
+  border-radius: 8px;
+
+  .eyesDateField {
+    margin-bottom: 8px;
+  }
+
+  .eyesSideGroup {
+    margin-bottom: 0;
+  }
+}
+
+/* =========================================
+   Эндокринная офтальмопатия
+   ========================================= */
+
+.eyesEopSection {
+  min-width: 0;
+
+  margin: 16px 0;
+  padding: 12px;
+
+  background: #edf7f4;
+  border: 1px solid #c7ded5;
+  border-radius: 11px;
+}
+
+.eyesEopHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.eyesEopTitle {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  min-width: 0;
+  gap: 7px;
+
+  > strong {
+    color: #244743;
+    font-size: 14px;
+    line-height: 1.3;
+  }
+}
+
+.eyesSmokingWarning {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  color: #c64737;
+
+  span {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  small {
+    font-size: 11px;
+    font-weight: 700;
+  }
+}
+
+.eyesSwitch {
+  display: inline-flex;
+  align-items: center;
+
+  flex: 0 0 auto;
+  gap: 6px;
+
+  cursor: pointer;
+
+  font-size: 12px;
+  font-weight: 650;
+  color: #38635d;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  input:checked + .eyesSwitchTrack {
+    background: #278776;
+  }
+
+  input:checked + .eyesSwitchTrack::before {
+    transform: translateX(20px);
+  }
+
+  input:focus-visible + .eyesSwitchTrack {
+    outline: 2px solid #176b6a;
+    outline-offset: 3px;
+  }
+}
+
+.eyesSwitchTrack {
+  position: relative;
+
+  display: inline-block;
+
+  width: 45px;
+  height: 26px;
+
+  flex: 0 0 45px;
+
+  border-radius: 999px;
+  background: #bacbc6;
+
+  transition: background-color 150ms ease;
+
+  &::before {
+    content: "";
+
+    position: absolute;
+    top: 3px;
+    left: 3px;
+
+    width: 20px;
+    height: 20px;
+
+    background: #fff;
+    border-radius: 50%;
+
+    box-shadow: 0 1px 3px #0002;
+
+    transition: transform 150ms ease;
+  }
+}
+
+.eyesEopContent {
+  margin-top: 12px;
+  padding-top: 12px;
+
+  border-top: 1px solid #cbded7;
+}
+
+/* =========================================
+   Именные глазные симптомы
+   ========================================= */
+
+.eyesNamedSection {
+  min-width: 0;
+  margin: 15px 0;
+
+  > h4 {
+    margin: 0 0 9px;
+
+    color: #284640;
+    font-size: 14px;
+    font-weight: 700;
+  }
+}
+
+.eyesTableScroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+
+  border: 1px solid #d5e5df;
+  border-radius: 9px;
+}
+
+.eyesNamedTable {
+  width: 100%;
+
+  border-collapse: collapse;
+  table-layout: fixed;
+
+  background: #fff;
+
+  font-size: 12px;
+  line-height: 1.4;
+
+  th,
+  td {
+    padding: 8px 7px;
+
+    text-align: left;
+    vertical-align: top;
+
+    border-bottom: 1px solid #e3ece8;
+
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+
+  th {
+    background: #e9f4ef;
+    color: #365851;
+    font-weight: 700;
+  }
+
+  th:first-child {
+    width: 27%;
+  }
+
+  th:nth-child(2) {
+    width: auto;
+  }
+
+  th:last-child {
+    width: 51px;
+    text-align: center;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+}
+
+.eyesTableCheck {
+  text-align: center !important;
+
+  input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+
+    accent-color: #217e78;
+  }
+}
+
+/* =========================================
+   Шкала активности CAS
+   ========================================= */
+
+.eyesCasSection {
+  min-width: 0;
+
+  margin-top: 16px;
+  padding: 11px;
+
+  background: #fff;
+  border: 1px solid #cbded7;
+  border-radius: 10px;
+}
+
+.eyesCasHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+
+  > div {
+    min-width: 0;
+  }
+
+  strong {
+    color: #294740;
+    font-size: 14px;
+  }
+}
+
+.eyesCasScore {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 7px;
+  margin-top: 7px;
+
+  > span:first-child {
+    font-size: 17px;
+    font-weight: 700;
+    color: #263f39;
+  }
+}
+
+.eyesCasActive,
+.eyesCasInactive {
+  padding: 4px 7px;
+  border-radius: 6px;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.eyesCasActive {
+  background: #fce9e7;
+  color: #a63e35;
+}
+
+.eyesCasInactive {
+  background: #e6f4ec;
+  color: #23734b;
+}
+
+.eyesCasToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 35px;
+
+  width: 35px;
+  height: 35px;
+
+  margin: 0;
+  padding: 6px;
+
+  background: #f6faf8;
+  border: 1px solid #cbded7;
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  img {
+    display: block;
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+  }
+
+  &:hover {
+    background: #e5f3ed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #217e78;
+    outline-offset: 2px;
+  }
+}
+
+.eyesCasDetails {
+  margin-top: 11px;
+  padding-top: 11px;
+
+  border-top: 1px solid #e1eae6;
+}
+
+.eyesCasCriteriaList {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.eyesCasCriterion {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) 30px;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 7px;
+
+  background: #f6faf8;
+  border: 1px solid #e1ece6;
+  border-radius: 7px;
+
+  color: #415a53;
+  font-size: 12px;
+
+  strong {
+    text-align: right;
+    font-size: 12px;
+  }
+}
+
+.eyesCriterionPresent {
+  color: #23875a;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.eyesCriterionAbsent {
+  color: #9daea8;
+  font-size: 16px;
+}
+
+/* =========================================
+   Мобильная адаптация
+   ========================================= */
+
+@media (max-width: 640px) {
+  .eyesChoiceGrid {
+    grid-template-columns: 1fr;
+    gap: 5px;
+
+    > label {
+      min-height: 36px;
+      padding: 6px 8px;
+      font-size: 12.5px;
+    }
+  }
+
+  .eyesSideOptions {
+    gap: 5px;
+
+    > label {
+      min-height: 37px;
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+  }
+
+  .eyesSignOptions > label {
+    min-height: 37px;
+  }
+
+  .eyesDateField {
+    max-width: 250px;
+  }
+
+  .eyesSymptomList {
+    gap: 5px;
+  }
+
+  .eyesCheckboxCard {
+    min-height: 36px;
+    padding: 6px 8px;
+    font-size: 12.5px;
+  }
+
+  .eyesInlineSide {
+    margin-left: 6px;
+    padding: 7px;
+  }
+
+  .eyesInjectionIllustration {
+    max-width: 100%;
+  }
+
+  .eyesInjectionOptions {
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+
+    > label {
+      min-height: 38px;
+      padding: 6px 7px;
+      font-size: 12px;
+    }
+  }
+
+  .eyesSingleChoice > label {
+    font-size: 12px;
+  }
+
+  .eyesEopSection {
+    padding: 9px;
+  }
+
+  .eyesEopTitle > strong {
+    font-size: 13px;
+  }
+
+  .eyesNamedTable {
+    font-size: 10.5px;
+
+    th,
+    td {
+      padding: 6px 4px;
+      line-height: 1.35;
+    }
+
+    th:first-child {
+      width: 30%;
+    }
+
+    th:last-child {
+      width: 40px;
+    }
+  }
+
+  .eyesTableCheck input {
+    width: 17px;
+    height: 17px;
+  }
+
+  .eyesCasSection {
+    padding: 9px;
+  }
+
+  .eyesCasCriterion {
+    font-size: 11.5px;
+  }
+}
+
+@media (max-width: 350px) {
+  .eyesInjectionOptions {
+    grid-template-columns: 1fr;
+  }
+
+  .eyesEopHeading {
+    align-items: flex-start;
+  }
+
+  .eyesCasScore {
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eyesSwitchTrack,
+  .eyesSwitchTrack::before {
+    transition: none;
+  }
+}

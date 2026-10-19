@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 
 import type { AnamnesisFormData } from "@/entities/anamnesis";
 
@@ -10,12 +10,14 @@ import { Input } from "@/shared/ui/Input";
 
 import { Textarea } from "@/shared/ui/Textarea";
 
+import { ToggleSwitch } from "@/shared/ui/ToggleSwitch";
+
 import { YesNo } from "../../YesNo";
 
 import styles from "../../styles.module.scss";
 
 export const Type2AdherenceSection: React.FC = () => {
-  const { register, watch } = useFormContext<AnamnesisFormData>();
+  const { register, watch, control } = useFormContext<AnamnesisFormData>();
 
   const insulinTherapy = boolFromString(watch("type2Diabetes.insulinTherapy"));
 
@@ -34,10 +36,23 @@ export const Type2AdherenceSection: React.FC = () => {
 
   return (
     <>
-      <YesNo
-        label="Инсулинотерапия"
+      {/* Инсулинотерапия — переключатель Да / Нет */}
+
+      <Controller
         name="type2Diabetes.insulinTherapy"
-        register={register}
+        control={control}
+        render={({ field }) => (
+          <ToggleSwitch
+            ref={field.ref}
+            name={field.name}
+            label="Инсулинотерапия"
+            checked={boolFromString(field.value) === true}
+            onChange={(checked) => field.onChange(checked)}
+            onBlur={field.onBlur}
+            onLabel="Да"
+            offLabel="Нет"
+          />
+        )}
       />
 
       {insulinTherapy === true && (
@@ -48,10 +63,13 @@ export const Type2AdherenceSection: React.FC = () => {
         />
       )}
 
+      {/* Приверженность — прежний выбор Да / Нет */}
+
       <YesNo
-        label="Приверженность приёма терапии?"
+        label="Пропуски приёма назначенной терапии?"
         name="type2Diabetes.therapyRegularity"
         register={register}
+        yesNoLabels={["Нет", "Да"]}
       />
 
       {therapyRegularity === false && (

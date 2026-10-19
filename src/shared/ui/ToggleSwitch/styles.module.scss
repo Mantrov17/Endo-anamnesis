@@ -1,0 +1,199 @@
+
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  gap: 10px;
+
+  padding: 6px 0;
+  margin-bottom: 9px;
+
+  // Вся строка больше не кликабельная.
+  cursor: default;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.labelText {
+  flex: 1 1 180px;
+  min-width: 0;
+
+  color: var(--text-primary, #203235);
+
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.4;
+
+  cursor: default;
+}
+
+.control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 9px;
+
+  flex: 0 0 auto;
+
+  // Пустая область вокруг ползунка не кликабельна.
+  cursor: default;
+}
+
+.stateText {
+  min-width: 35px;
+
+  color: var(--text-secondary, #708280);
+
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+
+  cursor: default;
+
+  transition: color 150ms ease;
+}
+
+.stateTextActive {
+  color: var(--accent, #20847c);
+}
+
+/*
+ * Единственная интерактивная область.
+ * Размер строго соответствует ползунку.
+ */
+
+.switchContainer {
+  position: relative;
+
+  display: inline-block;
+
+  width: 49px;
+  height: 28px;
+
+  flex: 0 0 49px;
+
+  cursor: pointer;
+}
+
+/*
+ * Checkbox занимает только 49 × 28 px.
+ * Никаких растянутых label поверх строки.
+ */
+
+.input {
+  position: absolute;
+  z-index: 2;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  opacity: 0;
+
+  cursor: pointer;
+}
+
+.track {
+  position: absolute;
+  inset: 0;
+
+  display: block;
+
+  background: #cbd7d5;
+  border: 1px solid #b9cac6;
+  border-radius: 999px;
+
+  box-sizing: border-box;
+
+  pointer-events: none;
+
+  transition:
+          background-color 160ms ease,
+          border-color 160ms ease;
+}
+
+.thumb {
+  position: absolute;
+
+  top: 3px;
+  left: 3px;
+
+  width: 20px;
+  height: 20px;
+
+  background: #fff;
+  border-radius: 50%;
+
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+
+  pointer-events: none;
+
+  transition: transform 160ms ease;
+}
+
+/* Включён */
+
+.input:checked + .track {
+  background: #20847c;
+  border-color: #19766e;
+}
+
+.input:checked + .track .thumb {
+  transform: translateX(21px);
+}
+
+/* Управление с клавиатуры */
+
+.input:focus-visible + .track {
+  outline: 3px solid rgba(32, 132, 124, 0.25);
+  outline-offset: 3px;
+}
+
+/* Заблокирован */
+
+.disabled {
+  opacity: 0.5;
+
+  .switchContainer,
+  .input {
+    cursor: not-allowed;
+  }
+}
+
+/* Мобильная адаптация */
+
+@media (max-width: 640px) {
+  .root {
+    gap: 7px;
+    padding: 5px 0;
+  }
+
+  .labelText {
+    flex-basis: 170px;
+    font-size: 13px;
+  }
+
+  .control {
+    gap: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .thumb,
+  .stateText {
+    transition: none;
+  }
+}

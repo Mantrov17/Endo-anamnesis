@@ -16,6 +16,10 @@ export const tabs = [
     label: "Сердечно-сосудистая система",
   },
   {
+    id: "eyes",
+    label: "Глаза",
+  },
+  {
     id: "anthropometry",
     label: "Антропометрия",
   },
