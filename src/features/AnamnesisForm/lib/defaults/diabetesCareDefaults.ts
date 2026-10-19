@@ -73,6 +73,10 @@ export const createSelfMonitoringDefaults = (): SelfMonitoringDefaults => ({
     shoulders: false,
   },
 
+  // Дополнительные сведения о местах инъекций
+
+  injectionSitesDetails: "",
+
   // Устройства для самоконтроля
 
   hasGlucometer: null,
@@ -116,6 +120,26 @@ export const createSelfMonitoringDefaults = (): SelfMonitoringDefaults => ({
   },
 
   needleChangeFrequency: "",
+
+  // Состояние мест инъекций
+
+  injectionSiteCondition: {
+    lipodystrophy: {
+      lipohypertrophy: false,
+      lipoatrophy: false,
+      none: false,
+    },
+
+    tenderness: null,
+
+    hyperemia: null,
+
+    skinTemperature: "",
+  },
+
+  // Для новых анкет перенос старых полей не требуется
+
+  injectionSiteDetailsMigrated: true,
 
   // Хранение инсулина
 

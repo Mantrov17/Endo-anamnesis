@@ -18,8 +18,6 @@ import { ActualTherapySection } from "./therapy/ActualTherapySection";
 
 import { Type1InitialTherapySection } from "./therapy/Type1InitialTherapySection";
 
-import { Type1InjectionSitesSection } from "./therapy/Type1InjectionSitesSection";
-
 import { Type2AdherenceSection } from "./therapy/Type2AdherenceSection";
 
 import { Type2InitialTherapySection } from "./therapy/Type2InitialTherapySection";
@@ -41,6 +39,9 @@ export const PrimaryTab: React.FC = () => {
 
   const type2Data = watch("type2Diabetes");
 
+  const isPump =
+    isType1 && watch("type1Diabetes.initialTherapy.injectionMethod") === "pump";
+
   const hasSelectedDiagnosis =
     (isType1 && Boolean(type1Data)) || (isType2 && Boolean(type2Data));
 
@@ -53,7 +54,7 @@ export const PrimaryTab: React.FC = () => {
       {isType2 && type2Data && <Type2DiabetesSection />}
 
       {hasSelectedDiagnosis && (
-        <div className={styles.section}>
+        <div className={`${styles.section} ${styles.therapySection}`}>
           <h3>Терапия</h3>
 
           <Input
@@ -98,9 +99,9 @@ export const PrimaryTab: React.FC = () => {
             </>
           )}
 
-          <ActualTherapySection hideTitle={isType2} />
-
-          {isType1 && type1Data && <Type1InjectionSitesSection />}
+          {/* При выборе инсулиновой помпы
+              блок актуальной терапии скрывается. */}
+          {!isPump && <ActualTherapySection hideTitle={isType2} />}
 
           {isType2 && type2Data && <Type2AdherenceSection />}
         </div>

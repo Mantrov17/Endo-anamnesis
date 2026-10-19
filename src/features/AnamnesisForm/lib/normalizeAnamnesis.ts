@@ -238,6 +238,10 @@ const normalizeLegacyInjectionSites = (
 
       ...data.selfMonitoring,
 
+      // Не помечаем перенос остальных данных мест инъекций как выполненный.
+      injectionSiteDetailsMigrated:
+        data.selfMonitoring?.injectionSiteDetailsMigrated,
+
       injectionSites: {
         abdomen: legacySites.abdomen,
         thighs: legacySites.thighs,
@@ -245,6 +249,73 @@ const normalizeLegacyInjectionSites = (
         lumbar: legacySites.lumbar,
         shoulders: legacySites.shoulders,
       },
+    },
+  };
+};
+
+/**
+ * Перенос состояния мест инъекций и частоты смены из формы СД 1
+ * в общий раздел «Самоконтроль».
+ *
+ * Данные переносятся однократно — метка предотвращает повторное
+ * заполнение очищенного пользователем поля из старой копии.
+ * Исходные поля type1Diabetes не удаляем для обратной совместимости.
+ */
+const normalizeLegacyInjectionSiteDetails = (
+  data: AnamnesisFormData,
+): AnamnesisFormData => {
+  const legacyInfo = data.type1Diabetes?.injectionSitesInfo;
+
+  if (
+    !legacyInfo ||
+    data.selfMonitoring?.injectionSiteDetailsMigrated === true
+  ) {
+    return data;
+  }
+
+  const monitoring = data.selfMonitoring;
+  const existingCondition = monitoring?.injectionSiteCondition;
+  const legacyLipo = legacyInfo.lipodystrophy;
+
+  return {
+    ...data,
+    selfMonitoring: {
+      ...createSelfMonitoringDefaults(),
+      ...monitoring,
+
+      // Если частоты уже введены в Самоконтроле — не перезаписываем их.
+      needleChangeFrequency: monitoring?.needleChangeFrequency?.trim()
+        ? monitoring.needleChangeFrequency
+        : (legacyInfo.needleChangeFrequency ?? ""),
+
+      injectionSiteChangeFrequency:
+        monitoring?.injectionSiteChangeFrequency?.trim()
+          ? monitoring.injectionSiteChangeFrequency
+          : (legacyInfo.siteChangeFrequency ?? ""),
+
+      injectionSiteCondition: {
+        lipodystrophy: {
+          lipohypertrophy:
+            existingCondition?.lipodystrophy?.lipohypertrophy ??
+            legacyLipo?.lipohypertrophy ??
+            false,
+          lipoatrophy:
+            existingCondition?.lipodystrophy?.lipoatrophy ??
+            legacyLipo?.lipoatrophy ??
+            false,
+          none:
+            existingCondition?.lipodystrophy?.none ?? legacyLipo?.none ?? false,
+        },
+        tenderness:
+          existingCondition?.tenderness ?? legacyInfo.tenderness ?? null,
+        hyperemia: existingCondition?.hyperemia ?? null,
+        skinTemperature:
+          existingCondition?.skinTemperature ||
+          legacyInfo.skinTemperature ||
+          "",
+      },
+
+      injectionSiteDetailsMigrated: true,
     },
   };
 };
@@ -277,8 +348,10 @@ const getDefaultsForData = (data: AnamnesisFormData): AnamnesisFormData => {
 export const mergeAnamnesisWithDefaults = (
   data: AnamnesisFormData,
 ): AnamnesisFormData => {
-  const normalizedData = normalizeLegacyInjectionSites(
-    normalizeLegacySevereEpisodes(normalizeLegacyHypoglycemia(data)),
+  const normalizedData = normalizeLegacyInjectionSiteDetails(
+    normalizeLegacyInjectionSites(
+      normalizeLegacySevereEpisodes(normalizeLegacyHypoglycemia(data)),
+    ),
   );
 
   const defaults = getDefaultsForData(normalizedData);

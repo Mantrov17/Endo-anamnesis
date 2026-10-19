@@ -30,6 +30,10 @@ const createEmptyDiary = (): DiaryFormData => ({
 
   saturation: null,
 
+  ketoneStripPerformed: null,
+
+  ketoneStripResult: null,
+
   edema: "",
 
   otherData: "",
@@ -47,7 +51,12 @@ export const useDiaryForm = ({
     initialData
       ? {
           ...initialData,
+
           performedActivities: initialData.performedActivities ?? "",
+
+          ketoneStripPerformed: initialData.ketoneStripPerformed ?? null,
+
+          ketoneStripResult: initialData.ketoneStripResult ?? null,
         }
       : createEmptyDiary(),
   );
@@ -72,6 +81,27 @@ export const useDiaryForm = ({
       ...previous,
 
       [field]: value,
+    }));
+  };
+
+  /*
+   * Переключение факта проведения теста.
+   *
+   * Если выбрано "Не проводился",
+   * предыдущий результат обязательно очищается.
+   *
+   * Изменяем оба поля одним обновлением состояния,
+   * чтобы не возникало рассинхронизации.
+   */
+  const updateKetoneStripPerformed = (performed: boolean) => {
+    setFormData((previous) => ({
+      ...previous,
+
+      ketoneStripPerformed: performed,
+
+      ketoneStripResult: performed
+        ? (previous.ketoneStripResult ?? null)
+        : null,
     }));
   };
 
@@ -127,6 +157,7 @@ export const useDiaryForm = ({
     loading,
 
     updateField,
+    updateKetoneStripPerformed,
     handleSubmit,
   };
 };

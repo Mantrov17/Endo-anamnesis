@@ -109,3 +109,325 @@
     font-size: 11.5px;
   }
 }
+
+/* =========================================
+   Тест-полоска на кетоны
+   ========================================= */
+
+.ketoneSection {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+
+  margin: 0;
+  padding: 11px 12px 12px;
+
+  background: #f8fbfa;
+  border: 1px solid #d6e5e1;
+  border-radius: 11px;
+}
+
+.ketoneSectionTitle {
+  padding: 0 5px;
+
+  color: var(--text-primary, #203235);
+
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* Проводился / Не проводился */
+
+.ketoneStatusOptions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+
+  min-width: 0;
+  margin-top: 4px;
+}
+
+.ketoneStatusOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  min-width: 0;
+  min-height: 43px;
+  box-sizing: border-box;
+
+  padding: 9px 10px;
+
+  background: #ffffff;
+  border: 1px solid #d6e5e1;
+  border-radius: 8px;
+
+  color: #52676b;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+          background-color 140ms ease,
+          border-color 140ms ease;
+
+  input[type="radio"] {
+    width: 18px;
+    height: 18px;
+
+    flex: 0 0 18px;
+    margin: 0;
+
+    accent-color: #217e78;
+    cursor: pointer;
+  }
+
+  &:focus-within {
+    outline: 2px solid rgba(33, 126, 120, 0.25);
+    outline-offset: 1px;
+  }
+}
+
+.ketoneStatusOptionSelected {
+  background: #e6f6f2;
+  border-color: #a1d0c6;
+  color: #216e69;
+}
+
+/* Раскрывающаяся шкала результата */
+
+.ketoneResultFieldset {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+
+  margin: 13px 0 0;
+  padding: 10px 8px 8px;
+
+  border: 1px solid #d6e5e1;
+  border-radius: 9px;
+
+  background: #ffffff;
+}
+
+.ketoneResultTitle {
+  padding: 0 5px;
+
+  color: #32494d;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.ketoneResultOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  min-width: 0;
+}
+
+.ketoneResultOption {
+  display: grid;
+
+  grid-template-columns:
+    18px
+    minmax(90px, 34%)
+    minmax(0, 1fr)
+    16px;
+
+  align-items: center;
+  gap: 9px;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 45px;
+  box-sizing: border-box;
+
+  padding: 6px 8px;
+
+  background: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 7px;
+
+  cursor: pointer;
+
+  transition:
+          background-color 140ms ease,
+          border-color 140ms ease;
+
+  &:hover {
+    background: #f5faf8;
+  }
+
+  &:focus-within {
+    outline: 2px solid rgba(33, 126, 120, 0.25);
+    outline-offset: 1px;
+  }
+
+  input[type="radio"] {
+    width: 18px;
+    height: 18px;
+
+    margin: 0;
+    padding: 0;
+
+    accent-color: #217e78;
+    cursor: pointer;
+  }
+}
+
+.ketoneResultOptionSelected {
+  background: #edf8f4;
+  border-color: #8fc6b7;
+
+  &:hover {
+    background: #e5f4ef;
+  }
+}
+
+/*
+ * Цветной прямоугольник.
+ *
+ * Используем большой горизонтальный образец,
+ * чтобы было проще сравнивать результат
+ * с реальной тест-полоской.
+ */
+.ketoneColor {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+  height: 32px;
+
+  box-sizing: border-box;
+
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 3px;
+}
+
+.ketoneResultLabel {
+  min-width: 0;
+
+  color: #273b40;
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1.3;
+
+  overflow-wrap: normal;
+}
+
+.ketoneSelectedMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 16px;
+  height: 20px;
+
+  color: #187b62;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.ketoneDisclaimer {
+  margin: 10px 2px 0;
+
+  padding-top: 8px;
+
+  border-top: 1px solid #e4eeeb;
+
+  color: #708184;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* Мобильная адаптация */
+
+@media (max-width: 640px) {
+  .ketoneSection {
+    padding: 9px 8px 10px;
+    border-radius: 9px;
+  }
+
+  .ketoneSectionTitle {
+    font-size: 13px;
+  }
+
+  .ketoneStatusOptions {
+    gap: 6px;
+  }
+
+  .ketoneStatusOption {
+    gap: 6px;
+    min-height: 41px;
+
+    padding: 7px 8px;
+    font-size: 12px;
+
+    input[type="radio"] {
+      width: 17px;
+      height: 17px;
+      flex-basis: 17px;
+    }
+  }
+
+  .ketoneResultFieldset {
+    margin-top: 11px;
+    padding: 8px 5px 6px;
+  }
+
+  .ketoneResultOption {
+    grid-template-columns:
+      17px
+      minmax(80px, 34%)
+      minmax(0, 1fr)
+      14px;
+
+    gap: 6px;
+    min-height: 43px;
+    padding: 5px 4px;
+
+    input[type="radio"] {
+      width: 17px;
+      height: 17px;
+    }
+  }
+
+  .ketoneColor {
+    height: 31px;
+  }
+
+  .ketoneResultLabel {
+    font-size: 12px;
+  }
+
+  .ketoneSelectedMark {
+    width: 14px;
+    font-size: 16px;
+  }
+
+  .ketoneDisclaimer {
+    font-size: 10.5px;
+  }
+}
+
+/* Очень узкие экраны */
+
+@media (max-width: 350px) {
+  .ketoneResultOption {
+    grid-template-columns:
+      16px
+      minmax(65px, 30%)
+      minmax(0, 1fr)
+      12px;
+
+    gap: 5px;
+    padding: 4px 3px;
+  }
+
+  .ketoneResultLabel {
+    font-size: 11px;
+  }
+}

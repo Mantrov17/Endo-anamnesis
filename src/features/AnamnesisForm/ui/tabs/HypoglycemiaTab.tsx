@@ -17,13 +17,21 @@ import { YesNo } from "../YesNo";
 import styles from "../styles.module.scss";
 
 export const HypoglycemiaTab: React.FC = () => {
-  const { register, watch } = useFormContext<AnamnesisFormData>();
+  const { register, watch, setValue } = useFormContext<AnamnesisFormData>();
 
   const hasGlucoseBelow39 = boolFromString(
     watch("hypoglycemia.hasGlucoseBelow39"),
   );
 
   const severeEpisodes = boolFromString(watch("hypoglycemia.severeEpisodes"));
+
+  const handleSevereEpisodesChange = (value: boolean) => {
+    setValue("hypoglycemia.severeEpisodes", value, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+  };
 
   return (
     <div className={styles.section}>
@@ -118,27 +126,19 @@ export const HypoglycemiaTab: React.FC = () => {
             </label>
           </fieldset>
 
-          <Textarea
-            label="Чем купирует гипогликемию?"
-            {...register("hypoglycemia.reliefMethod")}
-            rows={3}
-          />
+          {/* Метод купирования гипогликемии.
+              Компактная ширина поля.
+              Существующий ключ данных сохраняется. */}
 
-          <YesNo
-            label="Были ли тяжёлые гипогликемии?"
-            name="hypoglycemia.severeEpisodes"
-            register={register}
-          />
+          <div className={styles.hypoglycemiaReliefField}>
+            <Textarea
+              label="Метод купирования гипогликемии"
+              {...register("hypoglycemia.reliefMethod")}
+              rows={2}
+            />
+          </div>
 
-          {severeEpisodes === true && (
-            <Field noteKey="hypoglycemia.severeEpisodes">
-              <Textarea
-                label="Подробнее о тяжёлых гипогликемиях"
-                {...register("hypoglycemia.severeEpisodesDetails")}
-                rows={3}
-              />
-            </Field>
-          )}
+          {/* Типичные провоцирующие факторы */}
 
           <Field noteKey="hypoglycemia.provokingFactors">
             <fieldset className={styles.fieldset}>
@@ -172,23 +172,75 @@ export const HypoglycemiaTab: React.FC = () => {
             </fieldset>
           </Field>
 
-          <YesNo
-            label="Есть ли дома глюкагон?"
-            name="hypoglycemia.hasGlucagon"
-            register={register}
-          />
+          {/* Эпизоды тяжёлой гипогликемии.
+              Располагаются ПОСЛЕ провоцирующих факторов. */}
 
-          <YesNo
-            label="Обучены ли близкие введению глюкагона?"
-            name="hypoglycemia.familyTrained"
-            register={register}
-          />
+          <div className={styles.hypoglycemiaSevereGroup}>
+            <div
+              id="hypoglycemia-severe-label"
+              className={styles.hypoglycemiaSevereLabel}
+            >
+              Эпизоды тяжёлой гипогликемии
+            </div>
 
-          <YesNo
-            label="Ночные гипогликемии"
-            name="hypoglycemia.nocturnalHypoglycemia"
-            register={register}
-          />
+            <div
+              className={[
+                styles.hypoglycemiaSevereToggle,
+                severeEpisodes === true
+                  ? styles.hypoglycemiaSevereToggleYes
+                  : "",
+                severeEpisodes === false
+                  ? styles.hypoglycemiaSevereToggleNo
+                  : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              role="radiogroup"
+              aria-labelledby="hypoglycemia-severe-label"
+            >
+              <label className={styles.hypoglycemiaSevereOption}>
+                <input
+                  type="radio"
+                  name="hypoglycemia-severe-episodes-toggle"
+                  value="yes"
+                  checked={severeEpisodes === true}
+                  onChange={() => handleSevereEpisodesChange(true)}
+                />
+
+                <span>Да</span>
+              </label>
+
+              <label className={styles.hypoglycemiaSevereOption}>
+                <input
+                  type="radio"
+                  name="hypoglycemia-severe-episodes-toggle"
+                  value="no"
+                  checked={severeEpisodes === false}
+                  onChange={() => handleSevereEpisodesChange(false)}
+                />
+
+                <span>Нет</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Подробности показываем только при ответе "Да".
+              При переключении на "Нет" старый текст
+              не удаляется из данных. */}
+
+          {severeEpisodes === true && (
+            <Field noteKey="hypoglycemia.severeEpisodes">
+              <Textarea
+                label="Подробнее о тяжёлых гипогликемиях"
+                placeholder="Укажите количество эпизодов, время возникновения и клинические проявления"
+                {...register("hypoglycemia.severeEpisodesDetails")}
+                rows={3}
+              />
+            </Field>
+          )}
+
+          {/* Остальные три вопроса удалены из интерфейса.
+              Их значения в данных сохраняются. */}
 
           <Field
             noteKey="hypoglycemia.general"

@@ -1,0 +1,120 @@
+
+/* =========================================
+   Раздел «Терапия»
+   ========================================= */
+
+/*
+ * Визуально отделяем терапию от раздела
+ * «Основное заболевание».
+ *
+ * Фон охватывает весь раздел терапии,
+ * включая все вложенные поля и компоненты.
+ */
+
+.therapySection {
+  width: 100%;
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  margin-top: 16px;
+
+  padding: 16px 14px 22px;
+
+  background: #fff4e5;
+
+  border: 1px solid #ebd1ac;
+  border-left: 4px solid #cf9651;
+  border-radius: 12px;
+
+  box-shadow: 0 2px 8px rgba(148, 99, 43, 0.035);
+
+  /*
+   * Цвет фона сохраняется на всю
+   * высоту раздела, без градиента.
+   */
+
+  > h3 {
+    margin: 0 0 14px;
+
+    padding-bottom: 9px;
+
+    color: #765021;
+
+    border-bottom: 1px solid #e7cba5;
+
+    font-size: clamp(16px, 1.6vw, 19px);
+    font-weight: 700;
+    line-height: 1.3;
+  }
+}
+
+/*
+ * Стандартные зелёные элементы формы
+ * сохраняют свою стилистику.
+ *
+ * Отдельные fieldset внутри терапии
+ * делаем чуть светлее, чтобы текст
+ * и переключатели хорошо читались.
+ */
+
+.therapySection .fieldset {
+  background: #fffbf5;
+  border-color: #ead9c0;
+}
+
+/*
+ * У раздела терапии собственный цвет
+ * заголовка, остальные заголовки
+ * по-прежнему используют общие стили.
+ */
+
+.therapySection > h3 {
+  color: #765021;
+}
+
+/* =========================================
+   Адаптация под планшеты
+   ========================================= */
+
+@media (max-width: 768px) {
+  .therapySection {
+    margin-top: 13px;
+
+    padding: 14px 11px 20px;
+
+    border-radius: 10px;
+  }
+}
+
+/* =========================================
+   Samsung A53 и другие смартфоны
+   ========================================= */
+
+@media (max-width: 640px) {
+  .therapySection {
+    width: 100%;
+    min-width: 0;
+
+    margin-top: 12px;
+
+    padding: 12px 10px 18px;
+
+    border-left-width: 3px;
+    border-radius: 9px;
+  }
+
+  .therapySection > h3 {
+    margin-bottom: 12px;
+
+    padding-bottom: 8px;
+
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 350px) {
+  .therapySection {
+    padding: 10px 8px 16px;
+  }
+}

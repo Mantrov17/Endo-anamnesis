@@ -22,6 +22,48 @@ const formatShortDate = (date: string): string => {
   return year && month && day ? `${day}.${month}.${year}` : date;
 };
 
+/*
+ * Шесть результатов тест-полоски.
+ *
+ * Значения и порядок соответствуют
+ * приложенному образцу заказчика.
+ *
+ * Цвета приблизительно воспроизводят
+ * показанную шкалу.
+ */
+const KETONE_STRIP_RESULTS = [
+  {
+    value: "negative",
+    label: "Отрицательный",
+    color: "#dcd49c",
+  },
+  {
+    value: "trace",
+    label: "Следы (50 мг/л)",
+    color: "#caa58b",
+  },
+  {
+    value: "plus1",
+    label: "+ (150 мг/л)",
+    color: "#c58d86",
+  },
+  {
+    value: "plus2",
+    label: "++ (400 мг/л)",
+    color: "#ba6b6b",
+  },
+  {
+    value: "plus3",
+    label: "+++ (800 мг/л)",
+    color: "#923f49",
+  },
+  {
+    value: "plus4",
+    label: "++++ (1600 мг/л)",
+    color: "#4b2031",
+  },
+] as const;
+
 interface DiaryFormProps {
   patientId: string;
 
@@ -41,13 +83,19 @@ export const DiaryForm: React.FC<DiaryFormProps> = ({
   diaryEntries,
   onSuccess,
 }) => {
-  const { formData, currentDiaryId, loading, updateField, handleSubmit } =
-    useDiaryForm({
-      patientId,
-      diaryId,
-      initialData,
-      onSuccess,
-    });
+  const {
+    formData,
+    currentDiaryId,
+    loading,
+    updateField,
+    updateKetoneStripPerformed,
+    handleSubmit,
+  } = useDiaryForm({
+    patientId,
+    diaryId,
+    initialData,
+    onSuccess,
+  });
 
   const plansForDate = useMemo(
     () => getPlansByDate(patientId, formData.date),
@@ -155,6 +203,119 @@ export const DiaryForm: React.FC<DiaryFormProps> = ({
                 )
               }
             />
+          </div>
+
+          {/* ==============================
+              Тест-полоска на кетоны
+              ============================== */}
+
+          <div className={styles.field}>
+            <fieldset className={styles.ketoneSection}>
+              <legend className={styles.ketoneSectionTitle}>
+                Тест-полоска на кетоны
+              </legend>
+
+              <div
+                className={styles.ketoneStatusOptions}
+                role="radiogroup"
+                aria-label="Проводился ли тест-полосочный анализ на кетоны?"
+              >
+                <label
+                  className={`${styles.ketoneStatusOption} ${
+                    formData.ketoneStripPerformed === true
+                      ? styles.ketoneStatusOptionSelected
+                      : ""
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="ketone-strip-performed"
+                    value="yes"
+                    checked={formData.ketoneStripPerformed === true}
+                    onChange={() => updateKetoneStripPerformed(true)}
+                  />
+
+                  <span>Проводился</span>
+                </label>
+
+                <label
+                  className={`${styles.ketoneStatusOption} ${
+                    formData.ketoneStripPerformed === false
+                      ? styles.ketoneStatusOptionSelected
+                      : ""
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="ketone-strip-performed"
+                    value="no"
+                    checked={formData.ketoneStripPerformed === false}
+                    onChange={() => updateKetoneStripPerformed(false)}
+                  />
+
+                  <span>Не проводился</span>
+                </label>
+              </div>
+
+              {formData.ketoneStripPerformed === true && (
+                <fieldset className={styles.ketoneResultFieldset}>
+                  <legend className={styles.ketoneResultTitle}>
+                    Результат тест-полоски
+                  </legend>
+
+                  <div className={styles.ketoneResultOptions}>
+                    {KETONE_STRIP_RESULTS.map((result) => {
+                      const isSelected =
+                        formData.ketoneStripResult === result.value;
+
+                      return (
+                        <label
+                          key={result.value}
+                          className={`${styles.ketoneResultOption} ${
+                            isSelected ? styles.ketoneResultOptionSelected : ""
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="ketone-strip-result"
+                            value={result.value}
+                            checked={isSelected}
+                            onChange={() =>
+                              updateField("ketoneStripResult", result.value)
+                            }
+                            aria-label={result.label}
+                          />
+
+                          <span
+                            className={styles.ketoneColor}
+                            style={{
+                              backgroundColor: result.color,
+                            }}
+                            aria-hidden="true"
+                          />
+
+                          <span className={styles.ketoneResultLabel}>
+                            {result.label}
+                          </span>
+
+                          <span
+                            className={styles.ketoneSelectedMark}
+                            aria-hidden="true"
+                          >
+                            {isSelected ? "✓" : ""}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+
+                  <p className={styles.ketoneDisclaimer}>
+                    Цвета ориентировочные. Сравнивайте тест-полоску со шкалой на
+                    упаковке используемого производителя.
+                  </p>
+                </fieldset>
+              )}
+            </fieldset>
           </div>
 
           <div className={styles.field}>

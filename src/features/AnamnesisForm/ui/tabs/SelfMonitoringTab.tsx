@@ -6,6 +6,8 @@ import type { AnamnesisFormData } from "@/entities/anamnesis";
 
 import { Input } from "@/shared/ui/Input";
 
+import { Textarea } from "@/shared/ui/Textarea";
+
 import { Field } from "../Field";
 
 import { YesNo } from "../YesNo";
@@ -31,6 +33,41 @@ export const SelfMonitoringTab: React.FC = () => {
 
   const noMonitoringDevices =
     watch("selfMonitoring.noMonitoringDevices") === true;
+
+  const isPump =
+    watch("primaryExam.suspectedDiagnosis") === "type1" &&
+    watch("type1Diabetes.initialTherapy.injectionMethod") === "pump";
+
+  const isType1 = watch("primaryExam.suspectedDiagnosis") === "type1";
+
+  const handleLipodystrophyChange = (
+    kind: "lipohypertrophy" | "lipoatrophy" | "none",
+    checked: boolean,
+  ) => {
+    if (!checked) {
+      return;
+    }
+
+    if (kind === "none") {
+      setValue(
+        "selfMonitoring.injectionSiteCondition.lipodystrophy.lipohypertrophy",
+        false,
+        { shouldDirty: true, shouldTouch: true },
+      );
+
+      setValue(
+        "selfMonitoring.injectionSiteCondition.lipodystrophy.lipoatrophy",
+        false,
+        { shouldDirty: true, shouldTouch: true },
+      );
+    } else {
+      setValue(
+        "selfMonitoring.injectionSiteCondition.lipodystrophy.none",
+        false,
+        { shouldDirty: true, shouldTouch: true },
+      );
+    }
+  };
 
   const handleGlucometerChange = (checked: boolean) => {
     setValue("selfMonitoring.hasGlucometer", checked, {
@@ -125,6 +162,20 @@ export const SelfMonitoringTab: React.FC = () => {
             />
             <span>Наружная поверхность плеча</span>
           </label>
+        </div>
+
+        {/* Новое компактное поле.
+            Сохраняется в selfMonitoring.injectionSitesDetails.
+            Автоматически расширяется при вводе текста. */}
+
+        <div className={styles.selfMonitoringDetailsField}>
+          <Textarea
+            label="Подробнее"
+            placeholder="Дополнительные сведения о местах инъекций"
+            rows={1}
+            className={styles.selfMonitoringDetailsTextarea}
+            {...register("selfMonitoring.injectionSitesDetails")}
+          />
         </div>
       </fieldset>
 
@@ -287,19 +338,7 @@ export const SelfMonitoringTab: React.FC = () => {
       </div>
 
       {/* ====================
-          8. Смена места инъекции
-          ==================== */}
-
-      <div className={styles.selfMonitoringNarrowField}>
-        <Input
-          label="Частота смены места для инъекции"
-          placeholder="Например: каждые 3 дня"
-          {...register("selfMonitoring.injectionSiteChangeFrequency")}
-        />
-      </div>
-
-      {/* ====================
-          9. Длина игл
+          8. Длина игл
           ==================== */}
 
       <fieldset className={styles.fieldset}>
@@ -341,19 +380,147 @@ export const SelfMonitoringTab: React.FC = () => {
       </fieldset>
 
       {/* ====================
-          10. Частота смены игл
+          9. Частота смены игл / наборов
           ==================== */}
 
       <div className={styles.selfMonitoringNarrowField}>
         <Input
-          label="Частота смены игл"
-          placeholder="Например: после каждой инъекции"
+          label={
+            isPump ? "Частота смены инфузионных наборов" : "Частота смены игл"
+          }
+          placeholder={
+            isPump
+              ? "Например: каждые 3 дня"
+              : "Например: после каждой инъекции"
+          }
           {...register("selfMonitoring.needleChangeFrequency")}
         />
       </div>
 
       {/* ====================
-          11. Хранение инсулина
+          10. Частота смены мест инъекций
+          ==================== */}
+
+      <div className={styles.selfMonitoringNarrowField}>
+        <Input
+          label="Частота смены мест инъекций"
+          placeholder="Например: каждые 3 дня"
+          {...register("selfMonitoring.injectionSiteChangeFrequency")}
+        />
+      </div>
+
+      {/* ====================
+          11. Состояние мест инъекций
+          ==================== */}
+
+      <Field
+        noteKey={
+          isType1
+            ? "type1Diabetes.injectionSitesInfo"
+            : "selfMonitoring.injectionSiteCondition"
+        }
+      >
+        <fieldset className={styles.fieldset}>
+          <legend>Состояние мест инъекций</legend>
+
+          <fieldset className={styles.fieldset}>
+            <legend>Липодистрофии</legend>
+
+            <div
+              className={`${styles.selfMonitoringChoiceGrid} ${styles.selfMonitoringDeviceOptions}`}
+            >
+              <label>
+                <input
+                  type="checkbox"
+                  {...register(
+                    "selfMonitoring.injectionSiteCondition.lipodystrophy.lipohypertrophy",
+                    {
+                      onChange: (event) =>
+                        handleLipodystrophyChange(
+                          "lipohypertrophy",
+                          event.target.checked,
+                        ),
+                    },
+                  )}
+                />
+                <span>Липогипертрофии</span>
+              </label>
+
+              <label>
+                <input
+                  type="checkbox"
+                  {...register(
+                    "selfMonitoring.injectionSiteCondition.lipodystrophy.lipoatrophy",
+                    {
+                      onChange: (event) =>
+                        handleLipodystrophyChange(
+                          "lipoatrophy",
+                          event.target.checked,
+                        ),
+                    },
+                  )}
+                />
+                <span>Липоатрофии</span>
+              </label>
+
+              <label>
+                <input
+                  type="checkbox"
+                  {...register(
+                    "selfMonitoring.injectionSiteCondition.lipodystrophy.none",
+                    {
+                      onChange: (event) =>
+                        handleLipodystrophyChange("none", event.target.checked),
+                    },
+                  )}
+                />
+                <span>Отсутствуют</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <YesNo
+            label="Болезненность при пальпации"
+            name="selfMonitoring.injectionSiteCondition.tenderness"
+            register={register}
+          />
+
+          <YesNo
+            label="Гиперемия"
+            name="selfMonitoring.injectionSiteCondition.hyperemia"
+            register={register}
+          />
+
+          <div className={styles.radioGroup}>
+            <label>Температура кожи</label>
+
+            <label>
+              <input
+                type="radio"
+                value="hyperthermia"
+                {...register(
+                  "selfMonitoring.injectionSiteCondition.skinTemperature",
+                )}
+              />{" "}
+              Гипертермия
+            </label>
+
+            <label>
+              <input
+                type="radio"
+                value="normal"
+                {...register(
+                  "selfMonitoring.injectionSiteCondition.skinTemperature",
+                )}
+              />{" "}
+              Нормотермия
+            </label>
+          </div>
+        </fieldset>
+      </Field>
+
+      {/* ====================
+          12. Хранение инсулина
           ==================== */}
 
       <div className={styles.radioGroup}>
@@ -379,7 +546,7 @@ export const SelfMonitoringTab: React.FC = () => {
       </div>
 
       {/* ====================
-          12. Питание
+          13. Питание
           ==================== */}
 
       <div className={styles.radioGroup}>
@@ -405,7 +572,7 @@ export const SelfMonitoringTab: React.FC = () => {
       </div>
 
       {/* ====================
-          13. Диета
+          14. Диета
           ==================== */}
 
       <YesNo

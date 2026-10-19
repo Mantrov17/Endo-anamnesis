@@ -1,0 +1,212 @@
+
+/* =========================================
+   Гипогликемии
+   ========================================= */
+
+/*
+ * Узкое поле для метода купирования.
+ * Не меняем стили остальных Textarea.
+ */
+
+.hypoglycemiaReliefField {
+  width: 100%;
+  max-width: 300px;
+  min-width: 0;
+  margin-bottom: 12px;
+}
+
+/* =========================================
+   Эпизоды тяжёлой гипогликемии
+   ========================================= */
+
+.hypoglycemiaSevereGroup {
+  width: 100%;
+  min-width: 0;
+
+  margin: 13px 0;
+}
+
+.hypoglycemiaSevereLabel {
+  margin-bottom: 8px;
+
+  color: var(--text-primary, #203235);
+
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+/*
+ * Переключатель Да / Нет.
+ *
+ * Нейтральное начальное состояние:
+ * если ответ null, подсветки нет.
+ */
+
+.hypoglycemiaSevereToggle {
+  position: relative;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  isolation: isolate;
+
+  width: 100%;
+  max-width: 290px;
+  min-width: 0;
+  min-height: 44px;
+
+  box-sizing: border-box;
+
+  padding: 3px;
+
+  background: #f1f7f5;
+
+  border: 1px solid #cadfda;
+  border-radius: 10px;
+
+  /*
+   * Подвижная подсветка.
+   */
+
+  &::before {
+    content: "";
+
+    position: absolute;
+    z-index: 0;
+
+    top: 3px;
+    bottom: 3px;
+    left: 3px;
+
+    width: calc(50% - 3px);
+
+    background: #e0f3eb;
+
+    border: 1px solid #8dc9b5;
+    border-radius: 7px;
+
+    box-sizing: border-box;
+
+    opacity: 0;
+
+    transition:
+            transform 170ms ease,
+            opacity 170ms ease,
+            background-color 170ms ease;
+  }
+}
+
+/* Выбрано "Да" */
+
+.hypoglycemiaSevereToggleYes {
+  &::before {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Выбрано "Нет" */
+
+.hypoglycemiaSevereToggleNo {
+  &::before {
+    opacity: 1;
+    transform: translateX(100%);
+  }
+}
+
+/* Кнопки внутри переключателя */
+
+.hypoglycemiaSevereOption {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 0;
+  min-height: 38px;
+
+  margin: 0;
+  padding: 5px 10px;
+
+  box-sizing: border-box;
+
+  border-radius: 7px;
+
+  color: #657b7b;
+
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+
+  input[type="radio"] {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+
+    opacity: 0;
+
+    cursor: pointer;
+  }
+
+  span {
+    pointer-events: none;
+    user-select: none;
+  }
+
+  &:has(input:checked) {
+    color: #1d7169;
+    font-weight: 700;
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid #217e78;
+    outline-offset: 2px;
+  }
+}
+
+/* =========================================
+   Мобильная адаптация
+   ========================================= */
+
+@media (max-width: 640px) {
+  .hypoglycemiaReliefField {
+    max-width: 240px;
+  }
+
+  .hypoglycemiaSevereGroup {
+    margin: 11px 0;
+  }
+
+  .hypoglycemiaSevereLabel {
+    margin-bottom: 7px;
+    font-size: 13px;
+  }
+
+  .hypoglycemiaSevereToggle {
+    max-width: 270px;
+    min-height: 42px;
+  }
+
+  .hypoglycemiaSevereOption {
+    min-height: 36px;
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hypoglycemiaSevereToggle::before {
+    transition: none;
+  }
+}

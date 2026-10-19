@@ -63,6 +63,17 @@ export const DiaryPage: React.FC = () => {
 
       saturation: diary.saturation,
 
+      /*
+       * Восстанавливаем сохранённый результат
+       * тест-полоски на кетоны.
+       *
+       * В старых дневниках этих полей нет,
+       * поэтому используем null.
+       */
+      ketoneStripPerformed: diary.ketoneStripPerformed ?? null,
+
+      ketoneStripResult: diary.ketoneStripResult ?? null,
+
       edema: diary.edema,
 
       otherData: diary.otherData,

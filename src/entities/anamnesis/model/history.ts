@@ -56,6 +56,12 @@ export interface SelfMonitoring {
     shoulders: boolean;
   };
 
+  /*
+   * Дополнительные сведения о местах инъекций.
+   * Общее поле для всех типов диабета.
+   */
+  injectionSitesDetails: string;
+
   glucoseSensor: boolean;
 
   noMonitoringDevices: boolean;
@@ -76,6 +82,25 @@ export interface SelfMonitoring {
   };
 
   needleChangeFrequency: string;
+
+  /**
+   * Общее состояние мест инъекций для обоих типов СД.
+   * Старые значения из type1Diabetes.injectionSitesInfo
+   * переносятся при нормализации без удаления исходных данных.
+   */
+  injectionSiteCondition: {
+    lipodystrophy: {
+      lipohypertrophy: boolean;
+      lipoatrophy: boolean;
+      none: boolean;
+    };
+    tenderness: boolean | null;
+    hyperemia: boolean | null;
+    skinTemperature: "normal" | "hyperthermia" | "";
+  };
+
+  /** Признак однократного переноса данных из старой формы СД 1. */
+  injectionSiteDetailsMigrated?: boolean;
 
   insulinStorage: "correct" | "incorrect" | "";
 
@@ -171,7 +196,6 @@ export interface Lifestyle {
   copdMeds: string;
 
   // Артериальная гипертензия
-  // Используем существующие имена полей.
 
   knownHypertension: "yes" | "no" | "notMeasured" | "";
 

@@ -1,3 +1,11 @@
+export type DiaryKetoneStripResult =
+  | "negative"
+  | "trace"
+  | "plus1"
+  | "plus2"
+  | "plus3"
+  | "plus4";
+
 export interface DiaryFormData {
   /*
    * Дата дневника.
@@ -12,6 +20,23 @@ export interface DiaryFormData {
   pulse: number | null;
 
   saturation: number | null;
+
+  /*
+   * Тест-полоска на кетоны.
+   *
+   * true — проводился.
+   * false — не проводился.
+   * null — ответ ещё не выбран.
+   *
+   * Поля необязательные для совместимости
+   * с уже сохранёнными дневниками.
+   *
+   * Результат хранится как один вариант,
+   * поэтому выбрать сразу несколько нельзя.
+   */
+  ketoneStripPerformed?: boolean | null;
+
+  ketoneStripResult?: DiaryKetoneStripResult | null;
 
   edema: string;
 
