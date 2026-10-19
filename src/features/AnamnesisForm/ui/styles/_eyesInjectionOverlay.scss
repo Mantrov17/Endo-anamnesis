@@ -1,15 +1,19 @@
 
-/*
- * Радиокнопки непосредственно на изображении глаза.
+/**
+ * Интерактивный выбор инъекции сосудов.
  *
- * Существующую разметку EyesTab.tsx не меняем.
- *
- * Порядок секторов:
+ * Изображение делится на четыре кликабельных сектора.
+ * Радиокнопки скрыты, выбранная четверть
+ * выделяется зелёной рамкой.
  *
  * Конъюнктивальная | Перикорнеальная
  * -----------------|---------------
  * Норма            | Смешанная
  */
+
+/* ===================================
+   Основной контейнер
+   =================================== */
 
 .eyesSection
 .fieldset:has(> .eyesInjectionIllustration) {
@@ -21,10 +25,9 @@
   min-width: 0;
 }
 
-/*
- * Картинка и варианты выбора занимают
- * одну область CSS Grid.
- */
+/* ===================================
+   Изображение глаза
+   =================================== */
 
 .eyesSection
 .fieldset:has(> .eyesInjectionIllustration)
@@ -51,13 +54,15 @@
     height: 100%;
 
     object-fit: contain;
+
+    pointer-events: none;
+    user-select: none;
   }
 }
 
-/*
- * Прозрачный слой с радиокнопками
- * размещается прямо поверх изображения.
- */
+/* ===================================
+   Прозрачный интерактивный слой
+   =================================== */
 
 .eyesSection
 .fieldset:has(> .eyesInjectionIllustration)
@@ -70,14 +75,12 @@
 
   display: grid;
 
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-
-  grid-template-rows:
-    repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
 
   width: min(100%, 390px);
   max-width: 390px;
+
   aspect-ratio: 1122 / 1154;
 
   min-width: 0;
@@ -93,10 +96,9 @@
   border: 0;
 }
 
-/*
- * Каждая четверть изображения —
- * самостоятельная кликабельная область.
- */
+/* ===================================
+   Кликабельные четверти изображения
+   =================================== */
 
 .eyesSection
 .eyesInjectionOptions > label {
@@ -106,6 +108,7 @@
 
   width: 100%;
   height: 100%;
+
   min-width: 0;
   min-height: 0;
 
@@ -115,25 +118,21 @@
   padding: 0;
 
   background: transparent;
+
   border: 0;
   border-radius: 0;
+
+  box-shadow: none;
 
   cursor: pointer;
 
   -webkit-tap-highlight-color: transparent;
 
-  transition:
-          background-color 150ms ease,
-          box-shadow 150ms ease;
-
-  &:hover {
-    background: rgba(31, 127, 120, 0.06);
-  }
+  transition: box-shadow 150ms ease;
 
   /*
-   * Текст остаётся доступным
-   * для скринридеров, но не дублирует
-   * подписи на самом изображении.
+   * Текст скрыт визуально, но остаётся
+   * доступен для экранных дикторов.
    */
 
   > span {
@@ -146,6 +145,7 @@
     margin: -1px;
 
     overflow: hidden;
+
     clip-path: inset(50%);
 
     border: 0;
@@ -157,7 +157,7 @@
    Расположение четырёх секторов
    =================================== */
 
-/* Конъюнктивальная — сверху слева */
+/* Сверху слева — конъюнктивальная */
 
 .eyesSection
 .eyesInjectionOptions
@@ -166,7 +166,7 @@
   grid-row: 1;
 }
 
-/* Перикорнеальная — сверху справа */
+/* Сверху справа — перикорнеальная */
 
 .eyesSection
 .eyesInjectionOptions
@@ -175,7 +175,7 @@
   grid-row: 1;
 }
 
-/* Норма — снизу слева */
+/* Снизу слева — норма */
 
 .eyesSection
 .eyesInjectionOptions
@@ -184,7 +184,7 @@
   grid-row: 2;
 }
 
-/* Смешанная — снизу справа */
+/* Снизу справа — смешанная */
 
 .eyesSection
 .eyesInjectionOptions
@@ -194,8 +194,19 @@
 }
 
 /* ===================================
-   Радиокнопки
+   Невидимые радиокнопки
    =================================== */
+
+/*
+ * Сами radio полностью прозрачны.
+ *
+ * Они занимают площадь соответствующей
+ * четверти изображения, поэтому нажатие
+ * в любом её месте выбирает вариант.
+ *
+ * Input остаётся в DOM и доступен
+ * для управления с клавиатуры.
+ */
 
 .eyesSection
 .eyesInjectionOptions
@@ -203,91 +214,70 @@
   position: absolute;
   z-index: 3;
 
-  width: 27px;
-  height: 27px;
+  inset: 0;
+
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+  min-height: 0;
 
   margin: 0;
   padding: 0;
 
-  appearance: auto;
+  box-sizing: border-box;
 
-  accent-color: #168777;
+  -webkit-appearance: none;
+  appearance: none;
 
-  background: #fff;
-  border-radius: 50%;
+  opacity: 0;
 
-  box-shadow:
-          0 1px 5px rgba(0, 0, 0, 0.28);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 
   cursor: pointer;
-}
 
-/* Левый верхний угол */
-
-.eyesSection
-.eyesInjectionOptions
-> label:has(input[value="conjunctival"])
-input[type="radio"] {
-  top: 13px;
-  left: 13px;
-}
-
-/* Правый верхний угол */
-
-.eyesSection
-.eyesInjectionOptions
-> label:has(input[value="pericorneal"])
-input[type="radio"] {
-  top: 13px;
-  right: 13px;
-}
-
-/* Левый нижний угол */
-
-.eyesSection
-.eyesInjectionOptions
-> label:has(input[value="normal"])
-input[type="radio"] {
-  bottom: 13px;
-  left: 13px;
-}
-
-/* Правый нижний угол */
-
-.eyesSection
-.eyesInjectionOptions
-> label:has(input[value="mixed"])
-input[type="radio"] {
-  bottom: 13px;
-  right: 13px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ===================================
-   Выбранный вариант
+   Выделение выбранной четверти
    =================================== */
+
+/*
+ * Единственный визуальный индикатор
+ * выбора — зелёная рамка.
+ *
+ * Внутренняя часть остаётся прозрачной,
+ * чтобы не искажать цвета глаза.
+ */
 
 .eyesSection
 .eyesInjectionOptions
 > label:has(input:checked) {
-  background: rgba(31, 127, 120, 0.08);
+  background: transparent;
 
-  box-shadow:
-          inset 0 0 0 3px rgba(27, 131, 109, 0.85);
+  box-shadow: inset 0 0 0 3px #168777;
 }
 
-/* Видимый фокус клавиатуры */
+/* ===================================
+   Управление с клавиатуры
+   =================================== */
 
 .eyesSection
 .eyesInjectionOptions
-> label:focus-within {
-  outline: 2px solid #168777;
-  outline-offset: -2px;
+> label:has(input:focus-visible) {
+  outline: 2px dashed #168777;
+  outline-offset: -6px;
 }
 
-/*
- * Подсказку размещаем под картинкой,
- * а не между картинкой и кнопками.
- */
+/* ===================================
+   Подсказка под изображением
+   =================================== */
 
 .eyesSection
 .fieldset:has(> .eyesInjectionIllustration)
@@ -300,6 +290,7 @@ input[type="radio"] {
   margin: 9px 0 0;
 
   text-align: center;
+
   font-size: 11.5px;
   line-height: 1.35;
 }
@@ -311,49 +302,19 @@ input[type="radio"] {
 @media (max-width: 640px) {
   .eyesSection
   .eyesInjectionOptions
-  > label input[type="radio"] {
-    width: 25px;
-    height: 25px;
-  }
-
-  .eyesSection
-  .eyesInjectionOptions
-  > label:has(input[value="conjunctival"])
-  input[type="radio"] {
-    top: 10px;
-    left: 10px;
-  }
-
-  .eyesSection
-  .eyesInjectionOptions
-  > label:has(input[value="pericorneal"])
-  input[type="radio"] {
-    top: 10px;
-    right: 10px;
-  }
-
-  .eyesSection
-  .eyesInjectionOptions
-  > label:has(input[value="normal"])
-  input[type="radio"] {
-    bottom: 10px;
-    left: 10px;
-  }
-
-  .eyesSection
-  .eyesInjectionOptions
-  > label:has(input[value="mixed"])
-  input[type="radio"] {
-    bottom: 10px;
-    right: 10px;
+  > label:has(input:checked) {
+    box-shadow: inset 0 0 0 3px #168777;
   }
 }
 
-@media (max-width: 350px) {
+/* ===================================
+   Отключение анимаций
+   =================================== */
+
+@media (prefers-reduced-motion: reduce) {
   .eyesSection
   .eyesInjectionOptions
-  > label input[type="radio"] {
-    width: 23px;
-    height: 23px;
+  > label {
+    transition: none;
   }
 }
