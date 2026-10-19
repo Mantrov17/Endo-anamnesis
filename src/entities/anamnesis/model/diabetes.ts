@@ -3,7 +3,7 @@
 export interface PrimaryExam {
   reason: string;
 
-  suspectedDiagnosis?: "type1" | "type2";
+  suspectedDiagnosis?: "type1" | "type2" | "graves";
 
   height: number | null;
   weight: number | null;

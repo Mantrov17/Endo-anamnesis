@@ -15,6 +15,8 @@ import type {
   Type2Diabetes,
 } from "./diabetes.ts";
 
+import type { GravesDisease } from "./graves.ts";
+
 import type {
   AdditionalHistory,
   Examination,
@@ -37,6 +39,8 @@ export interface AnamnesisFormData {
   type1Diabetes?: Type1Diabetes | null;
 
   type2Diabetes?: Type2Diabetes | null;
+
+  gravesDisease?: GravesDisease | null;
 
   actualTherapy?: ActualTherapy;
 

@@ -14,6 +14,8 @@ import { Type1DiabetesSection } from "./primary/Type1DiabetesSection";
 
 import { Type2DiabetesSection } from "./primary/Type2DiabetesSection";
 
+import { GravesDiseaseSection } from "./primary/GravesDiseaseSection";
+
 import { ActualTherapySection } from "./therapy/ActualTherapySection";
 
 import { Type1InitialTherapySection } from "./therapy/Type1InitialTherapySection";
@@ -52,6 +54,8 @@ export const PrimaryTab: React.FC = () => {
       {isType1 && type1Data && <Type1DiabetesSection />}
 
       {isType2 && type2Data && <Type2DiabetesSection />}
+
+      {suspectedDiagnosis === "graves" && <GravesDiseaseSection />}
 
       {hasSelectedDiagnosis && (
         <div className={`${styles.section} ${styles.therapySection}`}>
@@ -99,8 +103,7 @@ export const PrimaryTab: React.FC = () => {
             </>
           )}
 
-          {/* При выборе инсулиновой помпы
-              блок актуальной терапии скрывается. */}
+          {/* При выборе помпы блок актуальной терапии не показываем. */}
           {!isPump && <ActualTherapySection hideTitle={isType2} />}
 
           {isType2 && type2Data && <Type2AdherenceSection />}

@@ -1,0 +1,174 @@
+
+/* Выбор нового диагноза занимает всю ширину блока радио-кнопок. */
+.radioGroup > .gravesDiagnosisOption {
+  grid-column: 1 / -1;
+}
+
+.gravesSection {
+  min-width: 0;
+  margin-top: 12px;
+}
+
+.gravesDateField {
+  width: 100%;
+  max-width: 280px;
+  min-width: 0;
+}
+
+.gravesSymptomGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 4px;
+  min-width: 0;
+}
+
+.gravesSymptomOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 40px;
+  margin: 0;
+  padding: 7px 9px;
+  border: 1px solid var(--border, #d7e7e4);
+  border-radius: 8px;
+  background: var(--bg-surface, #fff);
+  color: var(--text-primary, #203235);
+  cursor: pointer;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+
+  input[type="checkbox"] {
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--accent, #1f7f78);
+  }
+}
+
+.gravesSymptomOptionSelected {
+  background: #e6f5f0;
+  border-color: #a8d2c5;
+}
+
+.gravesOrderedSection {
+  margin: 12px 0 16px;
+  padding: 10px;
+  border: 1px solid #cce4dc;
+  border-radius: 10px;
+  background: #f3faf7;
+}
+
+.gravesOrderedTitle {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary, #203235);
+}
+
+.gravesOrderedHint {
+  margin: 3px 0 9px;
+  color: var(--text-secondary, #52656d);
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
+.gravesOrderedList {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gravesOrderedItem {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  min-height: 37px;
+  padding: 4px 5px 4px 9px;
+  border: 1px solid #d5e6e1;
+  border-radius: 7px;
+  background: white;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.gravesDragging {
+  opacity: 0.5;
+}
+
+.gravesDragHandle {
+  flex: 0 0 auto;
+  color: #869c99;
+  font-weight: 700;
+  user-select: none;
+}
+
+.gravesOrderLabel {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 12.5px;
+  color: var(--text-primary, #203235);
+  overflow-wrap: anywhere;
+}
+
+.gravesOrderButtons {
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.gravesOrderButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 33px;
+  height: 33px;
+  padding: 0;
+  border: 1px solid #cce1d9;
+  border-radius: 7px;
+  background: #f6fbf9;
+  color: #216f65;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #217e78;
+    outline-offset: 2px;
+  }
+}
+
+@media (max-width: 640px) {
+  .gravesSymptomGrid {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .gravesSymptomOption {
+    min-height: 37px;
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+
+  .gravesOrderedSection {
+    padding: 8px;
+  }
+
+  .gravesDateField {
+    max-width: 250px;
+  }
+}

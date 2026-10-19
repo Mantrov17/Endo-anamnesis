@@ -2,6 +2,8 @@ import type { AnamnesisFormData, AnamnesisRecord } from "@/entities/anamnesis";
 
 import { getDefaultValues } from "./defaultValues";
 
+import { createGravesDiseaseDefaults } from "./gravesDefaults";
+
 import { createSelfMonitoringDefaults } from "./defaults/diabetesCareDefaults";
 
 import {
@@ -340,6 +342,10 @@ const getDefaultsForData = (data: AnamnesisFormData): AnamnesisFormData => {
 
   if (data.type2Diabetes) {
     defaults.type2Diabetes = createType2DiabetesDefaults();
+  }
+
+  if (data.gravesDisease) {
+    defaults.gravesDisease = createGravesDiseaseDefaults();
   }
 
   return defaults;

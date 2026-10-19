@@ -9,6 +9,9 @@ export type {
 
 export type { Complications } from "./complications";
 
+export type { GravesDisease, GravesSymptomKey } from "./graves";
+export { GRAVES_SYMPTOMS } from "./graves";
+
 export type {
   AdditionalHistory,
   Examination,

@@ -52,6 +52,15 @@ export const PrimaryOverviewSection: React.FC = () => {
           СД 2 типа
         </label>
 
+        <label className={styles.gravesDiagnosisOption}>
+          <input
+            type="radio"
+            value="graves"
+            {...register("primaryExam.suspectedDiagnosis")}
+          />{" "}
+          Болезнь Грейвса
+        </label>
+
         {errors.primaryExam?.suspectedDiagnosis && (
           <span className={styles.error}>
             {errors.primaryExam.suspectedDiagnosis.message}

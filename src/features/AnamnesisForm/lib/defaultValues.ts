@@ -48,6 +48,8 @@ export const getDefaultValues = (): AnamnesisFormData => ({
   type1Diabetes: null,
   type2Diabetes: null,
 
+  gravesDisease: null,
+
   actualTherapy: createActualTherapyDefaults(),
 
   therapy: createTherapyDefaults(),
