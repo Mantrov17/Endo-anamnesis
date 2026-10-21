@@ -17,28 +17,27 @@ export const createEyesDefaults = (): Eyes => ({
   decreasedVisualAcuity: null,
   visualAcuitySign: "",
   visualAcuityValue: null,
-  decreasedVisualAcuityEye: "",
-
+  decreasedVisualAcuityEye: "OU",
+  visualAcuityByEye: {
+    OS: { sign: "", value: null },
+    OD: { sign: "", value: null },
+  },
   cataract: null,
   cataractEye: "",
   glaucoma: null,
   glaucomaEye: "",
-
   deteriorationDate: "",
   relativeToDiabetes: "",
   deteriorationCourse: "",
-
   periodicTriggers: {
     highBP: false,
     lowBP: false,
     highGlucose: false,
     lowGlucose: false,
   },
-
   nyctalopia: null,
   delayedDarkAdaptation: null,
   blurredVision: null,
-
   visualPhenomena: {
     floaters: false,
     photopsias: false,
@@ -46,77 +45,75 @@ export const createEyesDefaults = (): Eyes => ({
     grid: false,
     colorDistortion: false,
   },
-
   colorDistortionDetails: "",
-
   otherSymptoms: {
-    pain: emptyEyeSymptom(),
+    pain: {
+      ...emptyEyeSymptom(),
+      characteristics: {
+        constant: false,
+        spontaneous: false,
+        onMovement: false,
+        spontaneousRetrobulbar: false,
+      },
+    },
     tearing: emptyEyeSymptom(),
     dryness: emptyEyeSymptom(),
     sandSensation: emptyEyeSymptom(),
     photophobia: emptyEyeSymptom(),
   },
-
   diplopia: null,
-  diplopiaTypes: {
-    constant: false,
-    sideGaze: false,
-  },
-
+  diplopiaTypes: { constant: false, sideGaze: false },
   externalExam: {
     ptosis: emptyEyeSymptom(),
     miosis: emptyEyeSymptom(),
     mydriasis: emptyEyeSymptom(),
     enophthalmos: emptyEyeSymptom(),
     eyelidEdema: emptyEyeSymptom(),
+    eyelidErythema: emptyEyeSymptom(),
+    strabismus: { ...emptyEyeSymptom(), type: "" },
     caruncleInflammation: emptyEyeSymptom(),
     hemophthalmos: emptyEyeSymptom(),
     hyphema: emptyEyeSymptom(),
   },
-
   vesselInjection: "",
-
   visualFieldLoss: null,
   peripheralVisionTest: null,
   hemianopiaType: "",
-
   chemosis: null,
-
   ophthalmologistFollowUp: "",
-
   eyeDrops: null,
   eyeDropsDetails: "",
-
+  surgicalTreatment: null,
   surgeries: {
     retinalLaser: emptySurgery(),
     lensReplacement: emptySurgery(),
-    intravitrealInjection: emptySurgery(),
+    intravitrealInjection: {
+      ...emptySurgery(),
+      number: null,
+      frequency: null,
+      frequencyPeriod: "",
+    },
   },
-
   endocrineOphthalmopathy: null,
-
   exophthalmos: null,
   periorbitalEdema: null,
   scleralInjection: null,
-
   movementImpairment: null,
-
   movementDirections: {
     up: false,
     outward: false,
     down: false,
     inward: false,
   },
-
-  eopDiplopia: null,
-
-  eopDiplopiaTypes: {
-    constant: false,
-    sideGaze: false,
+  movementPainDirections: {
+    up: false,
+    outward: false,
+    down: false,
+    inward: false,
   },
-
+  eopDiplopia: null,
+  eopDiplopiaTypes: { constant: false, sideGaze: false },
   eopPtosis: null,
-
   namedSigns: {
     stellwag: false,
     moebius: false,
@@ -131,13 +128,11 @@ export const createEyesDefaults = (): Eyes => ({
     rosenbach: false,
     repnevMelekhov: false,
   },
-
   cas: {
     retrobulbarPain: false,
     gazePain: false,
     eyelidRedness: false,
   },
-
   ctOrbits: null,
   ctOrbitsPlace: "",
 });

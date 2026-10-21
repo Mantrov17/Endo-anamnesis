@@ -6,30 +6,51 @@ export interface EyeSymptomWithSide {
   eye: EyeSide;
 }
 
+export interface EyePainSymptom extends EyeSymptomWithSide {
+  characteristics: {
+    constant: boolean;
+    spontaneous: boolean;
+    onMovement: boolean;
+    spontaneousRetrobulbar: boolean;
+  };
+}
+
+export interface EyeStrabismusSymptom extends EyeSymptomWithSide {
+  type: "hypotropia" | "exotropia" | "esotropia" | "";
+}
+
 export interface EyeSurgery {
   selected: boolean;
   date: string;
   eye: EyeSide;
 }
 
-export interface Eyes {
-  // Существующие вопросы
+export interface EyeIntravitrealInjection extends EyeSurgery {
+  /** Количество инъекций (№). */
+  number: number | null;
+  /** Числовая кратность введений. */
+  frequency: number | null;
+  frequencyPeriod: "day" | "week" | "month" | "";
+}
 
+export interface Eyes {
   decreasedVisualAcuity: boolean | null;
   visualAcuitySign: "+" | "-" | "";
   visualAcuityValue: number | null;
   decreasedVisualAcuityEye: EyeSide;
+  visualAcuityByEye: {
+    OS: { sign: "+" | "-" | ""; value: number | null };
+    OD: { sign: "+" | "-" | ""; value: number | null };
+  };
 
   cataract: boolean | null;
   cataractEye: EyeSide;
-
   glaucoma: boolean | null;
   glaucomaEye: EyeSide;
 
   deteriorationDate: string;
   relativeToDiabetes: "before" | "after" | "";
   deteriorationCourse: "gradual" | "sudden" | "periodic" | "";
-
   periodicTriggers: {
     highBP: boolean;
     lowBP: boolean;
@@ -40,7 +61,6 @@ export interface Eyes {
   nyctalopia: boolean | null;
   delayedDarkAdaptation: boolean | null;
   blurredVision: boolean | null;
-
   visualPhenomena: {
     floaters: boolean;
     photopsias: boolean;
@@ -48,13 +68,10 @@ export interface Eyes {
     grid: boolean;
     colorDistortion: boolean;
   };
-
   colorDistortionDetails: string;
 
-  // Прочие симптомы
-
   otherSymptoms: {
-    pain: EyeSymptomWithSide;
+    pain: EyePainSymptom;
     tearing: EyeSymptomWithSide;
     dryness: EyeSymptomWithSide;
     sandSensation: EyeSymptomWithSide;
@@ -67,23 +84,21 @@ export interface Eyes {
     sideGaze: boolean;
   };
 
-  // Внешний осмотр
-
   externalExam: {
     ptosis: EyeSymptomWithSide;
     miosis: EyeSymptomWithSide;
     mydriasis: EyeSymptomWithSide;
     enophthalmos: EyeSymptomWithSide;
     eyelidEdema: EyeSymptomWithSide;
+    eyelidErythema: EyeSymptomWithSide;
+    strabismus: EyeStrabismusSymptom;
     caruncleInflammation: EyeSymptomWithSide;
     hemophthalmos: EyeSymptomWithSide;
     hyphema: EyeSymptomWithSide;
   };
 
   vesselInjection: "normal" | "conjunctival" | "pericorneal" | "mixed" | "";
-
   visualFieldLoss: boolean | null;
-
   peripheralVisionTest: boolean | null;
   hemianopiaType:
     | "homonymous"
@@ -91,44 +106,42 @@ export interface Eyes {
     | "heteronymousBitemporal"
     | "homonymousBitemporal"
     | "";
-
   chemosis: boolean | null;
 
   ophthalmologistFollowUp: string;
-
   eyeDrops: boolean | null;
   eyeDropsDetails: string;
 
+  /** Отдельный переключатель; null сохраняется для старых записей. */
+  surgicalTreatment: boolean | null;
   surgeries: {
     retinalLaser: EyeSurgery;
     lensReplacement: EyeSurgery;
-    intravitrealInjection: EyeSurgery;
+    intravitrealInjection: EyeIntravitrealInjection;
   };
 
-  // Эндокринная офтальмопатия
-
   endocrineOphthalmopathy: boolean | null;
-
   exophthalmos: boolean | null;
   periorbitalEdema: boolean | null;
   scleralInjection: boolean | null;
-
   movementImpairment: boolean | null;
-
   movementDirections: {
     up: boolean;
     outward: boolean;
     down: boolean;
     inward: boolean;
   };
-
+  movementPainDirections: {
+    up: boolean;
+    outward: boolean;
+    down: boolean;
+    inward: boolean;
+  };
   eopDiplopia: boolean | null;
-
   eopDiplopiaTypes: {
     constant: boolean;
     sideGaze: boolean;
   };
-
   eopPtosis: boolean | null;
 
   namedSigns: {
@@ -145,17 +158,11 @@ export interface Eyes {
     rosenbach: boolean;
     repnevMelekhov: boolean;
   };
-
-  /**
-   * Дополнительные признаки для CAS.
-   * Остальные баллы берутся из вопросов осмотра.
-   */
   cas: {
     retrobulbarPain: boolean;
     gazePain: boolean;
     eyelidRedness: boolean;
   };
-
   ctOrbits: boolean | null;
   ctOrbitsPlace: "public" | "private" | "";
 }

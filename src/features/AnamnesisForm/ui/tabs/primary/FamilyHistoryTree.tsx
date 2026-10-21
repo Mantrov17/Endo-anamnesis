@@ -141,6 +141,31 @@ export const FamilyHistoryTree: React.FC = () => {
   const { watch, getValues, setValue } = useFormContext<AnamnesisFormData>();
 
   const tree = watch("familyHistoryTree") ?? {};
+  const probandStatus = tree.proband;
+
+  const probandStatusLabel =
+    probandStatus === "type1" ? "СД1" : probandStatus === "type2" ? "СД2" : "";
+
+  const probandStatusDescription =
+    probandStatus === "type1"
+      ? "сахарный диабет 1 типа"
+      : probandStatus === "type2"
+        ? "сахарный диабет 2 типа"
+        : "сахарный диабет не отмечен";
+
+  const probandFill =
+    probandStatus === "type1"
+      ? "#dff3ea"
+      : probandStatus === "type2"
+        ? "#fff0dc"
+        : "#f0f7f5";
+
+  const probandStroke =
+    probandStatus === "type1"
+      ? "#228269"
+      : probandStatus === "type2"
+        ? "#ad6f33"
+        : "#445d61";
 
   const handleCycle = (relativeId: RelativeId) => {
     const currentTree = getValues("familyHistoryTree") ?? {};
@@ -172,7 +197,7 @@ export const FamilyHistoryTree: React.FC = () => {
       <h4 className={styles.heading}>Семейная родословная</h4>
 
       <p className={styles.instruction}>
-        Нажмите на фигуру родственника:
+        Нажмите на фигуру родственника или пробанда:
         <span className={styles.inlineLegend}>
           пусто → <strong>СД1</strong> → <strong>СД2</strong>
         </span>
@@ -321,25 +346,46 @@ export const FamilyHistoryTree: React.FC = () => {
             );
           })}
 
-          {/* Пробанд */}
-          <g>
+          {/* Пробанд: тот же цикл СД1 / СД2 / без отметки. */}
+          <g
+            className={styles.relative}
+            role="button"
+            tabIndex={0}
+            aria-label={`Пробанд: ${probandStatusDescription}. Нажмите для изменения.`}
+            onClick={() => handleCycle("proband")}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                handleCycle("proband");
+              }
+            }}
+            transform="translate(350 386)"
+          >
+            <title>{`Пробанд: ${probandStatusDescription}`}</title>
+
             <path
-              d="
-                M 350 348
-                L 388 386
-                L 350 424
-                L 312 386
-                Z
-              "
-              fill="#f0f7f5"
-              stroke="#445d61"
+              className={styles.shape}
+              d="M 0 -38 L 38 0 L 0 38 L -38 0 Z"
+              fill={probandFill}
+              stroke={probandStroke}
               strokeWidth="2.8"
             />
 
+            {probandStatusLabel && (
+              <text
+                className={styles.statusText}
+                textAnchor="middle"
+                dominantBaseline="central"
+                y={1}
+              >
+                {probandStatusLabel}
+              </text>
+            )}
+
             <text
               className={styles.relativeLabel}
-              x={350}
-              y={454}
+              x={0}
+              y={68}
               textAnchor="middle"
             >
               Пробанд

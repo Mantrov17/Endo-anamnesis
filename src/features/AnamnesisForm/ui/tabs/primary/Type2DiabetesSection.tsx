@@ -28,6 +28,8 @@ export const Type2DiabetesSection: React.FC = () => {
   const { register, watch, setValue, control } =
     useFormContext<AnamnesisFormData>();
 
+  const birthDate = watch("birthDate");
+
   const hba1cTestedType2 = boolFromString(watch("type2Diabetes.hba1c.tested"));
 
   const hba1cUnknownType2 = watch("type2Diabetes.hba1c.unknown") === true;
@@ -64,6 +66,24 @@ export const Type2DiabetesSection: React.FC = () => {
           {...register("type2Diabetes.diseaseDuration")}
         />
       </div>
+
+      {/* Целевой HbA1c перенесён из раздела «Терапия». */}
+
+      <Input
+        label="Целевой уровень гликированного гемоглобина"
+        suffix="%"
+        placeholder={birthDate ? undefined : "Укажите дату рождения пациента"}
+        {...register("therapy.targetHba1c")}
+        readOnly
+        disabled={!birthDate}
+      />
+
+      {!birthDate && (
+        <div className={styles.warning}>
+          Целевой HbA1c не рассчитан, потому что дата рождения пациента не
+          указана. Укажите дату рождения в карточке пациента.
+        </div>
+      )}
 
       <div className={styles.radioGroup}>
         <label>Как был поставлен диагноз?</label>
@@ -282,18 +302,7 @@ export const Type2DiabetesSection: React.FC = () => {
         register={register}
       />
 
-      {familyHistoryDiabetes === true && (
-        <>
-          <FamilyHistoryTree />
-
-          <Textarea
-            label="Уточните наследственность"
-            placeholder="Дополнительная информация о родственниках"
-            {...register("type2Diabetes.familyHistoryDiabetesDetails")}
-            rows={3}
-          />
-        </>
-      )}
+      {familyHistoryDiabetes === true && <FamilyHistoryTree />}
     </div>
   );
 };

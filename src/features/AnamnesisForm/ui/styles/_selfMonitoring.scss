@@ -85,38 +85,153 @@
   );
 }
 
-/*
- * Компактное поле "Подробнее"
- * после списка мест инъекций.
- */
+/* =========================================
+   Подробнее о местах инъекций
+   ========================================= */
 
 .selfMonitoringDetailsField {
   width: 100%;
   max-width: 360px;
   min-width: 0;
 
-  margin-top: 10px;
+  margin-top: 9px;
+}
+
+/*
+ * Компактный заголовок со стрелкой.
+ * В закрытом виде не занимает лишнего места.
+ */
+
+.selfMonitoringDetailsToggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  box-sizing: border-box;
+
+  width: 100%;
+  min-height: 34px;
+
+  padding: 5px 9px;
+
+  background: #f7fbfa;
+  border: 1px solid #d8e8e3;
+  border-radius: 7px;
+
+  color: var(--text-primary, #203235);
+
+  font-family: inherit;
+  text-align: left;
+
+  cursor: pointer;
+  touch-action: manipulation;
+
+  transition:
+          background-color 150ms ease,
+          border-color 150ms ease;
+
+  &:hover {
+    background: #edf7f3;
+    border-color: #b5d7cb;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #217e78;
+    outline-offset: 2px;
+  }
+}
+
+.selfMonitoringDetailsTitle {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  font-size: 12.5px;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+/*
+ * Небольшой индикатор появляется,
+ * если дополнительный текст уже введён.
+ */
+
+.selfMonitoringDetailsFilled {
+  flex: 0 0 auto;
+
+  padding: 3px 6px;
+
+  border: 1px solid #c8e4da;
+  border-radius: 5px;
+
+  background: #eaf6f1;
+  color: #397f6d;
+
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/*
+ * Стрелка справа.
+ */
+
+.selfMonitoringDetailsArrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 19px;
+  height: 19px;
+
+  color: #528579;
+
+  font-size: 18px;
+  line-height: 1;
+
+  transition: transform 150ms ease;
+}
+
+.selfMonitoringDetailsArrowOpen {
+  transform: rotate(180deg);
+}
+
+/*
+ * Содержимое раскрываемого блока.
+ */
+
+.selfMonitoringDetailsBody {
+  min-width: 0;
+
+  padding-top: 6px;
 
   > div {
     margin-bottom: 0;
   }
 }
 
+.selfMonitoringDetailsBody[hidden] {
+  display: none;
+}
+
 /*
- * Используем общую Textarea,
- * сохраняющую автоматическое изменение высоты.
+ * Используем общий компонент Textarea,
+ * который автоматически увеличивает высоту.
  *
- * Минимальную высоту уменьшаем только
- * для данного поля.
+ * Обычный текст оставляем 16px,
+ * чтобы мобильные браузеры не масштабировали
+ * страницу при установке фокуса.
  */
 
 .selfMonitoringDetailsField .selfMonitoringDetailsTextarea {
   display: block;
 
-  width: 100%;
-  min-height: 38px;
-
   box-sizing: border-box;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
 
   padding: 7px 9px;
 
@@ -125,12 +240,25 @@
 
   resize: none;
   overflow-y: hidden;
+
+  /*
+   * Серую подсказку делаем заметно меньше,
+   * чем вводимый текст.
+   */
+
+  &::placeholder {
+    color: #8a9c9b;
+    opacity: 1;
+
+    font-size: 11.5px;
+    font-weight: 400;
+    line-height: 1.3;
+  }
 }
 
-/*
- * Компактные однострочные поля.
- * Не растягиваем их на всю ширину формы.
- */
+/* =========================================
+   Компактные однострочные поля
+   ========================================= */
 
 .selfMonitoringNarrowField {
   width: 100%;
@@ -138,9 +266,9 @@
   min-width: 0;
 }
 
-/*
- * Диапазон средней гликемии.
- */
+/* =========================================
+   Диапазон средней гликемии
+   ========================================= */
 
 .selfMonitoringRange {
   width: 100%;
@@ -174,9 +302,9 @@
   }
 }
 
-/*
- * Адаптация под смартфоны.
- */
+/* =========================================
+   Адаптация под смартфоны
+   ========================================= */
 
 @media (max-width: 640px) {
   .selfMonitoringChoiceGrid {
@@ -200,12 +328,21 @@
 
   .selfMonitoringDetailsField {
     max-width: 100%;
-    margin-top: 9px;
+    margin-top: 8px;
+  }
+
+  .selfMonitoringDetailsToggle {
+    min-height: 33px;
+    padding: 5px 8px;
   }
 
   .selfMonitoringDetailsField .selfMonitoringDetailsTextarea {
     min-height: 38px;
     padding: 7px 9px;
+
+    &::placeholder {
+      font-size: 11px;
+    }
   }
 
   .selfMonitoringNarrowField {
@@ -238,5 +375,16 @@
 
   .selfMonitoringRangeFields {
     gap: 5px;
+  }
+}
+
+/* =========================================
+   Уменьшенная анимация
+   ========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .selfMonitoringDetailsArrow,
+  .selfMonitoringDetailsToggle {
+    transition: none;
   }
 }

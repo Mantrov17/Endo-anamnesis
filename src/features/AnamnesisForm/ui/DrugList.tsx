@@ -26,6 +26,7 @@ export type DrugArrayPath =
   | "type1Diabetes.initialTherapy.activeInsulin"
   | "type1Diabetes.initialTherapy.bolusInsulin"
   | "type2Diabetes.initialTherapy"
+  | "gravesDisease.therapy.medications"
   | "therapy.currentDrugs"
   | "therapy.basalInsulin"
   | "therapy.prandialInsulin"

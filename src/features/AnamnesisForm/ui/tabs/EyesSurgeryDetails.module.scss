@@ -1,0 +1,83 @@
+
+/* Только для блока хирургического лечения глаз. */
+.surgerySection {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin-top: 15px;
+  padding: 12px;
+  border: 1px solid #d7e6e2;
+  border-radius: 10px;
+  background: #f5faf8;
+}
+
+.surgeryHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.surgeryList {
+  margin-top: 12px;
+  min-width: 0;
+}
+
+.injectionFields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.injectionNumber,
+.injectionFrequency {
+  min-width: 0;
+  width: 75px;
+}
+
+.injectionFrequency {
+  width: 92px;
+}
+
+.frequencyPeriod {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 115px;
+  max-width: 100%;
+  min-width: 0;
+
+  > span {
+    font-size: 12px;
+    font-weight: 650;
+    color: #445d61;
+  }
+
+  select {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 41px;
+    border: 1px solid #cfdfd9;
+    border-radius: 7px;
+    padding: 6px;
+    font-size: 16px;
+    background: #fff;
+    color: #203235;
+  }
+}
+
+@media (max-width: 640px) {
+  .surgerySection {
+    padding: 10px 8px;
+  }
+
+  .injectionFields {
+    gap: 6px;
+  }
+}

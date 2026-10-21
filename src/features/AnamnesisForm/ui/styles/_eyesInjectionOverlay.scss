@@ -23,6 +23,9 @@
   justify-items: center;
 
   min-width: 0;
+
+  /* Единая ширина картинки и её прозрачного слоя выбора. */
+  --eye-injection-size: 280px;
 }
 
 /* ===================================
@@ -35,8 +38,8 @@
   grid-column: 1;
   grid-row: 1;
 
-  width: min(100%, 390px);
-  max-width: 390px;
+  width: min(100%, var(--eye-injection-size));
+  max-width: var(--eye-injection-size);
 
   aspect-ratio: 1122 / 1154;
 
@@ -78,8 +81,8 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-template-rows: repeat(2, minmax(0, 1fr));
 
-  width: min(100%, 390px);
-  max-width: 390px;
+  width: min(100%, var(--eye-injection-size));
+  max-width: var(--eye-injection-size);
 
   aspect-ratio: 1122 / 1154;
 
@@ -300,6 +303,11 @@
    =================================== */
 
 @media (max-width: 640px) {
+  .eyesSection
+  .fieldset:has(> .eyesInjectionIllustration) {
+    --eye-injection-size: 250px;
+  }
+
   .eyesSection
   .eyesInjectionOptions
   > label:has(input:checked) {

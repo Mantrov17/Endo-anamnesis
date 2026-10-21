@@ -1,0 +1,119 @@
+
+/* Новые стили только для раздела терапии болезни Грейвса. */
+.questionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.correctionFields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 1px 0 3px 10px;
+  border-left: 2px solid #e5c39b;
+}
+
+.shortField {
+  width: 100%;
+  max-width: 310px;
+  min-width: 0;
+}
+
+.laboratory {
+  margin-top: 16px;
+  min-width: 0;
+}
+
+.labRow {
+  display: grid;
+  grid-template-columns: minmax(0, 90px) auto minmax(0, 142px);
+  gap: 8px;
+  align-items: end;
+  width: 100%;
+  max-width: 335px;
+  min-width: 0;
+  margin: 0 0 11px;
+}
+
+.labValue,
+.labDate {
+  min-width: 0;
+
+  > div {
+    margin-bottom: 0;
+  }
+
+  input {
+    width: 100%;
+    min-width: 0;
+    font-size: 16px;
+  }
+}
+
+.labUnit {
+  padding-bottom: 9px;
+  color: #52656d;
+  font-size: 11px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.antibodyList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.antibodyRow {
+  display: grid;
+  grid-template-columns: minmax(0, 100px) minmax(0, 95px) auto;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 300px;
+  min-width: 0;
+  font-size: 13px;
+
+  input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 38px;
+    padding: 6px 8px;
+    border: 1px solid #cddbd7;
+    border-radius: 7px;
+    background: #fff;
+    color: #203235;
+    font-size: 16px;
+  }
+
+  input:focus-visible {
+    outline: 2px solid #217e78;
+    outline-offset: 1px;
+  }
+}
+
+@media (max-width: 640px) {
+  .correctionFields {
+    padding-left: 7px;
+  }
+
+  .labRow {
+    grid-template-columns: minmax(0, 78px) auto minmax(0, 128px);
+    gap: 6px;
+    max-width: 310px;
+  }
+
+  .labUnit {
+    font-size: 10.5px;
+  }
+
+  .antibodyRow {
+    grid-template-columns: minmax(0, 85px) minmax(0, 86px) auto;
+    gap: 6px;
+  }
+}

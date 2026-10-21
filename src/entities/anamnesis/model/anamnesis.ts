@@ -32,6 +32,8 @@ import type {
  *
  * Отцовская и материнская линии хранятся
  * раздельно, чтобы не путать родственников.
+ *
+ * Пробанд — пациент, для которого заполняется анамнез.
  */
 export type FamilyRelativeId =
   | "paternalGrandfather"
@@ -45,7 +47,8 @@ export type FamilyRelativeId =
   | "maternalAunt"
   | "mother"
   | "sister"
-  | "brother";
+  | "brother"
+  | "proband";
 
 /*
  * Отсутствие ключа означает:

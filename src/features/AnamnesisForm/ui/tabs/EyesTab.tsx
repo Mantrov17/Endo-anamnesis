@@ -1,24 +1,22 @@
 import React, { useState } from "react";
-
 import { type Path, useFormContext } from "react-hook-form";
 
 import type { AnamnesisFormData } from "@/entities/anamnesis";
-
 import { boolFromString } from "@/shared/lib/boolFromString";
-
 import { DateField } from "@/shared/ui/DateInput";
 import { Input } from "@/shared/ui/Input";
-
 import { YesNo } from "../YesNo";
+import { EyesAcuityFields } from "./EyesAcuityFields";
 
 import eyeInjectionImage from "@/shared/assets/eyes/eyeInjection.png";
 import normalEyeIcon from "@/shared/assets/eyes/normalEye.png";
 import crossedEyeIcon from "@/shared/assets/eyes/crossedEye.png";
 
 import styles from "../styles.module.scss";
+import detailStyles from "./EyesSymptomDetails.module.scss";
+import surgeryStyles from "./EyesSurgeryDetails.module.scss";
 
 type EyesData = NonNullable<AnamnesisFormData["eyes"]>;
-
 type OtherSymptomKey = keyof EyesData["otherSymptoms"];
 type ExternalSignKey = keyof EyesData["externalExam"];
 type NamedSignKey = keyof EyesData["namedSigns"];
@@ -60,10 +58,7 @@ const VISUAL_PHENOMENA = [
   },
 ] as const;
 
-const OTHER_SYMPTOMS: {
-  key: OtherSymptomKey;
-  label: string;
-}[] = [
+const OTHER_SYMPTOMS: { key: OtherSymptomKey; label: string }[] = [
   { key: "pain", label: "Боль и резь в глазах" },
   { key: "tearing", label: "Слёзотечение" },
   { key: "dryness", label: "Сухость" },
@@ -81,6 +76,8 @@ const EXTERNAL_SIGNS: {
   { key: "mydriasis", label: "Мидриаз" },
   { key: "enophthalmos", label: "Энофтальм" },
   { key: "eyelidEdema", label: "Отёк век", score: true },
+  { key: "eyelidErythema", label: "Эритема век", score: true },
+  { key: "strabismus", label: "Косоглазие" },
   {
     key: "caruncleInflammation",
     label: "Воспаление карункулы (слёзного мясца)",
@@ -89,6 +86,19 @@ const EXTERNAL_SIGNS: {
   { key: "hemophthalmos", label: "Гемофтальм" },
   { key: "hyphema", label: "Гифема" },
 ];
+
+const PAIN_CHARACTERISTICS = [
+  { key: "constant", label: "Постоянная" },
+  { key: "spontaneous", label: "Спонтанная" },
+  { key: "onMovement", label: "При движении" },
+  { key: "spontaneousRetrobulbar", label: "Спонтанная ретробульбарная" },
+] as const;
+
+const STRABISMUS_TYPES = [
+  { value: "hypotropia", label: "Гипотропия (вниз)" },
+  { value: "exotropia", label: "Экзотропия (кнаружи)" },
+  { value: "esotropia", label: "Эзотропия (кнутри)" },
+] as const;
 
 const INJECTION_TYPES = [
   { value: "normal", label: "Норма" },
@@ -110,152 +120,136 @@ const HEMIANOPIA_TYPES = [
   },
 ] as const;
 
-const SURGERIES: {
-  key: SurgeryKey;
-  label: string;
-}[] = [
-  {
-    key: "retinalLaser",
-    label: "Лазерная коагуляция сетчатки глаза",
-  },
+const SURGERIES: { key: SurgeryKey; label: string }[] = [
+  { key: "retinalLaser", label: "Лазерная коагуляция сетчатки глаза" },
   { key: "lensReplacement", label: "Замена хрусталика" },
-  {
-    key: "intravitrealInjection",
-    label: "Интравитреальные инъекции",
-  },
+  { key: "intravitrealInjection", label: "Интравитреальные инъекции" },
 ];
 
 const MOVEMENT_DIRECTIONS = [
-  {
-    key: "up",
-    label: "Вверх (нижняя прямая мышца)",
-    score: true,
-  },
-  {
-    key: "outward",
-    label: "Наружу (медиальная прямая мышца)",
-    score: false,
-  },
-  {
-    key: "down",
-    label: "Вниз (верхняя прямая мышца)",
-    score: true,
-  },
-  {
-    key: "inward",
-    label: "Внутрь (латеральная прямая мышца)",
-    score: false,
-  },
+  { key: "up", label: "Вверх (нижняя прямая мышца)" },
+  { key: "outward", label: "Наружу (медиальная прямая мышца)" },
+  { key: "down", label: "Вниз (верхняя прямая мышца)" },
+  { key: "inward", label: "Внутрь (латеральная прямая мышца)" },
 ] as const;
 
-const NAMED_SIGNS: {
-  key: NamedSignKey;
-  name: string;
-  description: string;
-}[] = [
-  {
-    key: "stellwag",
-    name: "Симптом Штельвага",
-    description: "Редкое моргание, «неподвижный взгляд»",
-  },
-  {
-    key: "moebius",
-    name: "Симптом Мебиуса",
-    description: "Слабость конвергенции",
-  },
-  {
-    key: "graefe",
-    name: "Симптом Грефе",
-    description:
-      "Отставание верхнего века от радужной оболочки при взгляде вниз; белая полоска склеры",
-  },
-  {
-    key: "kocher",
-    name: "Симптом Кохера",
-    description:
-      "Отставание нижнего века от радужной оболочки при взгляде вверх; белая полоска склеры",
-  },
-  {
-    key: "horner",
-    name: "Синдром Горнера",
-    description: "Птоз, миоз, энофтальм",
-  },
-  {
-    key: "marie",
-    name: "Синдром Мари",
-    description:
-      "Повышенная возбудимость, снижение концентрации внимания, дрожь, плаксивость",
-  },
-  {
-    key: "jellinek",
-    name: "Симптом Еллинека",
-    description: "Потемнение кожи вокруг глаз",
-  },
-  {
-    key: "dalrymple",
-    name: "Симптом Дальримпля",
-    description:
-      "Широкая глазная щель, лагофтальм (невозможность полного смыкания век)",
-  },
-  {
-    key: "joffroy",
-    name: "Симптом Жоффруа",
-    description: "Отсутствие наморщивания лба при взгляде вверх",
-  },
-  {
-    key: "botkin",
-    name: "Симптом Боткина",
-    description:
-      "Мимолётное широкое раскрытие глазных щелей при фиксации взгляда",
-  },
-  {
-    key: "rosenbach",
-    name: "Симптом Розенбаха",
-    description: "Мелкий тремор закрытых век",
-  },
-  {
-    key: "repnevMelekhov",
-    name: "Симптом Репнева — Мелехова",
-    description: "Гневный взгляд",
-  },
-];
+const NAMED_SIGNS: { key: NamedSignKey; name: string; description: string }[] =
+  [
+    {
+      key: "stellwag",
+      name: "Симптом Штельвага",
+      description: "Редкое моргание, «неподвижный взгляд»",
+    },
+    {
+      key: "moebius",
+      name: "Симптом Мебиуса",
+      description: "Слабость конвергенции",
+    },
+    {
+      key: "graefe",
+      name: "Симптом Грефе",
+      description:
+        "Отставание верхнего века от радужной оболочки при взгляде вниз; белая полоска склеры",
+    },
+    {
+      key: "kocher",
+      name: "Симптом Кохера",
+      description:
+        "Отставание нижнего века от радужной оболочки при взгляде вверх; белая полоска склеры",
+    },
+    {
+      key: "horner",
+      name: "Синдром Горнера",
+      description: "Птоз, миоз, энофтальм",
+    },
+    {
+      key: "marie",
+      name: "Синдром Мари",
+      description:
+        "Повышенная возбудимость, снижение концентрации внимания, дрожь, плаксивость",
+    },
+    {
+      key: "jellinek",
+      name: "Симптом Еллинека",
+      description: "Потемнение кожи вокруг глаз",
+    },
+    {
+      key: "dalrymple",
+      name: "Симптом Дальримпля",
+      description:
+        "Широкая глазная щель, лагофтальм (невозможность полного смыкания век)",
+    },
+    {
+      key: "joffroy",
+      name: "Симптом Жоффруа",
+      description: "Отсутствие наморщивания лба при взгляде вверх",
+    },
+    {
+      key: "botkin",
+      name: "Симптом Боткина",
+      description:
+        "Мимолётное широкое раскрытие глазных щелей при фиксации взгляда",
+    },
+    {
+      key: "rosenbach",
+      name: "Симптом Розенбаха",
+      description: "Мелкий тремор закрытых век",
+    },
+    {
+      key: "repnevMelekhov",
+      name: "Симптом Репнева — Мелехова",
+      description: "Гневный взгляд",
+    },
+  ];
 
-/** Возраст на дату начала ухудшения зрения. */
 const getAgeAtDate = (
   birthDate?: string,
   eventDate?: string,
 ): number | null => {
   if (!birthDate || !eventDate) return null;
-
   const birth = /^(\d{4})-(\d{2})-(\d{2})$/.exec(birthDate);
   const event = /^(\d{4})-(\d{2})-(\d{2})$/.exec(eventDate);
-
   if (!birth || !event) return null;
-
   const by = Number(birth[1]);
   const bm = Number(birth[2]);
   const bd = Number(birth[3]);
-
   const ey = Number(event[1]);
   const em = Number(event[2]);
   const ed = Number(event[3]);
-
   const age = ey - by - (em < bm || (em === bm && ed < bd) ? 1 : 0);
-
   return age >= 0 && age <= 130 ? age : null;
 };
 
-/** Универсальный выбор стороны для отдельного проявления. */
+const toNullableNumber = (value: unknown): number | null => {
+  if (value === "" || value === undefined || value === null) return null;
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? number : null;
+};
+
 const EyeSidePicker: React.FC<{
   name: Path<AnamnesisFormData>;
   label?: string;
-}> = ({ name, label = "Какой глаз?" }) => {
+  compact?: boolean;
+}> = ({ name, label = "Какой глаз?", compact = false }) => {
   const { register } = useFormContext<AnamnesisFormData>();
-
+  if (compact) {
+    return (
+      <fieldset className={detailStyles.compactSidePicker}>
+        <legend className={detailStyles.visuallyHidden}>Глаз</legend>
+        <div className={detailStyles.compactSideChoices}>
+          {EYE_SIDES.map((side) => (
+            <label key={side.value} title={side.label}>
+              <input type="radio" value={side.value} {...register(name)} />
+              <span>{side.value}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    );
+  }
   return (
     <fieldset className={styles.eyesSideGroup}>
       <legend>{label}</legend>
-
       <div className={styles.eyesSideOptions}>
         {EYE_SIDES.map((side) => (
           <label key={side.value}>
@@ -268,7 +262,6 @@ const EyeSidePicker: React.FC<{
   );
 };
 
-/** Один симптом с самостоятельным выбором OS / OD / OU. */
 const SymptomWithSide: React.FC<{
   name:
     | `eyes.otherSymptoms.${OtherSymptomKey}`
@@ -277,19 +270,13 @@ const SymptomWithSide: React.FC<{
   score?: boolean;
 }> = ({ name, label, score }) => {
   const { register, watch } = useFormContext<AnamnesisFormData>();
-
   const presentPath = `${name}.present` as Path<AnamnesisFormData>;
-
   const sidePath = `${name}.eye` as Path<AnamnesisFormData>;
-
   const selected = watch(presentPath) === true;
-
   return (
     <div className={styles.eyesSymptomItem}>
       <label
-        className={`${styles.eyesCheckboxCard} ${
-          selected ? styles.eyesCheckboxSelected : ""
-        }`}
+        className={`${styles.eyesCheckboxCard} ${selected ? styles.eyesCheckboxSelected : ""}`}
       >
         <input type="checkbox" {...register(presentPath)} />
         <span>
@@ -297,51 +284,126 @@ const SymptomWithSide: React.FC<{
           {score && <b className={styles.eyesPoint}> [1 балл]</b>}
         </span>
       </label>
-
       {selected && (
         <div className={styles.eyesInlineSide}>
-          <EyeSidePicker name={sidePath} />
+          <EyeSidePicker name={sidePath} compact />
+          {name === "eyes.otherSymptoms.pain" && (
+            <fieldset className={detailStyles.variantGroup}>
+              <legend>Характер боли</legend>
+              <div className={detailStyles.variantChoices}>
+                {PAIN_CHARACTERISTICS.map((item) => (
+                  <label key={item.key}>
+                    <input
+                      type="checkbox"
+                      {...register(
+                        `eyes.otherSymptoms.pain.characteristics.${item.key}`,
+                      )}
+                    />
+                    <span>
+                      {item.label}
+                      {item.key === "spontaneousRetrobulbar" && (
+                        <b className={styles.eyesPoint}> [1 балл CAS]</b>
+                      )}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          )}
+          {name === "eyes.externalExam.strabismus" && (
+            <fieldset className={detailStyles.variantGroup}>
+              <legend>Вид косоглазия</legend>
+              <div className={detailStyles.variantChoices}>
+                {STRABISMUS_TYPES.map((item) => (
+                  <label key={item.value}>
+                    <input
+                      type="radio"
+                      value={item.value}
+                      {...register("eyes.externalExam.strabismus.type")}
+                    />
+                    <span>{item.label}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          )}
         </div>
       )}
     </div>
   );
 };
 
-/** Операция: собственная дата и собственный выбор глаза. */
-const SurgeryItem: React.FC<{
-  surgeryKey: SurgeryKey;
-  label: string;
-}> = ({ surgeryKey, label }) => {
+const SurgeryItem: React.FC<{ surgeryKey: SurgeryKey; label: string }> = ({
+  surgeryKey,
+  label,
+}) => {
   const { register, watch, setValue } = useFormContext<AnamnesisFormData>();
-
   const base = `eyes.surgeries.${surgeryKey}` as const;
-
   const selected = watch(`${base}.selected`) === true;
-
+  const isInjection = surgeryKey === "intravitrealInjection";
   return (
     <div className={styles.eyesSymptomItem}>
       <label
-        className={`${styles.eyesCheckboxCard} ${
-          selected ? styles.eyesCheckboxSelected : ""
-        }`}
+        className={`${styles.eyesCheckboxCard} ${selected ? styles.eyesCheckboxSelected : ""}`}
       >
         <input type="checkbox" {...register(`${base}.selected`)} />
         <span>{label}</span>
       </label>
-
       {selected && (
         <div className={styles.eyesSurgeryDetails}>
-          <div className={styles.eyesDateField}>
-            <DateField
-              label="Дата проведения"
-              name={`${base}.date`}
-              watch={watch}
-              setValue={setValue}
-              placeholder="дд.мм.гггг"
-            />
-          </div>
-
-          <EyeSidePicker name={`${base}.eye`} />
+          {isInjection ? (
+            <div className={surgeryStyles.injectionFields}>
+              <div className={surgeryStyles.injectionNumber}>
+                <Input
+                  label="№"
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  step={1}
+                  {...register("eyes.surgeries.intravitrealInjection.number", {
+                    setValueAs: toNullableNumber,
+                  })}
+                />
+              </div>
+              <div className={surgeryStyles.injectionFrequency}>
+                <Input
+                  label="Кратность"
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  step={1}
+                  {...register(
+                    "eyes.surgeries.intravitrealInjection.frequency",
+                    { setValueAs: toNullableNumber },
+                  )}
+                />
+              </div>
+              <label className={surgeryStyles.frequencyPeriod}>
+                <span>Период</span>
+                <select
+                  {...register(
+                    "eyes.surgeries.intravitrealInjection.frequencyPeriod",
+                  )}
+                >
+                  <option value="">Выбрать</option>
+                  <option value="day">День</option>
+                  <option value="week">Неделя</option>
+                  <option value="month">Месяц</option>
+                </select>
+              </label>
+            </div>
+          ) : (
+            <div className={styles.eyesDateField}>
+              <DateField
+                label="Дата проведения"
+                name={`${base}.date`}
+                watch={watch}
+                setValue={setValue}
+                placeholder="дд.мм.гггг"
+              />
+            </div>
+          )}
+          <EyeSidePicker name={`${base}.eye`} compact />
         </div>
       )}
     </div>
@@ -350,188 +412,98 @@ const SurgeryItem: React.FC<{
 
 export const EyesTab: React.FC = () => {
   const { register, watch, setValue } = useFormContext<AnamnesisFormData>();
-
   const [showCasDetails, setShowCasDetails] = useState(false);
 
   const acuityDecline = boolFromString(watch("eyes.decreasedVisualAcuity"));
-
   const cataract = boolFromString(watch("eyes.cataract"));
   const glaucoma = boolFromString(watch("eyes.glaucoma"));
-
   const showInitialDetails =
     acuityDecline === true || cataract === true || glaucoma === true;
-
   const deteriorationDate = watch("eyes.deteriorationDate");
-
   const ageAtDeterioration = getAgeAtDate(
     watch("birthDate"),
     deteriorationDate,
   );
-
   const diagnosis = watch("primaryExam.suspectedDiagnosis");
-
   const hasDiabetes = diagnosis === "type1" || diagnosis === "type2";
-
   const smoking = boolFromString(watch("lifestyle.smoking"));
-
   const course = watch("eyes.deteriorationCourse");
-
   const colorDistortion =
     watch("eyes.visualPhenomena.colorDistortion") === true;
-
   const diplopia = boolFromString(watch("eyes.diplopia"));
-
   const peripheralVisionTest = boolFromString(
     watch("eyes.peripheralVisionTest"),
   );
-
   const eyeDrops = boolFromString(watch("eyes.eyeDrops"));
-
   const eop = boolFromString(watch("eyes.endocrineOphthalmopathy"));
-
   const movementImpairment = boolFromString(watch("eyes.movementImpairment"));
-
-  const eopDiplopia = boolFromString(watch("eyes.eopDiplopia"));
-
-  const eopPtosis = boolFromString(watch("eyes.eopPtosis"));
-
   const ctOrbits = boolFromString(watch("eyes.ctOrbits"));
-
   const vesselInjection = watch("eyes.vesselInjection");
-
   const chemosis = boolFromString(watch("eyes.chemosis"));
-
   const eyelidEdema = watch("eyes.externalExam.eyelidEdema.present") === true;
-
+  const eyelidErythema =
+    watch("eyes.externalExam.eyelidErythema.present") === true;
+  const eyePain = watch("eyes.otherSymptoms.pain.present") === true;
+  const spontaneousRetrobulbarPain =
+    watch("eyes.otherSymptoms.pain.characteristics.spontaneousRetrobulbar") ===
+    true;
   const caruncleInflammation =
     watch("eyes.externalExam.caruncleInflammation.present") === true;
-
   const periorbitalEdema = boolFromString(watch("eyes.periorbitalEdema"));
+  const painUp = watch("eyes.movementPainDirections.up") === true;
+  const painDown = watch("eyes.movementPainDirections.down") === true;
 
-  const scleralInjection = boolFromString(watch("eyes.scleralInjection"));
+  // Старые операции без переключателя не исчезнут.
+  const surgeryChoice = watch("eyes.surgicalTreatment");
+  const hasOldSurgerySelection =
+    watch("eyes.surgeries.retinalLaser.selected") === true ||
+    watch("eyes.surgeries.lensReplacement.selected") === true ||
+    watch("eyes.surgeries.intravitrealInjection.selected") === true;
+  const surgeryEnabled =
+    surgeryChoice === true || (surgeryChoice == null && hasOldSurgerySelection);
 
-  const upperRestriction = watch("eyes.movementDirections.up") === true;
+  const toggleMovementPain = (
+    key: (typeof MOVEMENT_DIRECTIONS)[number]["key"],
+  ) => {
+    const path = `eyes.movementPainDirections.${key}` as const;
+    setValue(path, !watch(path), { shouldDirty: true, shouldTouch: true });
+  };
 
-  const lowerRestriction = watch("eyes.movementDirections.down") === true;
-
-  /*
-   * Шкала CAS: каждый из семи признаков
-   * может дать максимум один балл.
-   *
-   * Повторяющиеся вопросы объединены:
-   * например, отёк век и периорбитальный отёк
-   * учитываются вместе, а не как два балла.
-   */
   const casCriteria = [
     {
       label: "Спонтанная ретробульбарная боль",
-      active: watch("eyes.cas.retrobulbarPain") === true,
+      active: eyePain && spontaneousRetrobulbarPain,
     },
     {
       label: "Боль при взгляде вверх или вниз",
-      active:
-        watch("eyes.cas.gazePain") === true ||
-        (movementImpairment === true && (upperRestriction || lowerRestriction)),
+      active: movementImpairment === true && (painUp || painDown),
     },
-    {
-      label: "Покраснение век (эритема)",
-      active: watch("eyes.cas.eyelidRedness") === true,
-    },
+    { label: "Покраснение век (эритема)", active: eyelidErythema },
     {
       label: "Инъекция конъюнктивы",
-      active:
-        vesselInjection === "conjunctival" ||
-        vesselInjection === "mixed" ||
-        scleralInjection === true,
+      active: vesselInjection === "conjunctival" || vesselInjection === "mixed",
     },
-    {
-      label: "Отёк век",
-      active: eyelidEdema || periorbitalEdema === true,
-    },
-    {
-      label: "Хемоз (отёк конъюнктивы)",
-      active: chemosis === true,
-    },
-    {
-      label: "Воспаление карункулы",
-      active: caruncleInflammation,
-    },
+    { label: "Отёк век", active: eyelidEdema || periorbitalEdema === true },
+    { label: "Хемоз (отёк конъюнктивы)", active: chemosis === true },
+    { label: "Воспаление карункулы", active: caruncleInflammation },
   ];
-
   const casScore = casCriteria.filter((item) => item.active).length;
-
-  const updateEop = (checked: boolean) => {
-    setValue("eyes.endocrineOphthalmopathy", checked, {
-      shouldDirty: true,
-      shouldTouch: true,
-    });
-  };
 
   return (
     <div className={`${styles.section} ${styles.eyesSection}`}>
       <h3>Глаза</h3>
-
-      {/* ==================================
-          1. Ранее добавленные глазные вопросы
-          ================================== */}
-
       <YesNo
         label="Снижение остроты зрения"
         name="eyes.decreasedVisualAcuity"
         register={register}
       />
-
-      {acuityDecline === true && (
-        <>
-          <div className={styles.eyesAcuityRow}>
-            <fieldset className={styles.eyesSignGroup}>
-              <legend>Знак</legend>
-
-              <div className={styles.eyesSignOptions}>
-                {(["+", "-"] as const).map((sign) => (
-                  <label key={sign}>
-                    <input
-                      type="radio"
-                      value={sign}
-                      {...register("eyes.visualAcuitySign")}
-                    />
-                    {sign === "-" ? "−" : "+"}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-
-            <div className={styles.eyesAcuityValue}>
-              <Input
-                label="Значение"
-                type="number"
-                inputMode="decimal"
-                min={0}
-                step="any"
-                placeholder="0.5"
-                {...register("eyes.visualAcuityValue", {
-                  setValueAs: (value: unknown) =>
-                    value === "" || value == null ? null : Number(value),
-                })}
-              />
-            </div>
-          </div>
-
-          <EyeSidePicker
-            name="eyes.decreasedVisualAcuityEye"
-            label="Снижение остроты зрения — глаз"
-          />
-        </>
-      )}
+      {acuityDecline === true && <EyesAcuityFields />}
 
       <YesNo label="Катаракта" name="eyes.cataract" register={register} />
-
       {cataract === true && (
         <EyeSidePicker name="eyes.cataractEye" label="Катаракта — глаз" />
       )}
-
       <YesNo label="Глаукома" name="eyes.glaucoma" register={register} />
-
       {glaucoma === true && (
         <EyeSidePicker name="eyes.glaucomaEye" label="Глаукома — глаз" />
       )}
@@ -547,14 +519,12 @@ export const EyesTab: React.FC = () => {
                 setValue={setValue}
               />
             </div>
-
             <span className={styles.eyesAgeInfo}>
               {ageAtDeterioration === null
                 ? "Возраст начала ухудшения: не определён"
                 : `Возраст начала ухудшения: ${ageAtDeterioration} лет`}
             </span>
           </div>
-
           {hasDiabetes && (
             <fieldset className={styles.eyesSideGroup}>
               <legend>Ухудшение зрения относительно диабета</legend>
@@ -578,10 +548,8 @@ export const EyesTab: React.FC = () => {
               </div>
             </fieldset>
           )}
-
           <div className={styles.radioGroup}>
             <label>Характер снижения</label>
-
             <label>
               <input
                 type="radio"
@@ -590,7 +558,6 @@ export const EyesTab: React.FC = () => {
               />
               Постепенно
             </label>
-
             <label>
               <input
                 type="radio"
@@ -599,7 +566,6 @@ export const EyesTab: React.FC = () => {
               />
               Внезапно
             </label>
-
             <label>
               <input
                 type="radio"
@@ -609,11 +575,9 @@ export const EyesTab: React.FC = () => {
               Периодическое
             </label>
           </div>
-
           {course === "periodic" && (
             <fieldset className={styles.fieldset}>
               <legend>Условия периодического снижения зрения</legend>
-
               <div className={styles.eyesChoiceGrid}>
                 {PERIODIC_TRIGGERS.map((item) => (
                   <label key={item.name}>
@@ -624,28 +588,23 @@ export const EyesTab: React.FC = () => {
               </div>
             </fieldset>
           )}
-
           <YesNo
             label='Никталопия ("куриная слепота")'
             name="eyes.nyctalopia"
             register={register}
           />
-
           <YesNo
             label="Замедленная адаптация к темноте"
             name="eyes.delayedDarkAdaptation"
             register={register}
           />
-
           <YesNo
             label="Расплывчатость зрения"
             name="eyes.blurredVision"
             register={register}
           />
-
           <fieldset className={styles.fieldset}>
             <legend>Зрительные феномены</legend>
-
             <div className={styles.eyesChoiceGrid}>
               {VISUAL_PHENOMENA.map((item) => (
                 <label key={item.name}>
@@ -654,7 +613,6 @@ export const EyesTab: React.FC = () => {
                 </label>
               ))}
             </div>
-
             {colorDistortion && (
               <div className={styles.eyesColorField}>
                 <Input
@@ -668,13 +626,8 @@ export const EyesTab: React.FC = () => {
         </div>
       )}
 
-      {/* ==================================
-          2. Прочие симптомы
-          ================================== */}
-
       <fieldset className={styles.fieldset}>
         <legend>Прочие симптомы</legend>
-
         <div className={styles.eyesSymptomList}>
           {OTHER_SYMPTOMS.map((item) => (
             <SymptomWithSide
@@ -687,7 +640,6 @@ export const EyesTab: React.FC = () => {
       </fieldset>
 
       <YesNo label="Диплопия" name="eyes.diplopia" register={register} />
-
       {diplopia === true && (
         <div className={styles.eyesChoiceGrid}>
           <label>
@@ -697,7 +649,6 @@ export const EyesTab: React.FC = () => {
             />
             <span>Постоянная</span>
           </label>
-
           <label>
             <input
               type="checkbox"
@@ -708,13 +659,8 @@ export const EyesTab: React.FC = () => {
         </div>
       )}
 
-      {/* ==================================
-          3. Внешний осмотр
-          ================================== */}
-
       <fieldset className={styles.fieldset}>
         <legend>Внешний осмотр</legend>
-
         <div className={styles.eyesSymptomList}>
           {EXTERNAL_SIGNS.map((item) => (
             <SymptomWithSide
@@ -727,22 +673,15 @@ export const EyesTab: React.FC = () => {
         </div>
       </fieldset>
 
-      {/* ==================================
-          4. Инъекция сосудов
-          ================================== */}
-
       <fieldset className={styles.fieldset}>
         <legend>Инъекция сосудов</legend>
-
         <div className={styles.eyesInjectionIllustration}>
           <img
             src={eyeInjectionImage}
             alt="Схема: конъюнктивальная, перикорнеальная, смешанная инъекция сосудов и норма"
           />
         </div>
-
         <p className={styles.eyesMuted}>Выберите один вариант по схеме.</p>
-
         <div className={styles.eyesInjectionOptions}>
           {INJECTION_TYPES.map((item) => (
             <label
@@ -756,7 +695,6 @@ export const EyesTab: React.FC = () => {
                 value={item.value}
                 {...register("eyes.vesselInjection")}
               />
-
               <span>
                 {item.label}
                 {item.value === "conjunctival" && (
@@ -768,30 +706,17 @@ export const EyesTab: React.FC = () => {
         </div>
       </fieldset>
 
-      {/* ==================================
-          5. Поля зрения
-          ================================== */}
-
-      <YesNo
-        label="Выпадение боковых полей зрения?"
-        name="eyes.visualFieldLoss"
-        register={register}
-      />
-
-      <fieldset className={styles.fieldset}>
-        <legend>Осмотр — определение периферического зрения</legend>
-
-        <p className={styles.eyesMuted}>
+      <section className={detailStyles.objectiveExam}>
+        <h4 className={detailStyles.objectiveExamTitle}>Объективный осмотр</h4>
+        <p className={detailStyles.objectiveExamInstruction}>
           Проведение: попросить пациента следить глазами за карандашом, не
           поворачивая голову.
         </p>
-
         <YesNo
-          label="Выявлены нарушения периферического зрения?"
+          label="Нарушение периферического зрения"
           name="eyes.peripheralVisionTest"
           register={register}
         />
-
         {peripheralVisionTest === true && (
           <div className={styles.eyesSingleChoice}>
             {HEMIANOPIA_TYPES.map((item) => (
@@ -806,65 +731,71 @@ export const EyesTab: React.FC = () => {
             ))}
           </div>
         )}
-      </fieldset>
-
-      <YesNo
-        label="Определение хемоза"
-        name="eyes.chemosis"
-        register={register}
-      />
-
-      {chemosis === true && (
-        <p className={styles.eyesPointInfo}>Хемоз отмечен — 1 балл CAS.</p>
-      )}
-
-      {/* ==================================
-          6. Наблюдение и лечение
-          ================================== */}
-
-      <Input
-        label="Наблюдение у офтальмолога?"
-        placeholder="Укажите сведения о наблюдении"
-        {...register("eyes.ophthalmologistFollowUp")}
-      />
-
-      <YesNo
-        label="Лекарственные глазные капли?"
-        name="eyes.eyeDrops"
-        register={register}
-      />
-
-      {eyeDrops === true && (
-        <Input
-          label="Какие глазные капли?"
-          placeholder="Название, дозировка, кратность"
-          {...register("eyes.eyeDropsDetails")}
+        <div className={detailStyles.objectiveExamDivider} />
+        <YesNo
+          label="Ограничение подвижности"
+          name="eyes.movementImpairment"
+          register={register}
         />
-      )}
+        {movementImpairment === true && (
+          <fieldset className={detailStyles.movementFieldset}>
+            <legend>Ограничение движения по направлениям</legend>
+            <p className={detailStyles.movementHint}>
+              Отметьте ограничение движения галочкой. Если при движении
+              возникает боль, нажмите значок ⚡ напротив направления.
+            </p>
+            <div className={detailStyles.movementList}>
+              {MOVEMENT_DIRECTIONS.map((item) => {
+                const hasPain =
+                  watch(`eyes.movementPainDirections.${item.key}`) === true;
+                return (
+                  <div key={item.key} className={detailStyles.movementRow}>
+                    <label className={detailStyles.movementCheckbox}>
+                      <input
+                        type="checkbox"
+                        {...register(`eyes.movementDirections.${item.key}`)}
+                      />
+                      <span>{item.label}</span>
+                    </label>
+                    <button
+                      type="button"
+                      className={`${detailStyles.painButton} ${hasPain ? detailStyles.painActive : ""}`}
+                      aria-pressed={hasPain}
+                      aria-label={`${item.label}: ${hasPain ? "убрать отметку боли" : "отметить боль"}`}
+                      title={
+                        hasPain
+                          ? "Боль отмечена — нажмите для снятия"
+                          : "Отметить боль при движении"
+                      }
+                      onClick={() => toggleMovementPain(item.key)}
+                    >
+                      <span aria-hidden="true">⚡</span>
+                      <span className={detailStyles.painText}>Боль</span>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </fieldset>
+        )}
+        <div className={detailStyles.objectiveExamDivider} />
+        <YesNo
+          label="Хемоз (отёк конъюнктивы)"
+          name="eyes.chemosis"
+          register={register}
+        />
+        {chemosis === true && (
+          <p className={detailStyles.objectiveExamCas}>
+            Хемоз отмечен — +1 балл CAS.
+          </p>
+        )}
+      </section>
 
-      <fieldset className={styles.fieldset}>
-        <legend>Хирургическое лечение глаз</legend>
-
-        <div className={styles.eyesSymptomList}>
-          {SURGERIES.map((item) => (
-            <SurgeryItem
-              key={item.key}
-              surgeryKey={item.key}
-              label={item.label}
-            />
-          ))}
-        </div>
-      </fieldset>
-
-      {/* ==================================
-          7. Эндокринная офтальмопатия
-          ================================== */}
-
+      {/* ЭОП, включая КТ орбит. */}
       <div className={styles.eyesEopSection}>
         <div className={styles.eyesEopHeading}>
           <div className={styles.eyesEopTitle}>
             <strong>Эндокринная офтальмопатия</strong>
-
             {eop === true && smoking === true && (
               <span
                 className={styles.eyesSmokingWarning}
@@ -876,20 +807,23 @@ export const EyesTab: React.FC = () => {
               </span>
             )}
           </div>
-
           <label className={styles.eyesSwitch}>
             <input
               type="checkbox"
               role="switch"
               checked={eop === true}
-              onChange={(event) => updateEop(event.target.checked)}
+              onChange={(event) =>
+                setValue("eyes.endocrineOphthalmopathy", event.target.checked, {
+                  shouldDirty: true,
+                  shouldTouch: true,
+                })
+              }
               aria-label="Эндокринная офтальмопатия"
             />
             <span className={styles.eyesSwitchTrack} />
             <span>{eop === true ? "Да" : "Нет"}</span>
           </label>
         </div>
-
         {eop === true && (
           <div className={styles.eyesEopContent}>
             <YesNo
@@ -897,126 +831,46 @@ export const EyesTab: React.FC = () => {
               name="eyes.exophthalmos"
               register={register}
             />
-
             <YesNo
               label="Периорбитальный отёк"
               name="eyes.periorbitalEdema"
               register={register}
             />
-
-            <YesNo
-              label="Инъекция сосудов склер"
-              name="eyes.scleralInjection"
-              register={register}
-            />
-
-            <YesNo
-              label="Ограничение подвижности, болезненность при движении"
-              name="eyes.movementImpairment"
-              register={register}
-            />
-
-            {movementImpairment === true && (
-              <fieldset className={styles.fieldset}>
-                <legend>Ограничение движения по направлениям</legend>
-
-                <div className={styles.eyesChoiceGrid}>
-                  {MOVEMENT_DIRECTIONS.map((item) => (
-                    <label key={item.key}>
-                      <input
-                        type="checkbox"
-                        {...register(`eyes.movementDirections.${item.key}`)}
-                      />
-                      <span>
-                        {item.label}
-                        {item.score && (
-                          <b className={styles.eyesPoint}> [1 балл]</b>
-                        )}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-            )}
-
-            <YesNo
-              label="Диплопия при ЭОП"
-              name="eyes.eopDiplopia"
-              register={register}
-            />
-
-            {eopDiplopia === true && (
-              <div className={styles.eyesChoiceGrid}>
-                <label>
-                  <input
-                    type="checkbox"
-                    {...register("eyes.eopDiplopiaTypes.constant")}
-                  />
-                  <span>Постоянная</span>
-                </label>
-
-                <label>
-                  <input
-                    type="checkbox"
-                    {...register("eyes.eopDiplopiaTypes.sideGaze")}
-                  />
-                  <span>При взгляде в стороны</span>
-                </label>
-              </div>
-            )}
-
-            <YesNo
-              label="Птоз при ЭОП"
-              name="eyes.eopPtosis"
-              register={register}
-            />
-
-            {eopPtosis === true && (
-              <section className={styles.eyesNamedSection}>
-                <h4>Именные глазные симптомы</h4>
-
-                <div className={styles.eyesTableScroll}>
-                  <table className={styles.eyesNamedTable}>
-                    <thead>
-                      <tr>
-                        <th scope="col">Симптом / синдром</th>
-                        <th scope="col">Проявление</th>
-                        <th scope="col">Есть</th>
+            <section className={styles.eyesNamedSection}>
+              <h4>Именные глазные симптомы</h4>
+              <div className={styles.eyesTableScroll}>
+                <table className={styles.eyesNamedTable}>
+                  <thead>
+                    <tr>
+                      <th scope="col">Симптом / синдром</th>
+                      <th scope="col">Проявление</th>
+                      <th scope="col">Есть</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {NAMED_SIGNS.map((item) => (
+                      <tr key={item.key}>
+                        <td>{item.name}</td>
+                        <td>{item.description}</td>
+                        <td className={styles.eyesTableCheck}>
+                          <input
+                            type="checkbox"
+                            aria-label={item.name}
+                            {...register(`eyes.namedSigns.${item.key}`)}
+                          />
+                        </td>
                       </tr>
-                    </thead>
-
-                    <tbody>
-                      {NAMED_SIGNS.map((item) => (
-                        <tr key={item.key}>
-                          <td>{item.name}</td>
-                          <td>{item.description}</td>
-                          <td className={styles.eyesTableCheck}>
-                            <input
-                              type="checkbox"
-                              aria-label={item.name}
-                              {...register(`eyes.namedSigns.${item.key}`)}
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-            )}
-
-            {/* ==================================
-                8. CAS — активность ЭОП
-                ================================== */}
-
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
             <div className={styles.eyesCasSection}>
               <div className={styles.eyesCasHeader}>
                 <div>
                   <strong>Шкала активности CAS</strong>
-
                   <div className={styles.eyesCasScore}>
                     <span>{casScore} / 7 баллов</span>
-
                     <span
                       className={
                         casScore >= 3
@@ -1030,7 +884,6 @@ export const EyesTab: React.FC = () => {
                     </span>
                   </div>
                 </div>
-
                 <button
                   type="button"
                   className={styles.eyesCasToggle}
@@ -1052,41 +905,12 @@ export const EyesTab: React.FC = () => {
                   />
                 </button>
               </div>
-
               {showCasDetails && (
                 <div className={styles.eyesCasDetails}>
                   <p className={styles.eyesMuted}>
-                    Каждый критерий учитывается один раз. Для первых трёх
-                    признаков предусмотрен отдельный ввод; остальные
-                    определяются по заполненным полям осмотра.
+                    Баллы рассчитываются автоматически по данным осмотра. Каждый
+                    критерий учитывается только один раз.
                   </p>
-
-                  <div className={styles.eyesChoiceGrid}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        {...register("eyes.cas.retrobulbarPain")}
-                      />
-                      <span>1. Спонтанная ретробульбарная боль</span>
-                    </label>
-
-                    <label>
-                      <input
-                        type="checkbox"
-                        {...register("eyes.cas.gazePain")}
-                      />
-                      <span>2. Боль при взгляде вверх или вниз</span>
-                    </label>
-
-                    <label>
-                      <input
-                        type="checkbox"
-                        {...register("eyes.cas.eyelidRedness")}
-                      />
-                      <span>3. Покраснение век (эритема)</span>
-                    </label>
-                  </div>
-
                   <div className={styles.eyesCasCriteriaList}>
                     {casCriteria.map((criterion, index) => (
                       <div
@@ -1102,60 +926,105 @@ export const EyesTab: React.FC = () => {
                         >
                           {criterion.active ? "✓" : "○"}
                         </span>
-
                         <span>
                           {index + 1}. {criterion.label}
                         </span>
-
                         <strong>{criterion.active ? "+1" : "0"}</strong>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
-
               <p className={styles.eyesMuted}>
                 CAS 0–2: неактивная стадия; CAS ≥3: активная стадия. Оценка
                 требует подтверждения при клиническом осмотре.
               </p>
             </div>
+
+            {/* КТ орбит находится только внутри ЭОП. */}
+            <YesNo
+              label="Имеется ли КТ орбит?"
+              name="eyes.ctOrbits"
+              register={register}
+            />
+            {ctOrbits === true && (
+              <div className={styles.radioGroup}>
+                <label>Место проведения КТ орбит</label>
+                <label>
+                  <input
+                    type="radio"
+                    value="public"
+                    {...register("eyes.ctOrbitsPlace")}
+                  />
+                  Госучреждение
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    value="private"
+                    {...register("eyes.ctOrbitsPlace")}
+                  />
+                  Платное учреждение
+                </label>
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* ==================================
-          9. КТ орбит
-          ================================== */}
-
+      {/* Эти три блока теперь в самом низу вкладки. */}
+      <Input
+        label="Наблюдение у офтальмолога?"
+        placeholder="Укажите сведения о наблюдении"
+        {...register("eyes.ophthalmologistFollowUp")}
+      />
       <YesNo
-        label="Имеется ли КТ орбит?"
-        name="eyes.ctOrbits"
+        label="Лекарственные глазные капли?"
+        name="eyes.eyeDrops"
         register={register}
       />
+      {eyeDrops === true && (
+        <Input
+          label="Какие глазные капли?"
+          placeholder="Название, дозировка, кратность"
+          {...register("eyes.eyeDropsDetails")}
+        />
+      )}
 
-      {ctOrbits === true && (
-        <div className={styles.radioGroup}>
-          <label>Место проведения КТ орбит</label>
-
-          <label>
+      <section className={surgeryStyles.surgerySection}>
+        <div className={surgeryStyles.surgeryHeading}>
+          <strong>Хирургическое лечение глаз</strong>
+          <label className={styles.eyesSwitch}>
             <input
-              type="radio"
-              value="public"
-              {...register("eyes.ctOrbitsPlace")}
+              type="checkbox"
+              role="switch"
+              checked={surgeryEnabled}
+              onChange={(event) =>
+                setValue("eyes.surgicalTreatment", event.target.checked, {
+                  shouldDirty: true,
+                  shouldTouch: true,
+                })
+              }
+              aria-label="Хирургическое лечение глаз"
             />
-            Госучреждение
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              value="private"
-              {...register("eyes.ctOrbitsPlace")}
-            />
-            Платное учреждение
+            <span className={styles.eyesSwitchTrack} />
+            <span>{surgeryEnabled ? "Да" : "Нет"}</span>
           </label>
         </div>
-      )}
+        {surgeryEnabled && (
+          <div
+            className={`${styles.eyesSymptomList} ${surgeryStyles.surgeryList}`}
+          >
+            {SURGERIES.map((item) => (
+              <SurgeryItem
+                key={item.key}
+                surgeryKey={item.key}
+                label={item.label}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 };

@@ -4,6 +4,7 @@ type PrimaryExamDefaults = NonNullable<AnamnesisFormData["primaryExam"]>;
 
 export const createPrimaryExamDefaults = (): PrimaryExamDefaults => ({
   reason: "",
+  complaints: "",
   suspectedDiagnosis: undefined,
 
   height: null,

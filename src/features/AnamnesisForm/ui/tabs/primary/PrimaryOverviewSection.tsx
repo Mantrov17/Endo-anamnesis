@@ -9,6 +9,7 @@ import { Textarea } from "@/shared/ui/Textarea";
 import { Field } from "../../Field";
 
 import styles from "../../styles.module.scss";
+import localStyles from "./PrimaryOverviewSection.module.scss";
 
 export const PrimaryOverviewSection: React.FC = () => {
   const {
@@ -20,13 +21,24 @@ export const PrimaryOverviewSection: React.FC = () => {
   return (
     <>
       <Field
-        hint="Что вас к нам привело? С какими жалобами поступили?"
+        hint="С какой целью пациент обратился за медицинской помощью?"
         noteKey="primaryExam.reason"
       >
         <Textarea
           label="Причина обращения"
           {...register("primaryExam.reason")}
           error={errors.primaryExam?.reason?.message}
+          rows={2}
+          className={localStyles.reasonTextarea}
+        />
+      </Field>
+
+      <Field noteKey="primaryExam.complaints">
+        <Textarea
+          label="Жалобы при поступлении"
+          placeholder="Укажите жалобы пациента"
+          {...register("primaryExam.complaints")}
+          error={errors.primaryExam?.complaints?.message}
           rows={3}
         />
       </Field>

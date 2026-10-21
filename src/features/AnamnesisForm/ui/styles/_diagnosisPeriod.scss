@@ -145,3 +145,48 @@
     margin-bottom: 9px;
   }
 }
+
+/*
+ * Компактные поля "Значение" и "Дата" для С-пептида и HbA1c
+ * исключительно в шаблоне СД 1 типа.
+ * Оставляем сам fieldset на привычной ширине, а ввод располагаем
+ * в одной строке и не растягиваем на весь экран.
+ */
+.type1LabFields {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: start;
+  gap: 9px;
+  width: 100%;
+  max-width: 340px;
+  min-width: 0;
+
+  > div {
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Укорачиваем резерв под "нг/мл" у узкого числового поля. */
+  > div:first-child input {
+    padding-right: 57px;
+  }
+
+  > div:first-child > div > span {
+    right: 7px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 640px) {
+  .type1LabFields {
+    max-width: 320px;
+    gap: 6px;
+  }
+}

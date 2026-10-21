@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId, useState } from "react";
 
 import { useFormContext } from "react-hook-form";
 
@@ -26,6 +26,16 @@ const toNullableNumber = (value: unknown): number | null => {
 
 export const SelfMonitoringTab: React.FC = () => {
   const { register, watch, setValue } = useFormContext<AnamnesisFormData>();
+
+  // Раскрываемый блок дополнительных сведений о местах инъекций.
+  // Состояние раскрытия не записываем в анкету.
+  const [detailsExpanded, setDetailsExpanded] = useState(false);
+  const detailsId = useId();
+
+  const injectionSitesDetails =
+    watch("selfMonitoring.injectionSitesDetails") ?? "";
+
+  const hasInjectionSitesDetails = injectionSitesDetails.trim().length > 0;
 
   const hasGlucometer = watch("selfMonitoring.hasGlucometer") === true;
 
@@ -164,18 +174,59 @@ export const SelfMonitoringTab: React.FC = () => {
           </label>
         </div>
 
-        {/* Новое компактное поле.
-            Сохраняется в selfMonitoring.injectionSitesDetails.
-            Автоматически расширяется при вводе текста. */}
+        {/* ====================
+            Подробнее о местах инъекций
+
+            По умолчанию поле свёрнуто.
+            Текст сохраняется по существующему пути.
+
+            При раскрытии Textarea монтируется заново,
+            чтобы правильно рассчитать высоту по тексту.
+            React Hook Form с shouldUnregister: false
+            сохраняет значение при сворачивании.
+            ==================== */}
 
         <div className={styles.selfMonitoringDetailsField}>
-          <Textarea
-            label="Подробнее"
-            placeholder="Дополнительные сведения о местах инъекций"
-            rows={1}
-            className={styles.selfMonitoringDetailsTextarea}
-            {...register("selfMonitoring.injectionSitesDetails")}
-          />
+          <button
+            type="button"
+            className={styles.selfMonitoringDetailsToggle}
+            aria-expanded={detailsExpanded}
+            aria-controls={detailsId}
+            onClick={() => setDetailsExpanded((previous) => !previous)}
+          >
+            <span className={styles.selfMonitoringDetailsTitle}>Подробнее</span>
+
+            {hasInjectionSitesDetails && (
+              <span className={styles.selfMonitoringDetailsFilled}>
+                Заполнено
+              </span>
+            )}
+
+            <span
+              className={`${styles.selfMonitoringDetailsArrow} ${
+                detailsExpanded ? styles.selfMonitoringDetailsArrowOpen : ""
+              }`}
+              aria-hidden="true"
+            >
+              ▾
+            </span>
+          </button>
+
+          <div
+            id={detailsId}
+            className={styles.selfMonitoringDetailsBody}
+            hidden={!detailsExpanded}
+          >
+            {detailsExpanded && (
+              <Textarea
+                aria-label="Дополнительные сведения о местах инъекций"
+                placeholder="Дополнительные сведения о местах инъекций"
+                rows={1}
+                className={styles.selfMonitoringDetailsTextarea}
+                {...register("selfMonitoring.injectionSitesDetails")}
+              />
+            )}
+          </div>
         </div>
       </fieldset>
 

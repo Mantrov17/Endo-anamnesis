@@ -323,6 +323,51 @@ const normalizeLegacyInjectionSiteDetails = (
 };
 
 /**
+ * Старая форма хранила одно измерение с выбором OS / OD / OU.
+ * В новой форме прежние поля используются для OU, а для OS и OD
+ * предусмотрены отдельные измерения.
+ *
+ * Переносим ранее введённый OS или OD в соответствующее новое поле
+ * только один раз: наличие visualAcuityByEye означает, что перенос
+ * уже выполнен. Не переписываем ранее введённые раздельные значения.
+ */
+const normalizeLegacyVisualAcuity = (
+  data: AnamnesisFormData,
+): AnamnesisFormData => {
+  const eyes = data.eyes;
+
+  if (!eyes || eyes.visualAcuityByEye !== undefined) {
+    return data;
+  }
+
+  const oldEye = eyes.decreasedVisualAcuityEye;
+
+  if (oldEye !== "OS" && oldEye !== "OD") {
+    return data;
+  }
+
+  return {
+    ...data,
+    eyes: {
+      ...eyes,
+      visualAcuitySign: "",
+      visualAcuityValue: null,
+      decreasedVisualAcuityEye: "OU",
+      visualAcuityByEye: {
+        OS: {
+          sign: oldEye === "OS" ? eyes.visualAcuitySign : "",
+          value: oldEye === "OS" ? eyes.visualAcuityValue : null,
+        },
+        OD: {
+          sign: oldEye === "OD" ? eyes.visualAcuitySign : "",
+          value: oldEye === "OD" ? eyes.visualAcuityValue : null,
+        },
+      },
+    },
+  };
+};
+
+/**
  * Создаём defaults с учётом выбранных типов диабета.
  *
  * В основном getDefaultValues():
@@ -360,9 +405,10 @@ export const mergeAnamnesisWithDefaults = (
     ),
   );
 
-  const defaults = getDefaultsForData(normalizedData);
+  const normalizedEyesData = normalizeLegacyVisualAcuity(normalizedData);
+  const defaults = getDefaultsForData(normalizedEyesData);
 
-  return deepMergeWithDefaults(defaults, normalizedData);
+  return deepMergeWithDefaults(defaults, normalizedEyesData);
 };
 
 export const normalizeAnamnesisFormData = (

@@ -3,6 +3,9 @@
 export interface PrimaryExam {
   reason: string;
 
+  /** Жалобы пациента на момент поступления. */
+  complaints: string;
+
   suspectedDiagnosis?: "type1" | "type2" | "graves";
 
   height: number | null;

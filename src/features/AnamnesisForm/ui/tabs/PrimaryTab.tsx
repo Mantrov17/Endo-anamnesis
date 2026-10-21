@@ -4,8 +4,6 @@ import { useFormContext } from "react-hook-form";
 
 import type { AnamnesisFormData } from "@/entities/anamnesis";
 
-import { Input } from "@/shared/ui/Input";
-
 import { YesNo } from "../YesNo";
 
 import { PrimaryOverviewSection } from "./primary/PrimaryOverviewSection";
@@ -15,6 +13,8 @@ import { Type1DiabetesSection } from "./primary/Type1DiabetesSection";
 import { Type2DiabetesSection } from "./primary/Type2DiabetesSection";
 
 import { GravesDiseaseSection } from "./primary/GravesDiseaseSection";
+
+import { GravesTreatmentSection } from "./primary/GravesTreatmentSection";
 
 import { ActualTherapySection } from "./therapy/ActualTherapySection";
 
@@ -28,8 +28,6 @@ import styles from "../styles.module.scss";
 
 export const PrimaryTab: React.FC = () => {
   const { register, watch } = useFormContext<AnamnesisFormData>();
-
-  const birthDate = watch("birthDate");
 
   const suspectedDiagnosis = watch("primaryExam.suspectedDiagnosis");
 
@@ -55,29 +53,16 @@ export const PrimaryTab: React.FC = () => {
 
       {isType2 && type2Data && <Type2DiabetesSection />}
 
-      {suspectedDiagnosis === "graves" && <GravesDiseaseSection />}
+      {suspectedDiagnosis === "graves" && (
+        <>
+          <GravesDiseaseSection />
+          <GravesTreatmentSection />
+        </>
+      )}
 
       {hasSelectedDiagnosis && (
         <div className={`${styles.section} ${styles.therapySection}`}>
           <h3>Терапия</h3>
-
-          <Input
-            label="Целевой уровень гликированного гемоглобина"
-            suffix="%"
-            placeholder={
-              birthDate ? undefined : "Укажите дату рождения пациента"
-            }
-            {...register("therapy.targetHba1c")}
-            readOnly
-            disabled={!birthDate}
-          />
-
-          {!birthDate && (
-            <div className={styles.warning}>
-              Целевой HbA1c не рассчитан, потому что дата рождения пациента не
-              указана. Укажите дату рождения в карточке пациента.
-            </div>
-          )}
 
           {isType1 && type1Data && (
             <>

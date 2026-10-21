@@ -28,6 +28,8 @@ export const Type1DiabetesSection: React.FC = () => {
   const { register, watch, setValue, control } =
     useFormContext<AnamnesisFormData>();
 
+  const birthDate = watch("birthDate");
+
   const autoantibodiesTested = boolFromString(
     watch("type1Diabetes.autoantibodies.tested"),
   );
@@ -41,8 +43,6 @@ export const Type1DiabetesSection: React.FC = () => {
   const iaaChecked = watch("type1Diabetes.autoantibodies.IAA");
 
   const cPeptideTested = boolFromString(watch("type1Diabetes.cPeptide.tested"));
-
-  const cPeptideUnknown = watch("type1Diabetes.cPeptide.unknown") === true;
 
   const hba1cTestedType1 = boolFromString(watch("type1Diabetes.hba1c.tested"));
 
@@ -81,6 +81,24 @@ export const Type1DiabetesSection: React.FC = () => {
           {...register("type1Diabetes.diseaseDuration")}
         />
       </div>
+
+      {/* Целевой HbA1c перенесён из раздела «Терапия». */}
+
+      <Input
+        label="Целевой уровень гликированного гемоглобина"
+        suffix="%"
+        placeholder={birthDate ? undefined : "Укажите дату рождения пациента"}
+        {...register("therapy.targetHba1c")}
+        readOnly
+        disabled={!birthDate}
+      />
+
+      {!birthDate && (
+        <div className={styles.warning}>
+          Целевой HbA1c не рассчитан, потому что дата рождения пациента не
+          указана. Укажите дату рождения в карточке пациента.
+        </div>
+      )}
 
       <Field noteKey="type1Diabetes.howDiagnosed">
         <div className={styles.radioGroup}>
@@ -394,7 +412,7 @@ export const Type1DiabetesSection: React.FC = () => {
           />
 
           {cPeptideTested === true && (
-            <>
+            <div className={styles.type1LabFields}>
               <Input
                 label="Значение"
                 suffix="нг/мл"
@@ -406,17 +424,8 @@ export const Type1DiabetesSection: React.FC = () => {
                 name="type1Diabetes.cPeptide.date"
                 watch={watch}
                 setValue={setValue}
-                disabled={cPeptideUnknown}
               />
-
-              <label className={styles.smallCheckbox}>
-                <input
-                  type="checkbox"
-                  {...register("type1Diabetes.cPeptide.unknown")}
-                />{" "}
-                Затрудняюсь ответить
-              </label>
-            </>
+            </div>
           )}
         </fieldset>
       </Field>
@@ -445,7 +454,7 @@ export const Type1DiabetesSection: React.FC = () => {
           />
 
           {hba1cTestedType1 === true && (
-            <>
+            <div className={styles.type1LabFields}>
               <Input
                 label="Значение"
                 type="number"
@@ -460,15 +469,7 @@ export const Type1DiabetesSection: React.FC = () => {
                 watch={watch}
                 setValue={setValue}
               />
-
-              <label className={styles.smallCheckbox}>
-                <input
-                  type="checkbox"
-                  {...register("type1Diabetes.hba1c.unknown")}
-                />{" "}
-                Затрудняюсь ответить
-              </label>
-            </>
+            </div>
           )}
         </fieldset>
       </Field>
@@ -485,18 +486,7 @@ export const Type1DiabetesSection: React.FC = () => {
         register={register}
       />
 
-      {familyHistoryDiabetes === true && (
-        <>
-          <FamilyHistoryTree />
-
-          <Textarea
-            label="Уточните наследственность"
-            placeholder="Дополнительная информация о родственниках"
-            {...register("type1Diabetes.familyHistoryDiabetesDetails")}
-            rows={3}
-          />
-        </>
-      )}
+      {familyHistoryDiabetes === true && <FamilyHistoryTree />}
     </div>
   );
 };
