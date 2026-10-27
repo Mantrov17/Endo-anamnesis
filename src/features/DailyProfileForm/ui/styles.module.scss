@@ -1,0 +1,1037 @@
+
+/* =========================================
+   Суточный профиль — компактная версия
+   ========================================= */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.topToolbar,
+.targetsCard,
+.profileCard,
+.entriesCard {
+  min-width: 0;
+  background: #fff;
+  border: 1px solid #dae7e6;
+  border-radius: 13px;
+  box-shadow: 0 3px 12px rgba(32, 71, 71, 0.035);
+}
+
+/* Панель даты */
+
+.topToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.topToolbar > button,
+.dateNavigator > button {
+  min-height: 34px;
+  padding: 6px 11px;
+  font-size: 12px;
+}
+
+.dateNavigator {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.currentDateCard {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  min-width: 0;
+  padding: 7px 10px;
+  background: #f5faf9;
+  border: 1px solid #dce9e6;
+  border-radius: 9px;
+}
+
+.currentDateLabel {
+  color: #6c7d80;
+  font-size: 11px;
+}
+
+.currentDateCard strong {
+  color: #294c50;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.currentDateCard input {
+  width: 120px;
+  max-width: 100%;
+  min-height: 30px;
+  padding: 3px 6px;
+  background: #fff;
+  border: 1px solid #cfdfdd;
+  border-radius: 7px;
+  color: #243d43;
+  font: inherit;
+  font-size: 13px;
+}
+
+/* Целевые диапазоны */
+
+.targetsCard,
+.profileCard,
+.entriesCard {
+  padding: 12px;
+}
+
+.targetsHeader h3,
+.graphHeader h3,
+.entriesHeader h3 {
+  margin: 0;
+  color: #243b42;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.targetsHeader p,
+.graphHeader p {
+  margin: 3px 0 0;
+  color: #718084;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.targetsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.targetsGrid > div {
+  min-width: 0;
+  margin: 0;
+}
+
+.targetsGrid input {
+  min-height: 35px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 14px;
+}
+
+/* Заголовок графика */
+
+.graphHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px 9px;
+  color: #5a6d71;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.legendGlucose,
+.legendBasal,
+.legendBolus,
+.legendMeal {
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.legendGlucose {
+  color: #2c67d6;
+}
+
+.legendBasal {
+  color: #2d77f3;
+}
+
+.legendBolus {
+  color: #df8521;
+}
+
+.legendMeal {
+  color: #8c36da;
+}
+
+/* =========================================
+   Единая прокрутка графика
+   ========================================= */
+
+.chartShell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 7px;
+
+  min-width: 0;
+  width: 100%;
+
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: thin;
+  scrollbar-color: #accad2 transparent;
+}
+
+.chartPanel {
+  position: relative;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+
+  background: linear-gradient(
+                  180deg,
+                  #fbfdfd 0%,
+                  #f6fbfa 100%
+  );
+
+  border: 1px solid #e0ebea;
+  border-radius: 10px;
+  overflow: visible;
+}
+
+.chartSvg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+}
+
+/* Цветовые зоны */
+
+.zonePostMeal {
+  fill: rgba(247, 229, 67, 0.26);
+}
+
+.zoneTarget {
+  fill: rgba(136, 233, 151, 0.32);
+}
+
+.zoneHypo {
+  fill: rgba(244, 132, 132, 0.17);
+}
+
+/* Линии сетки */
+
+.gridLine {
+  stroke: #e5edef;
+  stroke-width: 1;
+}
+
+.gridLineVertical {
+  stroke: #e1edf0;
+  stroke-width: 1;
+}
+
+.axisLine {
+  stroke: #a9c2c5;
+  stroke-width: 1.1;
+}
+
+.axisLabel {
+  fill: #557279;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.rangeLabel {
+  fill: #708185;
+  font-size: 12px;
+  font-weight: 700;
+  text-anchor: end;
+}
+
+/* График глюкозы */
+
+.glucosePath {
+  fill: none;
+  stroke: #2b67d7;
+  stroke-width: 2.5;
+  stroke-dasharray: 8 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.glucosePoint {
+  fill: #fff;
+  stroke: #2b67d7;
+  stroke-width: 2.5;
+  cursor: pointer;
+}
+
+.pointValue {
+  fill: #2b67d7;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cursorLine {
+  stroke: rgba(43, 103, 215, 0.7);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 5;
+}
+
+/* Всплывающая карточка */
+
+.pointTooltip {
+  position: absolute;
+  z-index: 5;
+  box-sizing: border-box;
+
+  min-width: 165px;
+  max-width: 215px;
+  padding: 9px;
+
+  transform: translate(
+                  -50%,
+                  calc(-100% - 10px)
+  );
+
+  color: #24424a;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #d9e7f8;
+  border-radius: 10px;
+
+  box-shadow: 0 5px 16px rgba(31, 83, 128, 0.14);
+  font-size: 11px;
+}
+
+.tooltipHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 7px;
+  margin-bottom: 6px;
+  color: #23406d;
+}
+
+.pointTooltip p {
+  margin: 0 0 6px;
+  font-size: 11px;
+}
+
+.tooltipInsulins {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tooltipLabel {
+  color: #708083;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.tooltipInsulinItem {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 5px 6px;
+  background: #f7fbff;
+  border-radius: 6px;
+}
+
+.tooltipInsulinItem span,
+.tooltipInsulinItem small {
+  color: #536d73;
+}
+
+/* =========================================
+   Дорожки инсулина и питания
+   ========================================= */
+
+.timelineSection {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.timelineRow {
+  display: block;
+  min-width: 0;
+  margin: 0 0 6px;
+}
+
+.timelineLabel {
+  display: block;
+  margin: 0 0 3px;
+  padding: 0 2px;
+
+  border: 0;
+  background: transparent;
+
+  color: #2d5362;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/*
+ * 4.6% и 4.4% соответствуют
+ * отступам оси графика:
+ *
+ * CHART_PADDING_LEFT = 46
+ * CHART_PADDING_RIGHT = 44
+ * SVG_WIDTH = 1000
+ *
+ * Поэтому дорожки и график
+ * используют одинаковую временную ось.
+ */
+
+.timelineTrack {
+  position: relative;
+  box-sizing: border-box;
+
+  min-height: 64px;
+  margin-left: 4.6%;
+  margin-right: 4.4%;
+
+  background:
+          repeating-linear-gradient(
+                          to right,
+                          transparent 0,
+                          transparent calc(100% / 12 - 1px),
+                          #e0edf0 calc(100% / 12 - 1px),
+                          #e0edf0 calc(100% / 12)
+          ),
+          linear-gradient(
+                          180deg,
+                          #fbfdff 0%,
+                          #f6fbff 100%
+          );
+
+  border: 1px solid #e0ebef;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.timelineBlock {
+  position: absolute;
+  box-sizing: border-box;
+
+  max-width: none;
+  min-width: 60px;
+  padding: 4px 7px;
+
+  color: #173d4a;
+  border-radius: 9px;
+
+  box-shadow: 0 2px 6px rgba(17, 64, 82, 0.1);
+}
+
+.timelineBlock span,
+.timelineBlock small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timelineBlock span {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.timelineBlock small {
+  margin-top: 1px;
+  font-size: 10px;
+}
+
+.basalBlock {
+  background: linear-gradient(
+                  90deg,
+                  #e5f0ff,
+                  #8bb4fa
+  );
+}
+
+.bolusBlock {
+  background: linear-gradient(
+                  90deg,
+                  #fff3df,
+                  #f8ba75
+  );
+}
+
+.carryOverBlock {
+  opacity: 0.78;
+}
+
+/* Питание */
+
+.mealMarker {
+  position: absolute;
+  top: 5px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+
+  transform: translateX(-50%);
+
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
+.mealMarkerDot {
+  width: 11px;
+  height: 11px;
+
+  background: #962ddb;
+  border: 2px solid #efd7ff;
+  border-radius: 50%;
+}
+
+.mealMarkerBadge {
+  padding: 3px 6px;
+
+  color: #8435b9;
+  background: #f5eaff;
+  border: 1px solid #ead8fb;
+  border-radius: 7px;
+
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.mealMarker small {
+  color: #795994;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+/* =========================================
+   Исправленная шкала времени
+   ========================================= */
+
+.timelineAxis {
+  display: block;
+
+  margin-left: 4.6%;
+  margin-right: 4.4%;
+  padding: 3px 0 4px;
+
+  color: #557279;
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.timelineAxis > div:first-child {
+  display: none;
+}
+
+.timelineAxisLabels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 0;
+  min-width: 0;
+  width: 100%;
+}
+
+.timelineAxisLabels span {
+  flex: 0 0 auto;
+  min-width: 0;
+  text-align: center;
+}
+
+/* =========================================
+   Добавление записей
+   ========================================= */
+
+.entriesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.addButton {
+  flex: 0 0 auto;
+
+  width: 34px;
+  height: 34px;
+  padding: 0;
+
+  color: #fff;
+  background: #2471df;
+  border: 0;
+  border-radius: 50%;
+
+  box-shadow: 0 3px 9px rgba(29, 95, 212, 0.18);
+
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.addPanel {
+  margin-bottom: 10px;
+  padding: 10px;
+
+  background: #f7fbff;
+  border: 1px solid #dbe9fb;
+  border-radius: 10px;
+}
+
+.addPanelTopRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.entryTypeSelector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  padding-top: 18px;
+}
+
+.entryTypeSelector label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  color: #355560;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.addBlocks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.addBlock {
+  min-width: 0;
+  padding: 10px;
+
+  background: #fff;
+  border: 1px solid #dce8f7;
+  border-radius: 10px;
+}
+
+.addBlock h4,
+.entriesColumn h4 {
+  margin: 0 0 8px;
+  color: #244149;
+  font-size: 13px;
+}
+
+.selectField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  margin-bottom: 8px;
+
+  color: #567175;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.selectField select {
+  box-sizing: border-box;
+
+  width: 100%;
+  min-height: 36px;
+  padding: 5px 8px;
+
+  color: #203235;
+  background: #fff;
+
+  border: 1px solid #cfe0df;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.addPanelActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.addPanelActions button {
+  min-height: 34px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+/* Список записей */
+
+.entriesLists {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.entriesColumn {
+  min-width: 0;
+  padding: 9px;
+
+  background: #fbfdfd;
+  border: 1px solid #e2ebeb;
+  border-radius: 10px;
+}
+
+.entryCard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 7px;
+  margin-bottom: 6px;
+  padding: 8px;
+
+  background: #fff;
+  border: 1px solid #e0eaea;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.entryCard:last-child {
+  margin-bottom: 0;
+}
+
+.entryCard div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.entryCard strong {
+  color: #1f3947;
+}
+
+.entryCard span,
+.entryCard small,
+.emptyState {
+  color: #597074;
+  overflow-wrap: anywhere;
+}
+
+.entryCard button {
+  flex: 0 0 auto;
+  padding: 4px 6px;
+
+  color: #b94752;
+  background: #fff4f5;
+  border: 1px solid #f3d1d4;
+  border-radius: 6px;
+
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+}
+
+.emptyState {
+  margin: 0;
+  font-size: 12px;
+}
+
+/* =========================================
+   Планшеты
+   ========================================= */
+
+@media (max-width: 1050px) {
+  .targetsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .addBlocks,
+  .entriesLists {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .graphHeader {
+    flex-wrap: wrap;
+  }
+
+  .legend {
+    justify-content: flex-start;
+  }
+}
+
+/* =========================================
+   Смартфоны
+   ========================================= */
+
+@media (max-width: 700px) {
+  .form {
+    gap: 8px;
+  }
+
+  .topToolbar,
+  .targetsCard,
+  .profileCard,
+  .entriesCard {
+    padding: 9px;
+    border-radius: 10px;
+  }
+
+  /* Даты */
+
+  .topToolbar {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 7px;
+  }
+
+  .topToolbar > button {
+    width: 100%;
+    min-height: 33px;
+  }
+
+  .dateNavigator {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 5px;
+  }
+
+  .dateNavigator > button {
+    flex: 0 0 31px;
+
+    min-width: 31px;
+    width: 31px;
+    min-height: 35px;
+    padding: 0;
+
+    font-size: 0;
+  }
+
+  .dateNavigator > button:first-child::before {
+    content: "‹";
+    font-size: 23px;
+  }
+
+  .dateNavigator > button:last-child::after {
+    content: "›";
+    font-size: 23px;
+  }
+
+  .currentDateCard {
+    flex: 1 1 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 3px 6px;
+    min-width: 0;
+    padding: 5px 6px;
+  }
+
+  .currentDateLabel {
+    display: none;
+  }
+
+  .currentDateCard strong {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+  }
+
+  .currentDateCard input {
+    width: 116px;
+    max-width: 100%;
+    min-height: 28px;
+    font-size: 12px;
+  }
+
+  /* Целевые диапазоны */
+
+  .targetsHeader h3,
+  .graphHeader h3,
+  .entriesHeader h3 {
+    font-size: 14px;
+  }
+
+  .targetsHeader p,
+  .graphHeader p {
+    display: none;
+  }
+
+  .targetsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    margin-top: 7px;
+  }
+
+  .targetsGrid input {
+    min-height: 33px;
+    font-size: 16px;
+  }
+
+  .graphHeader {
+    gap: 5px;
+    margin-bottom: 6px;
+  }
+
+  .legend {
+    gap: 3px 7px;
+    font-size: 9px;
+  }
+
+  /* График с общей горизонтальной прокруткой */
+
+  .chartShell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 5px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+  }
+
+
+  .chartPanel,
+  .timelineSection {
+    box-sizing: border-box;
+
+    /* Ширина ленты для горизонтальной прокрутки */
+    width: 760px;
+    min-width: 760px;
+
+    /* Высота определяется содержимым, а не шириной */
+    flex: 0 0 auto;
+    height: auto;
+  }
+
+  .chartPanel {
+    padding: 0;
+    overflow: visible;
+  }
+
+  .chartSvg {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-width: 0;
+  }
+
+
+  /*
+   * На телефоне показываем время
+   * только под тремя дорожками.
+   */
+  .axisLabel {
+    display: none;
+  }
+
+  .timelineRow {
+    margin-bottom: 5px;
+  }
+
+  .timelineLabel {
+    font-size: 11px;
+    margin-bottom: 2px;
+  }
+
+  .timelineTrack {
+    min-height: 61px;
+  }
+
+  .timelineAxis {
+    font-size: 10.5px;
+  }
+
+  .pointTooltip {
+    max-width: 185px;
+    min-width: 160px;
+    padding: 7px;
+  }
+
+  /* Добавление и просмотр записей */
+
+  .addBlocks,
+  .entriesLists {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .addPanel,
+  .addBlock {
+    padding: 8px;
+  }
+
+  .addPanelTopRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .entryTypeSelector {
+    padding-top: 0;
+  }
+
+  .selectField select,
+  .addBlock input,
+  .addBlock textarea {
+    font-size: 16px;
+  }
+
+  .entriesColumn {
+    padding: 7px;
+  }
+
+  .entryCard {
+    padding: 7px;
+  }
+}
+
+/* Узкие экраны */
+
+@media (max-width: 380px) {
+  .currentDateCard {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .currentDateCard input {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chartShell {
+    scroll-behavior: auto;
+  }
+}

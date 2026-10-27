@@ -16,11 +16,19 @@ interface PatientPrimaryAnamnesisProps {
   onOpen: (patientId: string) => void;
 
   onOpenGlycemicProfile: (patientId: string) => void;
+
+  onOpenDailyProfile: (patientId: string) => void;
 }
 
 export const PatientPrimaryAnamnesis: React.FC<
   PatientPrimaryAnamnesisProps
-> = ({ patientId, primaryAnamnesis, onOpen, onOpenGlycemicProfile }) => {
+> = ({
+  patientId,
+  primaryAnamnesis,
+  onOpen,
+  onOpenGlycemicProfile,
+  onOpenDailyProfile,
+}) => {
   return (
     <div className={`${styles.anamnesesSection} ${styles.primarySection}`}>
       <div className={styles.anamnesesHeader}>
@@ -76,6 +84,17 @@ export const PatientPrimaryAnamnesis: React.FC<
             }}
           >
             Гликемический профиль
+          </Button>
+
+          <Button
+            variant="secondary"
+            onClick={(event) => {
+              event.stopPropagation();
+
+              onOpenDailyProfile(patientId);
+            }}
+          >
+            Суточный профиль
           </Button>
         </div>
       </div>

@@ -22,6 +22,8 @@ type StoredDiaryRecord = Omit<CurrentDiaryRecord, "pulse"> & {
 
 type StoredGlycemicProfile = NonNullable<Patient["glycemicProfile"]>;
 
+type StoredDailyProfile = NonNullable<Patient["dailyProfile"]>;
+
 type StoredPlanRecord = Patient["plans"][number];
 
 type StoredDepartureChecklist = Partial<PatientDepartureChecklist>;
@@ -32,6 +34,7 @@ type StoredPatient = Omit<
   | "primaryAnamnesis"
   | "diaryEntries"
   | "glycemicProfile"
+  | "dailyProfile"
   | "plans"
   | "departureChecklist"
 > & {
@@ -44,6 +47,8 @@ type StoredPatient = Omit<
   diaryEntries?: StoredDiaryRecord[];
 
   glycemicProfile?: StoredGlycemicProfile | null;
+
+  dailyProfile?: StoredDailyProfile | null;
 
   plans?: StoredPlanRecord[];
 
@@ -160,6 +165,14 @@ const isStoredPatient = (value: unknown): value is StoredPatient => {
     return false;
   }
 
+  if (
+    value.dailyProfile !== undefined &&
+    value.dailyProfile !== null &&
+    !isObject(value.dailyProfile)
+  ) {
+    return false;
+  }
+
   if (value.plans !== undefined && !Array.isArray(value.plans)) {
     return false;
   }
@@ -240,6 +253,8 @@ const migrateStoredPatient = (patient: StoredPatient): Patient => {
 
     glycemicProfile: patient.glycemicProfile ?? null,
 
+    dailyProfile: patient.dailyProfile ?? null,
+
     diaryEntries: (patient.diaryEntries ?? []).map(migrateDiaryRecord),
 
     plans: patient.plans ?? [],
@@ -261,6 +276,7 @@ const needsMigration = (
       "anamneses" in patient ||
       !("primaryAnamnesis" in patient) ||
       !("glycemicProfile" in patient) ||
+      !("dailyProfile" in patient) ||
       !("diaryEntries" in patient) ||
       !("plans" in patient) ||
       !patient.createdAt ||

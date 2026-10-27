@@ -6,6 +6,8 @@ import "./styles.scss";
 
 import { AnamnesisPage } from "@/pages/AnamnesisPage";
 
+import { DailyProfilePage } from "@/pages/DailyProfilePage";
+
 import { DiaryPage } from "@/pages/DiaryPage";
 
 import { GlycemicProfilePage } from "@/pages/GlycemicProfilePage";
@@ -34,6 +36,11 @@ export const App: React.FC = () => {
         <Route
           path="/patient/:patientId/glycemic-profile"
           element={<GlycemicProfilePage />}
+        />
+
+        <Route
+          path="/patient/:patientId/daily-profile"
+          element={<DailyProfilePage />}
         />
 
         <Route path="/patient/:patientId/plans" element={<PlansPage />} />

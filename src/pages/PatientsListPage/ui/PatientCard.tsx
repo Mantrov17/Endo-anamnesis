@@ -36,6 +36,8 @@ interface PatientCardProps {
 
   onOpenGlycemicProfile: (patientId: string) => void;
 
+  onOpenDailyProfile: (patientId: string) => void;
+
   onAddDiary: (patientId: string) => void;
 
   onEditDiary: (patientId: string, diaryId: string) => void;
@@ -82,6 +84,7 @@ export const PatientCard: React.FC<PatientCardProps> = ({
   onDeletePatient,
   onOpenPrimaryAnamnesis,
   onOpenGlycemicProfile,
+  onOpenDailyProfile,
   onAddDiary,
   onEditDiary,
   onDeleteDiary,
@@ -226,6 +229,7 @@ export const PatientCard: React.FC<PatientCardProps> = ({
             primaryAnamnesis={patient.primaryAnamnesis}
             onOpen={onOpenPrimaryAnamnesis}
             onOpenGlycemicProfile={onOpenGlycemicProfile}
+            onOpenDailyProfile={onOpenDailyProfile}
           />
 
           <PatientDiaries

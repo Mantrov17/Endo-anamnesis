@@ -102,6 +102,8 @@ export const createPatient = (data: PatientFormData): Patient => {
 
     glycemicProfile: null,
 
+    dailyProfile: null,
+
     diaryEntries: [],
 
     plans: [],

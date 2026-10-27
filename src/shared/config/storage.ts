@@ -28,5 +28,10 @@ export const PATIENTS_STORAGE_VERSION_KEY = "patientsDataSchemaVersion";
  * Версия 6:
  * - у пациента появился чек-лист выполненных
  *   процедур перед уходом врача.
+ *
+ * Версия 7:
+ * - у пациента появился суточный профиль
+ *   с датами, графиком глюкозы, инсулином
+ *   и приёмами пищи.
  */
-export const PATIENTS_STORAGE_VERSION = 6;
+export const PATIENTS_STORAGE_VERSION = 7;
