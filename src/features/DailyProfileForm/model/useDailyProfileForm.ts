@@ -15,7 +15,10 @@ import {
   normalizeDailyProfileDay,
   saveDailyProfile,
   type DailyProfileDay,
+  type DailyProfileGlucoseEntry,
+  type DailyProfileInsulinEntry,
   type DailyProfileInsulinName,
+  type DailyProfileMealEntry,
   type DailyProfileMealType,
 } from "@/entities/dailyProfile";
 
@@ -40,20 +43,19 @@ interface AddEntriesPayload {
   mealNote: string;
 }
 
-export type DailyProfileAutoSaveStatus = "idle" | "saved" | "saving" | "error";
+export type DailyProfileAutoSaveStatus = "idle" | "saving" | "saved" | "error";
 
 const AUTO_SAVE_DELAY_MS = 650;
 
-const sortDays = (days: DailyProfileDay[]): DailyProfileDay[] =>
-  [...days].sort((a, b) => a.date.localeCompare(b.date));
-
 const normalizeDays = (days: DailyProfileDay[]): DailyProfileDay[] =>
-  sortDays(days.map((day) => normalizeDailyProfileDay(structuredClone(day))));
+  days
+    .map((day) => normalizeDailyProfileDay(structuredClone(day)))
+    .sort((a, b) => a.date.localeCompare(b.date));
 
-const shiftDate = (date: string, offset: number): string => {
+const shiftDate = (date: string, days: number): string => {
   const value = new Date(`${date}T12:00:00`);
 
-  value.setDate(value.getDate() + offset);
+  value.setDate(value.getDate() + days);
 
   return [
     value.getFullYear(),
@@ -73,57 +75,30 @@ export const useDailyProfileForm = ({
       : [createDailyProfileDay()],
   );
 
-  const [selectedDayId, setSelectedDayId] = useState(() => {
-    const initial = initialDays?.length ? sortDays(initialDays) : null;
-
-    return initial?.[initial.length - 1]?.id ?? "";
-  });
+  const [selectedDayId, setSelectedDayId] = useState<string>(() =>
+    initialDays?.length ? (normalizeDays(initialDays).at(-1)?.id ?? "") : "",
+  );
 
   const [autoSaveStatus, setAutoSaveStatus] =
     useState<DailyProfileAutoSaveStatus>("idle");
 
-  const [loading, setLoading] = useState(false);
-
-  /*
-   * Храним последние данные в ref.
-   *
-   * Это позволяет сохранить изменения
-   * даже при закрытии страницы до
-   * окончания задержки автосохранения.
-   */
   const latestDaysRef = useRef(days);
-  latestDaysRef.current = days;
+  const pendingRef = useRef(false);
+  const onSuccessRef = useRef(onSuccess);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const hasPendingChangesRef = useRef(false);
-  const didMountRef = useRef(false);
-
-  const callbackRef = useRef(onSuccess);
-  callbackRef.current = onSuccess;
-
-  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const sortedDays = useMemo(() => sortDays(days), [days]);
+  useEffect(() => {
+    onSuccessRef.current = onSuccess;
+  }, [onSuccess]);
 
   const selectedDay = useMemo(
-    () =>
-      sortedDays.find((day) => day.id === selectedDayId) ??
-      sortedDays[0] ??
-      null,
-    [selectedDayId, sortedDays],
+    () => days.find((day) => day.id === selectedDayId) ?? days[0] ?? null,
+    [days, selectedDayId],
   );
 
-  /*
-   * Единая функция сохранения.
-   *
-   * Автосохранение использует её без
-   * всплывающего уведомления.
-   *
-   * Ручное сохранение при отправке
-   * формы остаётся запасным механизмом.
-   */
   const saveNow = useCallback(
     (notify = false, updateStatus = true): boolean => {
-      if (!hasPendingChangesRef.current && !notify) {
+      if (!pendingRef.current && !notify) {
         return true;
       }
 
@@ -137,14 +112,14 @@ export const useDailyProfileForm = ({
           throw new Error("Пациент не найден");
         }
 
-        hasPendingChangesRef.current = false;
+        pendingRef.current = false;
 
         if (updateStatus) {
           setAutoSaveStatus("saved");
         }
 
         if (notify) {
-          callbackRef.current?.();
+          onSuccessRef.current?.();
         }
 
         return true;
@@ -162,53 +137,48 @@ export const useDailyProfileForm = ({
   );
 
   /*
-   * Автоматическое сохранение.
+   * Автосохранение после изменения данных.
    *
-   * При каждом изменении days:
-   * 1. Отменяется предыдущий таймер.
-   * 2. Отмечается наличие несохранённых данных.
-   * 3. Через 650 мс выполняется сохранение.
-   *
-   * Первую загрузку существующего
-   * профиля повторно не сохраняем.
+   * Синхронных вызовов setState внутри
+   * эффекта нет.
    */
   useEffect(() => {
-    if (!didMountRef.current) {
-      didMountRef.current = true;
+    latestDaysRef.current = days;
+
+    if (!pendingRef.current) {
       return;
     }
 
-    hasPendingChangesRef.current = true;
-    setAutoSaveStatus("saving");
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current);
+    }
 
-    autoSaveTimerRef.current = setTimeout(() => {
-      autoSaveTimerRef.current = null;
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
       saveNow();
     }, AUTO_SAVE_DELAY_MS);
 
     return () => {
-      if (autoSaveTimerRef.current !== null) {
-        clearTimeout(autoSaveTimerRef.current);
-        autoSaveTimerRef.current = null;
+      if (timerRef.current !== null) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
       }
     };
   }, [days, saveNow]);
 
   /*
-   * Сохранение при уходе со страницы.
-   *
-   * Используется и при переключении
-   * вкладок браузера, и при размонтировании
-   * компонента через React Router.
+   * Дополнительная попытка сохранения
+   * при закрытии страницы или уходе
+   * на другую страницу приложения.
    */
   useEffect(() => {
     const flush = () => {
-      if (autoSaveTimerRef.current !== null) {
-        clearTimeout(autoSaveTimerRef.current);
-        autoSaveTimerRef.current = null;
+      if (timerRef.current !== null) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
       }
 
-      if (hasPendingChangesRef.current) {
+      if (pendingRef.current) {
         saveNow(false, false);
       }
     };
@@ -232,8 +202,18 @@ export const useDailyProfileForm = ({
     };
   }, [saveNow]);
 
+  const markDirty = () => {
+    pendingRef.current = true;
+    setAutoSaveStatus("saving");
+  };
+
   /*
-   * Изменение выбранного дня.
+   * Все действия с данными проходят
+   * через updateSelectedDay.
+   *
+   * Благодаря этому добавление,
+   * редактирование и удаление вызывают
+   * одно и то же автосохранение.
    */
   const updateSelectedDay = (
     updater: (day: DailyProfileDay) => DailyProfileDay,
@@ -242,56 +222,46 @@ export const useDailyProfileForm = ({
       return;
     }
 
+    const id = selectedDay.id;
+
+    markDirty();
+
     setDays((previous) =>
       normalizeDays(
         previous.map((day) =>
-          day.id === selectedDay.id ? updater(structuredClone(day)) : day,
+          day.id === id ? updater(structuredClone(day)) : day,
         ),
       ),
     );
   };
 
-  const selectDay = (dayId: string) => {
-    setSelectedDayId(dayId);
-  };
-
-  /*
-   * Выбор даты.
-   *
-   * Не переносим записи текущего дня
-   * на новую дату!
-   *
-   * Открываем существующий профиль
-   * или создаём новый пустой день.
-   */
   const updateSelectedDate = (date: string) => {
     if (!date || !selectedDay) {
       return;
     }
 
-    const exists = sortedDays.find((day) => day.date === date);
+    const existing = days.find((day) => day.date === date);
 
-    if (exists) {
-      setSelectedDayId(exists.id);
+    if (existing) {
+      setSelectedDayId(existing.id);
       return;
     }
 
     const newDay = createDailyProfileDay(date);
+
+    markDirty();
 
     setDays((previous) => normalizeDays([...previous, newDay]));
 
     setSelectedDayId(newDay.id);
   };
 
-  const goToAdjacentDate = (offset: number) => {
+  const goToAdjacentDate = (amount: number) => {
     if (selectedDay) {
-      updateSelectedDate(shiftDate(selectedDay.date, offset));
+      updateSelectedDate(shiftDate(selectedDay.date, amount));
     }
   };
 
-  /*
-   * Целевые диапазоны.
-   */
   const updateTargets = (patch: Partial<DailyProfileDay["targetRanges"]>) => {
     updateSelectedDay((day) => ({
       ...day,
@@ -303,17 +273,13 @@ export const useDailyProfileForm = ({
   };
 
   /*
-   * Добавление связанных записей.
-   *
-   * Глюкоза, инсулин и питание могут
-   * добавляться одновременно.
+   * Добавление глюкозы, инсулина
+   * и питания.
    */
   const addLinkedEntries = (payload: AddEntriesPayload) => {
     updateSelectedDay((day) => {
-      const next = structuredClone(day);
-
       if (payload.addGlucose) {
-        next.glucoseEntries.push({
+        day.glucoseEntries.push({
           ...createDailyProfileGlucoseEntry(payload.time),
           value: payload.glucoseValue,
           note: payload.glucoseNote,
@@ -321,7 +287,7 @@ export const useDailyProfileForm = ({
       }
 
       if (payload.addInsulin) {
-        next.insulinEntries.push({
+        day.insulinEntries.push({
           ...createDailyProfileInsulinEntry(payload.time),
           insulinName: payload.insulinName,
           units: payload.insulinUnits,
@@ -330,7 +296,7 @@ export const useDailyProfileForm = ({
       }
 
       if (payload.addMeal) {
-        next.mealEntries.push({
+        day.mealEntries.push({
           ...createDailyProfileMealEntry(payload.time),
           breadUnits: payload.breadUnits,
           mealType: payload.mealType,
@@ -338,74 +304,106 @@ export const useDailyProfileForm = ({
         });
       }
 
-      return next;
+      return day;
     });
   };
 
   /*
-   * Удаление ошибочных записей.
+   * Редактирование существующих записей.
    *
-   * Каждое удаление меняет days,
-   * поэтому тоже запускает автосохранение.
+   * ID сохраняется, поэтому запись
+   * не нужно удалять и создавать заново.
    */
-  const deleteGlucoseEntry = (entryId: string) =>
+  const updateGlucoseEntry = (
+    id: string,
+    patch: Partial<Pick<DailyProfileGlucoseEntry, "time" | "value" | "note">>,
+  ) => {
     updateSelectedDay((day) => ({
       ...day,
-      glucoseEntries: day.glucoseEntries.filter(
-        (entry) => entry.id !== entryId,
+      glucoseEntries: day.glucoseEntries.map((entry) =>
+        entry.id === id ? { ...entry, ...patch } : entry,
       ),
     }));
+  };
 
-  const deleteInsulinEntry = (entryId: string) =>
+  const updateInsulinEntry = (
+    id: string,
+    patch: Partial<
+      Pick<DailyProfileInsulinEntry, "time" | "insulinName" | "units">
+    >,
+  ) => {
     updateSelectedDay((day) => ({
       ...day,
-      insulinEntries: day.insulinEntries.filter(
-        (entry) => entry.id !== entryId,
+      insulinEntries: day.insulinEntries.map((entry) =>
+        entry.id === id ? { ...entry, ...patch } : entry,
       ),
     }));
+  };
 
-  const deleteMealEntry = (entryId: string) =>
+  const updateMealEntry = (
+    id: string,
+    patch: Partial<
+      Pick<DailyProfileMealEntry, "time" | "mealType" | "breadUnits">
+    >,
+  ) => {
     updateSelectedDay((day) => ({
       ...day,
-      mealEntries: day.mealEntries.filter((entry) => entry.id !== entryId),
+      mealEntries: day.mealEntries.map((entry) =>
+        entry.id === id ? { ...entry, ...patch } : entry,
+      ),
     }));
+  };
 
   /*
-   * Запасное сохранение при отправке формы
-   * клавишей Enter.
+   * Удаление записей.
    */
+  const deleteGlucoseEntry = (id: string) => {
+    updateSelectedDay((day) => ({
+      ...day,
+      glucoseEntries: day.glucoseEntries.filter((entry) => entry.id !== id),
+    }));
+  };
+
+  const deleteInsulinEntry = (id: string) => {
+    updateSelectedDay((day) => ({
+      ...day,
+      insulinEntries: day.insulinEntries.filter((entry) => entry.id !== id),
+    }));
+  };
+
+  const deleteMealEntry = (id: string) => {
+    updateSelectedDay((day) => ({
+      ...day,
+      mealEntries: day.mealEntries.filter((entry) => entry.id !== id),
+    }));
+  };
+
   const handleSubmit = (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
 
-    setLoading(true);
-
-    const successful = saveNow(true);
-
-    if (!successful) {
+    if (!saveNow(true)) {
       window.alert(
-        "Сохранение не удалось. Проверьте свободное место браузера.",
+        "Не удалось сохранить профиль. Проверьте хранилище браузера.",
       );
     }
-
-    setLoading(false);
   };
 
   return {
-    days: sortedDays,
+    days,
     selectedDay,
     selectedDayId,
-
-    loading,
     autoSaveStatus,
 
-    selectDay,
     updateSelectedDate,
-
     goToPreviousDate: () => goToAdjacentDate(-1),
     goToNextDate: () => goToAdjacentDate(1),
 
     updateTargets,
     addLinkedEntries,
+
+    updateGlucoseEntry,
+    updateInsulinEntry,
+    updateMealEntry,
 
     deleteGlucoseEntry,
     deleteInsulinEntry,

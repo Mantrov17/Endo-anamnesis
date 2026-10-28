@@ -1,0 +1,277 @@
+
+.journal {
+  min-width: 0;
+}
+
+/* Свёрнутый журнал */
+
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 9px;
+  margin: 0 0 5px;
+
+  color: #487076;
+  background: #f5faf9;
+  border: 1px solid #d9e9e6;
+  border-radius: 8px;
+
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+}
+
+.toggle span:last-child {
+  color: #237d78;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+/* Общая таблица событий */
+
+.rows {
+  border: 1px solid #e1eae9;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.timeRow {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  align-items: start;
+  gap: 9px;
+
+  min-width: 0;
+  padding: 7px 9px;
+  border-bottom: 1px solid #e5eeee;
+}
+
+.timeRow:nth-child(even) {
+  background: #f9fcfc;
+}
+
+.timeRow:last-child {
+  border-bottom: 0;
+}
+
+.time {
+  padding: 5px 0;
+  font-size: 13px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  color: #2b434a;
+}
+
+.events {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+/* Компактные показатели */
+
+.event {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  max-width: 100%;
+  min-height: 30px;
+  padding: 4px 7px;
+
+  border: 1px solid var(--event-border);
+  border-radius: 7px;
+
+  background: var(--event-bg);
+  color: var(--event-color);
+
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.event:hover,
+.active {
+  border-color: currentColor;
+}
+
+.event:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Глюкоза — синий */
+
+.glucose {
+  --event-border: #cee1fb;
+  --event-bg: #f0f6ff;
+  --event-color: #285d9e;
+}
+
+/* Инсулин — оранжевый */
+
+.insulin {
+  --event-border: #f4daba;
+  --event-bg: #fff5e8;
+  --event-color: #995822;
+}
+
+/* Питание — фиолетовый */
+
+.meal {
+  --event-border: #e8d4f7;
+  --event-bg: #faf2ff;
+  --event-color: #7934a7;
+}
+
+.eventDot {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.editGlyph {
+  opacity: 0.55;
+  margin-left: 2px;
+}
+
+/* Встроенный редактор */
+
+.editor {
+  flex: 1 0 100%;
+  min-width: 0;
+  margin: 4px 0;
+  padding: 11px;
+
+  background: #fff;
+  border: 1px solid #cbdedb;
+  border-radius: 9px;
+
+  box-shadow: 0 3px 12px rgba(20, 66, 67, 0.06);
+}
+
+.editorTitle {
+  margin-bottom: 9px;
+  font-size: 13px;
+  font-weight: 750;
+  color: #294a4d;
+}
+
+.editorFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.editorFields label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  min-width: 0;
+  color: #5b7175;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.editorFields input,
+.editorFields select {
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  box-sizing: border-box;
+  padding: 6px 8px;
+
+  border: 1px solid #d0e0de;
+  border-radius: 7px;
+
+  background: #fff;
+  color: #1d3c40;
+
+  font: inherit;
+  font-size: 15px;
+}
+
+.wideField {
+  grid-column: 1 / -1;
+}
+
+/* Действия редактора */
+
+.editorActions,
+.editorActionsRight {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.editorActions {
+  justify-content: space-between;
+  margin-top: 11px;
+}
+
+.editorActions button {
+  min-height: 32px;
+  padding: 5px 9px;
+
+  border: 1px solid #d6e3e2;
+  border-radius: 7px;
+
+  background: #fff;
+  color: #4a6268;
+
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
+
+.editorActions .save {
+  background: #217f7b;
+  border-color: #217f7b;
+  color: #fff;
+}
+
+.editorActions .delete {
+  background: #fff5f4;
+  border-color: #f2d9d5;
+  color: #a34b42;
+}
+
+.empty {
+  margin: 7px 0;
+  color: #829193;
+  font-size: 12px;
+}
+
+/* Мобильная адаптация */
+
+@media (max-width: 700px) {
+  .timeRow {
+    grid-template-columns: 49px minmax(0, 1fr);
+    gap: 6px;
+    padding: 6px 7px;
+  }
+
+  .time {
+    font-size: 12px;
+  }
+
+  .event {
+    padding: 4px 6px;
+    font-size: 11px;
+    min-height: 28px;
+  }
+
+  .editor {
+    padding: 8px;
+  }
+}

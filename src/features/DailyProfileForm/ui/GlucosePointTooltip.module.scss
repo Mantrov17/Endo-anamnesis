@@ -1,0 +1,310 @@
+
+.tooltip {
+  position: absolute;
+  top: 6px;
+  z-index: 12;
+  box-sizing: border-box;
+
+  width: 208px;
+  padding: 7px;
+
+  transform: translateX(-50%);
+
+  border: 1px solid #cbdceb;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .98);
+
+  box-shadow: 0 4px 14px rgba(40, 75, 105, .12);
+
+  color: #263f50;
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 5px;
+
+  border-bottom: 1px solid #e4ecf3;
+
+  color: #255d9c;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.header strong:nth-child(2) {
+  margin-left: auto;
+}
+
+.close {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+
+  width: 20px;
+  height: 20px;
+  padding: 0;
+
+  border: 0;
+  border-radius: 5px;
+
+  color: #66808d;
+  background: #eef4f6;
+
+  cursor: pointer;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.note {
+  margin: 4px 0;
+  color: #536d77;
+  overflow-wrap: anywhere;
+}
+
+/* Список действующих инсулинов */
+
+.insulinList {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  max-height: 154px;
+  margin-top: 5px;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+/* Базальный */
+
+.insulin {
+  --phase-light: #d2e6ff;
+  --phase-strong: #4b93ef;
+  --phase-line: #347bd3;
+
+  flex: 0 0 auto;
+  padding: 5px;
+
+  border-radius: 7px;
+  background: #f3f8ff;
+}
+
+/* Болюсный */
+
+.bolus {
+  --phase-light: #fbd7ac;
+  --phase-strong: #f29a42;
+  --phase-line: #df8130;
+
+  background: #fff7ee;
+}
+
+/* Название и доза */
+
+.drugLine {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+
+  color: #1a538f;
+  font-size: 10.5px;
+}
+
+.bolus .drugLine {
+  color: #a95a1c;
+}
+
+.drugLine strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drugDot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+  background: var(--phase-line);
+}
+
+/* Время введения и фаза */
+
+.detailsLine {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+
+  margin: 3px 0 5px 12px;
+
+  color: #577080;
+  font-size: 9px;
+}
+
+.detailsLine span:first-child {
+  flex: 0 1 auto;
+}
+
+.phaseName {
+  text-align: right;
+  font-weight: 700;
+  color: #375c83;
+}
+
+.bolus .phaseName {
+  color: #a9682f;
+}
+
+/* Ползунок времени действия */
+
+.progressLine {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 12px;
+}
+
+.progressTrack {
+  position: relative;
+  flex: 1 1 auto;
+
+  height: 8px;
+
+  border-radius: 5px;
+  background: #e9eff4;
+
+  overflow: visible;
+}
+
+.beforeOnset,
+.mainPhase,
+.residual,
+.peak,
+.elapsedOverlay,
+.progressMarker {
+  position: absolute;
+}
+
+/* Пунктир до начала действия */
+
+.beforeOnset {
+  top: 3px;
+  height: 0;
+  border-top: 2px dashed var(--phase-line);
+}
+
+/* Светлая основная фаза */
+
+.mainPhase {
+  top: 0;
+  height: 8px;
+
+  background: var(--phase-light);
+  border-radius: 3px;
+}
+
+/* Насыщенная фаза пика */
+
+.peak {
+  top: 0;
+  height: 8px;
+
+  background: var(--phase-strong);
+  border-radius: 3px;
+}
+
+/* Остаточное действие */
+
+.residual {
+  top: 0;
+  height: 8px;
+
+  background: repeating-linear-gradient(
+                  135deg,
+                  var(--phase-line) 0 1.5px,
+                  #fff 1.5px 4px
+  );
+}
+
+/* Уже прошедший временной участок */
+
+.elapsedOverlay {
+  top: 0;
+  height: 8px;
+
+  background: rgba(22, 58, 87, .09);
+  pointer-events: none;
+}
+
+/* Текущее положение */
+
+.progressMarker {
+  z-index: 3;
+  top: -3px;
+
+  width: 3px;
+  height: 14px;
+
+  transform: translateX(-50%);
+
+  border-radius: 2px;
+  background: #234f83;
+  box-shadow: 0 0 0 1px white;
+}
+
+.bolus .progressMarker {
+  background: #aa6228;
+}
+
+.progressValue {
+  flex: 0 0 25px;
+
+  color: #647c86;
+  font-size: 9px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.noInsulin {
+  margin: 2px 0;
+  color: #5b737e;
+  font-size: 10px;
+}
+
+.disclaimer {
+  display: block;
+  margin-top: 5px;
+
+  color: #748690;
+  font-size: 8.5px;
+}
+
+/* Смартфоны */
+
+@media (max-width: 700px) {
+  .tooltip {
+    width: 190px;
+    padding: 6px;
+    border-radius: 9px;
+  }
+
+  .insulinList {
+    max-height: 122px;
+    gap: 4px;
+  }
+
+  .header {
+    font-size: 11px;
+  }
+
+  .detailsLine {
+    font-size: 8.5px;
+  }
+}

@@ -16,6 +16,14 @@ import { Input } from "@/shared/ui/Input";
 import { Textarea } from "@/shared/ui/Textarea";
 
 import { useDailyProfileForm } from "../model/useDailyProfileForm";
+
+import {
+  GlucosePointTooltip,
+  type TooltipInsulin,
+} from "./GlucosePointTooltip";
+
+import { DailyProfileEntries } from "./DailyProfileEntries";
+
 import styles from "./styles.module.scss";
 
 interface DailyProfileFormProps {
@@ -65,6 +73,7 @@ const PLOT_TOP = 18;
 const PLOT_BOTTOM = 34;
 
 const PLOT_HEIGHT = SVG_HEIGHT - PLOT_TOP - PLOT_BOTTOM;
+
 const PLOT_WIDTH = SVG_WIDTH - PLOT_LEFT - PLOT_RIGHT;
 
 const MAX_GLUCOSE = 20;
@@ -99,15 +108,17 @@ const yAt = (value: number, max: number): number =>
   PLOT_TOP + PLOT_HEIGHT - (clamp(value, 0, max) / max) * PLOT_HEIGHT;
 
 const asNumberOrNull = (raw: string): number | null => {
-  if (!raw.trim()) return null;
+  if (!raw.trim()) {
+    return null;
+  }
 
-  const value = Number(raw.replace(",", "."));
+  const number = Number(raw.replace(",", "."));
 
-  return Number.isFinite(value) ? value : null;
+  return Number.isFinite(number) ? number : null;
 };
 
-const decimal = (value: number): string =>
-  value.toLocaleString("ru-RU", {
+const decimal = (number: number): string =>
+  number.toLocaleString("ru-RU", {
     maximumFractionDigits: 2,
   });
 
@@ -123,12 +134,8 @@ interface DoseEvent {
   date: string;
   entry: DailyProfileInsulinEntry;
   meta: InsulinProfileMeta;
-
-  // Минуты относительно начала выбранных суток.
   start: number;
   end: number;
-
-  // Уровень размещения при перекрытии доз.
   lane: number;
 }
 
@@ -137,50 +144,57 @@ const getDoseEvents = (
   targetDate: string,
   category: "basal" | "bolus",
 ): DoseEvent[] => {
-  const candidates = days.flatMap((day) =>
-    (day.insulinEntries ?? []).flatMap((entry) => {
-      const meta = getInsulin(entry.insulinName);
+  const items = days
+    .flatMap((day) =>
+      (day.insulinEntries ?? []).flatMap((entry) => {
+        const meta = getInsulin(entry.insulinName);
 
-      if (meta.category !== category) return [];
+        if (meta.category !== category) {
+          return [];
+        }
 
-      const start =
-        dateOffsetDays(day.date, targetDate) * MINUTES_PER_DAY +
-        minutes(entry.time);
+        const start =
+          dateOffsetDays(day.date, targetDate) * MINUTES_PER_DAY +
+          minutes(entry.time);
 
-      const end = start + meta.durationHoursMax * 60;
+        const end = start + meta.durationHoursMax * 60;
 
-      if (!(end > 0 && start < MINUTES_PER_DAY)) {
-        return [];
-      }
+        if (end <= 0 || start >= MINUTES_PER_DAY) {
+          return [];
+        }
 
-      return [
-        {
-          key: `${day.date}:${entry.id}`,
-          date: day.date,
-          entry,
-          meta,
-          start,
-          end,
-          lane: 0,
-        },
-      ];
-    }),
-  );
-
-  candidates.sort((a, b) => a.start - b.start);
+        return [
+          {
+            key: `${day.date}:${entry.id}`,
+            date: day.date,
+            entry,
+            meta,
+            start,
+            end,
+            lane: 0,
+          },
+        ];
+      }),
+    )
+    .sort((a, b) => a.start - b.start);
 
   const laneEnd: number[] = [];
 
-  return candidates.map((item) => {
+  return items.map((item) => {
     const visibleStart = Math.max(0, item.start);
 
     let lane = laneEnd.findIndex((end) => end + 25 <= visibleStart);
 
-    if (lane < 0) lane = laneEnd.length;
+    if (lane < 0) {
+      lane = laneEnd.length;
+    }
 
     laneEnd[lane] = Math.min(MINUTES_PER_DAY, item.end);
 
-    return { ...item, lane };
+    return {
+      ...item,
+      lane,
+    };
   });
 };
 
@@ -189,9 +203,12 @@ const phasePosition = (
   to: number,
 ): React.CSSProperties | null => {
   const start = clamp(from, 0, MINUTES_PER_DAY);
+
   const end = clamp(to, 0, MINUTES_PER_DAY);
 
-  if (end <= start) return null;
+  if (end <= start) {
+    return null;
+  }
 
   return {
     left: percentAt(start),
@@ -199,40 +216,8 @@ const phasePosition = (
   };
 };
 
-const phaseDescription = (
-  elapsed: number,
-  meta: InsulinProfileMeta,
-): string => {
-  if (elapsed < 0) {
-    return "Инсулин ещё не введён";
-  }
-
-  if (elapsed < meta.onsetHoursMax) {
-    return "До начала действия / начало действия";
-  }
-
-  if (elapsed >= meta.durationHoursMax) {
-    return "Окно действия завершилось";
-  }
-
-  if (meta.durationHoursMin !== undefined && elapsed >= meta.durationHoursMin) {
-    return "Возможное остаточное действие";
-  }
-
-  if (
-    meta.peakHoursMin !== undefined &&
-    meta.peakHoursMax !== undefined &&
-    elapsed >= meta.peakHoursMin &&
-    elapsed <= meta.peakHoursMax
-  ) {
-    return "Период пика действия";
-  }
-
-  return "Период действия";
-};
-
 const insulinDescription = (dose: DoseEvent): string => {
-  const meta = dose.meta;
+  const { meta, entry } = dose;
 
   const duration =
     meta.durationHoursMin === undefined
@@ -241,15 +226,14 @@ const insulinDescription = (dose: DoseEvent): string => {
 
   const peak =
     meta.peakHoursMin === undefined || meta.peakHoursMax === undefined
-      ? "пик не обозначен"
+      ? "без выделенного пика"
       : `пик ${decimal(meta.peakHoursMin)}–${decimal(meta.peakHoursMax)} ч`;
 
   return (
-    `${meta.label}: ${dose.entry.units ?? "—"} ЕД, ` +
-    `введено ${dose.date} в ${dose.entry.time}; ` +
-    `начало ${decimal(meta.onsetHoursMin)}–` +
-    `${decimal(meta.onsetHoursMax)} ч, ${peak}, ` +
-    `действие ${duration}.`
+    `${meta.label}: ` +
+    `${entry.units ?? "—"} ЕД; ` +
+    `введён ${dose.date} в ${entry.time}; ` +
+    `${peak}; длительность ${duration}`
   );
 };
 
@@ -258,8 +242,11 @@ interface InsulinTimelineProps {
   category: "basal" | "bolus";
   doses: DoseEvent[];
   selectedDoseKey: string | null;
-  onSelectDose: (key: string | null) => void;
+  onSelectDose: (value: string | null) => void;
 }
+
+const entryDose = (units: number | null): string =>
+  units === null ? "— ЕД" : `${decimal(units)} ЕД`;
 
 const InsulinTimeline: React.FC<InsulinTimelineProps> = ({
   label,
@@ -281,9 +268,15 @@ const InsulinTimeline: React.FC<InsulinTimelineProps> = ({
     >
       <div className={styles.timelineLabel}>{label}</div>
 
-      <div className={styles.timelineTrack} style={{ height: trackHeight }}>
+      <div
+        className={styles.timelineTrack}
+        style={{
+          height: trackHeight,
+        }}
+      >
         {doses.map((dose) => {
           const { meta, start, end, lane } = dose;
+
           const y = lane * 58;
 
           const onsetEnd = start + meta.onsetHoursMax * 60;
@@ -302,6 +295,7 @@ const InsulinTimeline: React.FC<InsulinTimelineProps> = ({
               : start + meta.peakHoursMax * 60;
 
           const onsetStyle = phasePosition(start, onsetEnd);
+
           const mainStyle = phasePosition(onsetEnd, regularEnd);
 
           const peakStyle =
@@ -310,25 +304,25 @@ const InsulinTimeline: React.FC<InsulinTimelineProps> = ({
               : phasePosition(peakStart, peakEnd);
 
           const tailStyle =
-            meta.durationHoursMin !== undefined
-              ? phasePosition(regularEnd, end)
-              : null;
+            meta.durationHoursMin === undefined
+              ? null
+              : phasePosition(regularEnd, end);
 
           const injectionVisible = start >= 0 && start < MINUTES_PER_DAY;
 
           const at = percentAt(start);
+
           const title = insulinDescription(dose);
 
-          const isSelected = dose.key === selectedDoseKey;
+          const active = dose.key === selectedDoseKey;
 
           return (
             <React.Fragment key={dose.key}>
-              {/* Светлое основное действие */}
               {mainStyle && (
                 <span
-                  title={title}
-                  aria-hidden="true"
                   className={styles.insulinMain}
+                  aria-hidden="true"
+                  title={title}
                   style={{
                     ...mainStyle,
                     top: y + 34,
@@ -336,12 +330,11 @@ const InsulinTimeline: React.FC<InsulinTimelineProps> = ({
                 />
               )}
 
-              {/* Остаточное действие — штриховка */}
               {tailStyle && (
                 <span
-                  title={title}
-                  aria-hidden="true"
                   className={styles.insulinResidual}
+                  aria-hidden="true"
+                  title={title}
                   style={{
                     ...tailStyle,
                     top: y + 34,
@@ -349,12 +342,11 @@ const InsulinTimeline: React.FC<InsulinTimelineProps> = ({
                 />
               )}
 
-              {/* Пик действия */}
               {peakStyle && (
                 <span
-                  title={title}
-                  aria-hidden="true"
                   className={styles.insulinPeak}
+                  aria-hidden="true"
+                  title={title}
                   style={{
                     ...peakStyle,
                     top: y + 34,
@@ -362,12 +354,11 @@ const InsulinTimeline: React.FC<InsulinTimelineProps> = ({
                 />
               )}
 
-              {/* Пунктир до начала действия */}
               {onsetStyle && (
                 <span
-                  title={title}
-                  aria-hidden="true"
                   className={styles.insulinOnset}
+                  aria-hidden="true"
+                  title={title}
                   style={{
                     ...onsetStyle,
                     top: y + 41,
@@ -384,38 +375,36 @@ const InsulinTimeline: React.FC<InsulinTimelineProps> = ({
                       top: y + 2,
                     }}
                   >
-                    {dose.entry.units === null
-                      ? "— ЕД"
-                      : `${decimal(dose.entry.units)} ЕД`}
+                    {entryDose(dose.entry.units)}
                   </span>
 
                   <button
                     type="button"
                     title={title}
                     aria-label={title}
-                    aria-pressed={isSelected}
+                    aria-pressed={active}
                     className={`${styles.injectionDot} ${
-                      isSelected ? styles.injectionDotSelected : ""
+                      active ? styles.injectionDotSelected : ""
                     }`}
                     style={{
                       left: at,
                       top: y + 32,
                     }}
-                    onClick={() => onSelectDose(isSelected ? null : dose.key)}
+                    onClick={() => onSelectDose(active ? null : dose.key)}
                   />
                 </>
               ) : (
                 <button
                   type="button"
-                  title={title}
-                  aria-label={`Продолжение действия с предыдущего дня. ${title}`}
-                  aria-pressed={isSelected}
                   className={styles.carryOverMarker}
+                  title={title}
+                  aria-label={`Продолжение с предыдущего дня. ${title}`}
+                  aria-pressed={active}
                   style={{
                     left: 0,
                     top: y + 23,
                   }}
-                  onClick={() => onSelectDose(isSelected ? null : dose.key)}
+                  onClick={() => onSelectDose(active ? null : dose.key)}
                 >
                   ↤
                 </button>
@@ -424,7 +413,7 @@ const InsulinTimeline: React.FC<InsulinTimelineProps> = ({
           );
         })}
 
-        {doses.length === 0 && (
+        {!doses.length && (
           <span className={styles.emptyTrack}>Нет введений</span>
         )}
       </div>
@@ -446,9 +435,15 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
     goToNextDate,
     updateTargets,
     addLinkedEntries,
+
     deleteGlucoseEntry,
     deleteInsulinEntry,
     deleteMealEntry,
+
+    updateGlucoseEntry,
+    updateInsulinEntry,
+    updateMealEntry,
+
     handleSubmit,
   } = useDailyProfileForm({
     patientId,
@@ -466,26 +461,13 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
 
   const [selectedDoseKey, setSelectedDoseKey] = useState<string | null>(null);
 
-  /*
-   * ЕДИНЫЙ КУРСОР ДЛЯ ВСЕХ ЧЕТЫРЁХ ПОЛОС
-   *
-   * Здесь не создаются отдельные линии в разных
-   * блоках. Мы измеряем положение точки глюкозы
-   * и нижнюю границу полосы питания.
-   *
-   * Это позволяет провести одну линию через
-   * весь график, включая промежутки.
-   */
-
   const graphLayersRef = useRef<HTMLDivElement>(null);
+
   const glucoseSvgRef = useRef<SVGSVGElement>(null);
+
   const mealTrackRef = useRef<HTMLDivElement>(null);
 
-  const [cursorGeometry, setCursorGeometry] = useState<{
-    left: number;
-    top: number;
-    height: number;
-  } | null>(null);
+  const unifiedCursorRef = useRef<HTMLDivElement>(null);
 
   const points = useMemo(() => {
     const entries = (selectedDay?.glucoseEntries ?? [])
@@ -525,93 +507,97 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
     (point) => point.entry.id === selectedGlucoseId,
   );
 
-  const activeAtPoint = useMemo(() => {
-    if (!selectedPoint) return [];
-
-    const at = minutes(selectedPoint.entry.time);
-
-    return [...basalDoses, ...bolusDoses]
-      .filter((dose) => dose.start <= at && dose.end > at)
-      .sort((a, b) => b.start - a.start);
-  }, [selectedPoint, basalDoses, bolusDoses]);
-
   const selectedDose = [...basalDoses, ...bolusDoses].find(
     (item) => item.key === selectedDoseKey,
   );
 
+  const tooltipInsulins = useMemo<TooltipInsulin[]>(() => {
+    if (!selectedPoint) {
+      return [];
+    }
+
+    const at = minutes(selectedPoint.entry.time);
+
+    return [...basalDoses, ...bolusDoses]
+      .filter((dose) => dose.start <= at && dose.end >= at)
+      .sort((a, b) => b.start - a.start)
+      .map((dose) => ({
+        key: dose.key,
+        meta: dose.meta,
+        units: dose.entry.units,
+        date: dose.date,
+        time: dose.entry.time,
+        elapsedHours: (at - dose.start) / 60,
+      }));
+  }, [selectedPoint, basalDoses, bolusDoses]);
+
   /*
-   * Измеряем положение единого курсора.
+   * Единый вертикальный курсор
+   * от точки глюкозы до питания.
    *
-   * Точка задаётся в координатах SVG.
-   * Затем переводим её в пиксели.
-   *
-   * Нижняя граница берётся именно у полосы пищи.
-   *
-   * ResizeObserver обновляет положение при
-   * изменении ширины экрана или высоты полос.
+   * Координаты записываются через ref,
+   * без setState внутри эффекта.
    */
   useLayoutEffect(() => {
     if (!selectedPoint) {
-      setCursorGeometry(null);
       return;
     }
 
     const layers = graphLayersRef.current;
+
     const svg = glucoseSvgRef.current;
+
     const meal = mealTrackRef.current;
 
-    if (!layers || !svg || !meal) return;
+    const cursor = unifiedCursorRef.current;
 
-    const measureCursor = () => {
-      const layersRect = layers.getBoundingClientRect();
+    if (!layers || !svg || !meal || !cursor) {
+      return;
+    }
+
+    const measure = () => {
+      const containerRect = layers.getBoundingClientRect();
+
       const svgRect = svg.getBoundingClientRect();
+
       const mealRect = meal.getBoundingClientRect();
 
       const left =
         svgRect.left -
-        layersRect.left +
+        containerRect.left +
         (selectedPoint.x / SVG_WIDTH) * svgRect.width;
 
       const top =
         svgRect.top -
-        layersRect.top +
+        containerRect.top +
         (selectedPoint.y / SVG_HEIGHT) * svgRect.height;
 
-      const bottom = mealRect.bottom - layersRect.top;
-      const height = Math.max(0, bottom - top);
+      const height = Math.max(0, mealRect.bottom - containerRect.top - top);
 
-      setCursorGeometry((previous) => {
-        if (
-          previous &&
-          Math.abs(previous.left - left) < 0.5 &&
-          Math.abs(previous.top - top) < 0.5 &&
-          Math.abs(previous.height - height) < 0.5
-        ) {
-          return previous;
-        }
+      cursor.style.left = `${left}px`;
 
-        return { left, top, height };
-      });
+      cursor.style.top = `${top}px`;
+
+      cursor.style.height = `${height}px`;
     };
 
-    measureCursor();
+    measure();
 
     const observer =
       typeof ResizeObserver !== "undefined"
-        ? new ResizeObserver(measureCursor)
+        ? new ResizeObserver(measure)
         : null;
 
-    if (observer) {
-      observer.observe(layers);
-      observer.observe(svg);
-      observer.observe(meal);
-    }
+    observer?.observe(layers);
+    observer?.observe(svg);
+    observer?.observe(meal);
 
-    window.addEventListener("resize", measureCursor);
+    window.addEventListener("resize", measure);
 
     return () => {
       observer?.disconnect();
-      window.removeEventListener("resize", measureCursor);
+
+      window.removeEventListener("resize", measure);
     };
   }, [
     selectedPoint?.x,
@@ -647,7 +633,9 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
     }
 
     const glucoseValue = asNumberOrNull(draft.glucoseValue);
+
     const insulinUnits = asNumberOrNull(draft.insulinUnits);
+
     const breadUnits = asNumberOrNull(draft.breadUnits);
 
     if (
@@ -694,8 +682,14 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
           <Button
             type="button"
             variant="secondary"
-            onClick={goToPreviousDate}
             aria-label="Предыдущий день"
+            onClick={() => {
+              goToPreviousDate();
+
+              setSelectedGlucoseId(null);
+
+              setSelectedDoseKey(null);
+            }}
           >
             ‹
           </Button>
@@ -707,15 +701,27 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
               type="date"
               aria-label="Выбрать дату"
               value={selectedDay.date}
-              onChange={(event) => updateSelectedDate(event.target.value)}
+              onChange={(event) => {
+                updateSelectedDate(event.target.value);
+
+                setSelectedGlucoseId(null);
+
+                setSelectedDoseKey(null);
+              }}
             />
           </div>
 
           <Button
             type="button"
             variant="secondary"
-            onClick={goToNextDate}
             aria-label="Следующий день"
+            onClick={() => {
+              goToNextDate();
+
+              setSelectedGlucoseId(null);
+
+              setSelectedDoseKey(null);
+            }}
           >
             ›
           </Button>
@@ -802,15 +808,18 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
         </div>
       </section>
 
-      {/* Единый суточный график */}
+      {/* График */}
 
       <section className={styles.profileCard}>
         <h3>Суточный профиль: глюкоза, инсулин и питание</h3>
 
         <div className={styles.legend}>
           <span className={styles.legendGlucose}>● Глюкоза</span>
+
           <span className={styles.legendBasal}>● Базальный</span>
+
           <span className={styles.legendBolus}>● Болюсный</span>
+
           <span className={styles.legendMeal}>● ХЕ</span>
         </div>
 
@@ -822,18 +831,22 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
             <i className={styles.legendInjection} />
             Введение
           </span>
+
           <span>
             <i className={styles.legendOnset} />
             До начала действия
           </span>
+
           <span>
             <i className={styles.legendDuration} />
             Действие
           </span>
+
           <span>
             <i className={styles.legendPeak} />
             Пик
           </span>
+
           <span>
             <i className={styles.legendResidual} />
             Остаточное действие
@@ -841,15 +854,9 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
         </div>
 
         <div className={styles.chartShell}>
-          {/*
-            Все четыре полосы внутри graphLayers.
-
-            Именно это объединяет их в одну
-            систему координат и позволяет
-            нарисовать курсор одним элементом.
-          */}
-
           <div className={styles.graphLayers} ref={graphLayersRef}>
+            {/* График глюкозы */}
+
             <div className={styles.chartPanel}>
               <svg
                 ref={glucoseSvgRef}
@@ -857,8 +864,6 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                 className={styles.chartSvg}
                 aria-label="График глюкозы по времени суток"
               >
-                {/* Цветовые зоны */}
-
                 <rect
                   x={PLOT_LEFT}
                   y={yMeal}
@@ -883,11 +888,13 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                   className={styles.zoneHypo}
                 />
 
-                {/* Горизонтальная сетка */}
+                {/* Сетка по глюкозе */}
 
                 {Array.from(
-                  { length: 6 },
-                  (_, index) => (index * points.maxY) / 5,
+                  {
+                    length: 6,
+                  },
+                  (_, i) => (i * points.maxY) / 5,
                 ).map((value) => (
                   <g key={value}>
                     <line
@@ -909,20 +916,20 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                   </g>
                 ))}
 
-                {/* Вертикальная сетка времени */}
+                {/* Сетка по времени */}
 
-                {DAILY_PROFILE_HOURS.map((label) => (
+                {DAILY_PROFILE_HOURS.map((hour) => (
                   <line
-                    key={label}
-                    x1={xAt(minutes(label))}
-                    x2={xAt(minutes(label))}
+                    key={hour}
+                    x1={xAt(minutes(hour))}
+                    x2={xAt(minutes(hour))}
                     y1={PLOT_TOP}
                     y2={SVG_HEIGHT - PLOT_BOTTOM}
                     className={styles.gridLineVertical}
                   />
                 ))}
 
-                {/* Целевые значения */}
+                {/* Границы целевых значений */}
 
                 {[
                   targetRanges.postMealMax,
@@ -941,7 +948,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                   </text>
                 ))}
 
-                {/* Линия измерений глюкозы */}
+                {/* Линия измерений */}
 
                 {points.data.length > 1 && (
                   <path
@@ -955,6 +962,8 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                   />
                 )}
 
+                {/* Измерения глюкозы */}
+
                 {points.data.map((point) => (
                   <g key={point.entry.id}>
                     <circle
@@ -964,24 +973,24 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                       className={styles.glucosePoint}
                       tabIndex={0}
                       role="button"
-                      aria-label={`${point.entry.time}: ${point.entry.value} ммоль/л`}
+                      aria-label={`${point.entry.time}: ${
+                        point.entry.value
+                      } ммоль/л`}
                       onClick={() =>
-                        setSelectedGlucoseId(
-                          selectedGlucoseId === point.entry.id
-                            ? null
-                            : point.entry.id,
+                        setSelectedGlucoseId((current) =>
+                          current === point.entry.id ? null : point.entry.id,
                         )
                       }
                       onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          event.preventDefault();
-
-                          setSelectedGlucoseId(
-                            selectedGlucoseId === point.entry.id
-                              ? null
-                              : point.entry.id,
-                          );
+                        if (event.key !== "Enter" && event.key !== " ") {
+                          return;
                         }
+
+                        event.preventDefault();
+
+                        setSelectedGlucoseId((current) =>
+                          current === point.entry.id ? null : point.entry.id,
+                        );
                       }}
                     />
 
@@ -997,68 +1006,22 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                 ))}
               </svg>
 
-              {/* Информация о выбранной точке */}
+              {/* Компактная карточка глюкозы */}
 
               {selectedPoint && (
-                <div
-                  className={styles.pointTooltip}
-                  style={{
-                    left: `${clamp(
-                      (selectedPoint.x / SVG_WIDTH) * 100,
-                      14,
-                      86,
-                    )}%`,
-                  }}
-                >
-                  <div className={styles.tooltipHeader}>
-                    <strong>{selectedPoint.entry.time}</strong>
-                    <strong>
-                      {decimal(selectedPoint.entry.value ?? 0)} ммоль/л
-                    </strong>
-                  </div>
-
-                  {selectedPoint.entry.note && (
-                    <p>{selectedPoint.entry.note}</p>
-                  )}
-
-                  <small>Введения инсулина к этому времени:</small>
-
-                  {activeAtPoint.length ? (
-                    activeAtPoint.map((dose) => (
-                      <div key={dose.key} className={styles.tooltipInsulinItem}>
-                        <strong>
-                          {dose.meta.shortLabel}, {dose.entry.units ?? "—"} ЕД
-                        </strong>
-
-                        <span>
-                          {phaseDescription(
-                            (minutes(selectedPoint.entry.time) - dose.start) /
-                              60,
-                            dose.meta,
-                          )}
-                        </span>
-
-                        <small>
-                          Введён {dose.date} в {dose.entry.time}
-                        </small>
-                      </div>
-                    ))
-                  ) : (
-                    <p>Нет известных введений в этом окне действия.</p>
-                  )}
-
-                  <button
-                    type="button"
-                    className={styles.closeTooltip}
-                    onClick={() => setSelectedGlucoseId(null)}
-                  >
-                    Закрыть
-                  </button>
-                </div>
+                <GlucosePointTooltip
+                  time={selectedPoint.entry.time}
+                  glucose={selectedPoint.entry.value ?? 0}
+                  note={selectedPoint.entry.note}
+                  selectedDate={selectedDay.date}
+                  insulins={tooltipInsulins}
+                  leftPercent={(selectedPoint.x / SVG_WIDTH) * 100}
+                  onClose={() => setSelectedGlucoseId(null)}
+                />
               )}
             </div>
 
-            {/* Базальный, болюсный и питание */}
+            {/* Инсулиновые полосы */}
 
             <div className={styles.timelineSection}>
               <InsulinTimeline
@@ -1077,13 +1040,17 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                 onSelectDose={setSelectedDoseKey}
               />
 
+              {/* Питание */}
+
               <div className={styles.timelineRow}>
                 <div className={styles.timelineLabel}>Питание / ХЕ</div>
 
                 <div
                   ref={mealTrackRef}
                   className={styles.timelineTrack}
-                  style={{ height: 59 }}
+                  style={{
+                    height: 59,
+                  }}
                 >
                   {selectedDay.mealEntries.map((meal) => (
                     <div
@@ -1112,7 +1079,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                 </div>
               </div>
 
-              {/* Единственная шкала времени */}
+              {/* Общая шкала времени */}
 
               <div className={styles.timelineAxis}>
                 <div className={styles.timelineAxisLabels}>
@@ -1128,8 +1095,8 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => setSelectedDoseKey(null)}
                     aria-label="Закрыть информацию"
+                    onClick={() => setSelectedDoseKey(null)}
                   >
                     ×
                   </button>
@@ -1137,38 +1104,20 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
               )}
             </div>
 
-            {/*
-              ЕДИНАЯ ВЕРТИКАЛЬНАЯ ЛИНИЯ
+            {/* Единый курсор до полосы питания */}
 
-              Важно: эта линия размещена не внутри
-              SVG глюкозы, а поверх общего graphLayers.
-
-              Она проходит:
-              точка глюкозы
-                 ↓
-              базальный инсулин
-                 ↓
-              болюсный инсулин
-                 ↓
-              питание / ХЕ
-            */}
-
-            {selectedPoint && cursorGeometry && (
+            {selectedPoint && (
               <div
+                ref={unifiedCursorRef}
                 className={styles.unifiedCursor}
                 aria-hidden="true"
-                style={{
-                  left: cursorGeometry.left,
-                  top: cursorGeometry.top,
-                  height: cursorGeometry.height,
-                }}
               />
             )}
           </div>
         </div>
       </section>
 
-      {/* Добавление записей */}
+      {/* Записи и добавление */}
 
       <section className={styles.entriesCard}>
         <div className={styles.entriesHeader}>
@@ -1178,7 +1127,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
             type="button"
             className={styles.addButton}
             aria-label={isAddOpen ? "Закрыть добавление" : "Добавить запись"}
-            onClick={() => setIsAddOpen((current) => !current)}
+            onClick={() => setIsAddOpen((value) => !value)}
           >
             {isAddOpen ? "×" : "+"}
           </button>
@@ -1218,6 +1167,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                         }))
                       }
                     />
+
                     {label}
                   </label>
                 ))}
@@ -1225,6 +1175,8 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
             </div>
 
             <div className={styles.addBlocks}>
+              {/* Новая глюкоза */}
+
               {draft.addGlucose && (
                 <div className={styles.addBlock}>
                   <h4>Глюкоза</h4>
@@ -1259,6 +1211,8 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                   />
                 </div>
               )}
+
+              {/* Новый инсулин */}
 
               {draft.addInsulin && (
                 <div className={styles.addBlock}>
@@ -1316,6 +1270,8 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                   />
                 </div>
               )}
+
+              {/* Новое питание */}
 
               {draft.addMeal && (
                 <div className={styles.addBlock}>
@@ -1378,97 +1334,26 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
           </div>
         )}
 
-        {/* Списки записей */}
+        {/*
+          Новый компактный журнал.
 
-        <div className={styles.entriesLists}>
-          <div className={styles.entriesColumn}>
-            <h4>Глюкоза</h4>
+          Вместо трёх отдельных списков
+          все данные объединены по времени.
 
-            {selectedDay.glucoseEntries.map((entry) => (
-              <div key={entry.id} className={styles.entryCard}>
-                <div>
-                  <strong>{entry.time}</strong>
+          Ключ выбранного дня сбрасывает
+          состояние редактора при смене даты.
+        */}
 
-                  <span>
-                    {entry.value === null
-                      ? "—"
-                      : `${decimal(entry.value)} ммоль/л`}
-                  </span>
-
-                  {entry.note && <small>{entry.note}</small>}
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => deleteGlucoseEntry(entry.id)}
-                >
-                  Удалить
-                </button>
-              </div>
-            ))}
-
-            {!selectedDay.glucoseEntries.length && (
-              <p className={styles.emptyState}>Пока нет измерений.</p>
-            )}
-          </div>
-
-          <div className={styles.entriesColumn}>
-            <h4>Инсулин</h4>
-
-            {selectedDay.insulinEntries.map((entry) => (
-              <div key={entry.id} className={styles.entryCard}>
-                <div>
-                  <strong>{entry.time}</strong>
-
-                  <span>
-                    {getInsulin(entry.insulinName).shortLabel} ·{" "}
-                    {entry.units ?? "—"} ЕД
-                  </span>
-
-                  {entry.note && <small>{entry.note}</small>}
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => deleteInsulinEntry(entry.id)}
-                >
-                  Удалить
-                </button>
-              </div>
-            ))}
-
-            {!selectedDay.insulinEntries.length && (
-              <p className={styles.emptyState}>Пока нет введений.</p>
-            )}
-          </div>
-
-          <div className={styles.entriesColumn}>
-            <h4>Питание</h4>
-
-            {selectedDay.mealEntries.map((entry) => (
-              <div key={entry.id} className={styles.entryCard}>
-                <div>
-                  <strong>{entry.time}</strong>
-
-                  <span>
-                    {DAILY_PROFILE_MEAL_TYPE_LABELS[entry.mealType]} ·{" "}
-                    {entry.breadUnits ?? "—"} ХЕ
-                  </span>
-
-                  {entry.note && <small>{entry.note}</small>}
-                </div>
-
-                <button type="button" onClick={() => deleteMealEntry(entry.id)}>
-                  Удалить
-                </button>
-              </div>
-            ))}
-
-            {!selectedDay.mealEntries.length && (
-              <p className={styles.emptyState}>Пока нет питания.</p>
-            )}
-          </div>
-        </div>
+        <DailyProfileEntries
+          key={selectedDay.id}
+          day={selectedDay}
+          updateGlucoseEntry={updateGlucoseEntry}
+          updateInsulinEntry={updateInsulinEntry}
+          updateMealEntry={updateMealEntry}
+          deleteGlucoseEntry={deleteGlucoseEntry}
+          deleteInsulinEntry={deleteInsulinEntry}
+          deleteMealEntry={deleteMealEntry}
+        />
       </section>
     </form>
   );
