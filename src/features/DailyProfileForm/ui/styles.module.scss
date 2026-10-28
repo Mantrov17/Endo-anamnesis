@@ -1,8 +1,4 @@
 
-/* =========================================
-   Суточный профиль — компактная версия
-   ========================================= */
-
 .form {
   display: flex;
   flex-direction: column;
@@ -17,26 +13,16 @@
   min-width: 0;
   background: #fff;
   border: 1px solid #dae7e6;
-  border-radius: 13px;
-  box-shadow: 0 3px 12px rgba(32, 71, 71, 0.035);
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(32, 71, 71, 0.04);
 }
-
-/* Панель даты */
 
 .topToolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 10px 12px;
-}
-
-.topToolbar > button,
-.dateNavigator > button {
-  min-height: 34px;
-  padding: 6px 11px;
-  font-size: 12px;
+  gap: 10px;
+  padding: 9px 12px;
 }
 
 .dateNavigator {
@@ -46,43 +32,50 @@
   min-width: 0;
 }
 
+.dateNavigator > button {
+  min-width: 34px;
+  height: 34px;
+  padding: 3px 9px;
+  font-size: 19px;
+}
+
 .currentDateCard {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 4px 10px;
+  gap: 6px 10px;
   min-width: 0;
-  padding: 7px 10px;
-  background: #f5faf9;
+  padding: 6px 9px;
   border: 1px solid #dce9e6;
-  border-radius: 9px;
-}
-
-.currentDateLabel {
-  color: #6c7d80;
-  font-size: 11px;
+  background: #f6fbf9;
+  border-radius: 8px;
 }
 
 .currentDateCard strong {
-  color: #294c50;
   font-size: 12px;
-  line-height: 1.25;
+  color: #294b50;
 }
 
 .currentDateCard input {
-  width: 120px;
-  max-width: 100%;
+  width: 122px;
   min-height: 30px;
   padding: 3px 6px;
-  background: #fff;
-  border: 1px solid #cfdfdd;
-  border-radius: 7px;
-  color: #243d43;
   font: inherit;
-  font-size: 13px;
+  font-size: 12px;
+  border: 1px solid #cfdfdd;
+  border-radius: 6px;
+  background: white;
 }
 
-/* Целевые диапазоны */
+.saveStatus {
+  color: #497d71;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.saveError {
+  color: #b42318;
+}
 
 .targetsCard,
 .profileCard,
@@ -90,20 +83,12 @@
   padding: 12px;
 }
 
-.targetsHeader h3,
-.graphHeader h3,
-.entriesHeader h3 {
+.targetsCard h3,
+.profileCard h3,
+.entriesCard h3 {
   margin: 0;
   color: #243b42;
   font-size: 16px;
-  line-height: 1.25;
-}
-
-.targetsHeader p,
-.graphHeader p {
-  margin: 3px 0 0;
-  color: #718084;
-  font-size: 11px;
   line-height: 1.3;
 }
 
@@ -111,7 +96,7 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 9px;
 }
 
 .targetsGrid > div {
@@ -121,485 +106,620 @@
 
 .targetsGrid input {
   min-height: 35px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  font-size: 14px;
+  padding-block: 5px;
+  font-size: 16px;
 }
 
-/* Заголовок графика */
+/* Легенда */
 
-.graphHeader {
+.legend,
+.phasesLegend {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  font-size: 11px;
+  color: #547078;
 }
 
 .legend {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 3px 9px;
-  color: #5a6d71;
-  font-size: 10px;
-  line-height: 1.2;
+  margin-top: 6px;
 }
 
-.legendGlucose,
-.legendBasal,
-.legendBolus,
-.legendMeal {
-  white-space: nowrap;
-  font-weight: 600;
+.legend span {
+  font-weight: 650;
 }
 
 .legendGlucose {
-  color: #2c67d6;
+  color: #2b67d7;
 }
 
 .legendBasal {
-  color: #2d77f3;
+  color: #2576e0;
 }
 
 .legendBolus {
-  color: #df8521;
+  color: #ec8522;
 }
 
 .legendMeal {
-  color: #8c36da;
+  color: #982bdd;
+}
+
+.phasesLegend {
+  margin: 7px 0 9px;
+  font-size: 10px;
+}
+
+.phasesLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.phasesLegend i {
+  width: 21px;
+  height: 8px;
+  display: inline-block;
+  border-radius: 5px;
+}
+
+.legendInjection {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  background: #f19235;
+}
+
+.legendOnset {
+  background: transparent;
+  height: 0 !important;
+  border-top: 2px dashed #ef9b4d;
+  border-radius: 0 !important;
+}
+
+.legendDuration {
+  background: #f7d4aa;
+}
+
+.legendPeak {
+  background: #f39a3c;
+}
+
+.legendResidual {
+  background: repeating-linear-gradient(
+                  135deg,
+                  #eea45d 0 2px,
+                  #fff3e4 2px 5px
+  );
 }
 
 /* =========================================
-   Единая прокрутка графика
+   ОБЩИЙ ГРАФИК
    ========================================= */
 
 .chartShell {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 7px;
-
-  min-width: 0;
   width: 100%;
-
+  min-width: 0;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   -webkit-overflow-scrolling: touch;
-
   scrollbar-width: thin;
-  scrollbar-color: #accad2 transparent;
+  scrollbar-color: #b4cfd7 transparent;
+}
+
+/*
+ * Общий контейнер.
+ *
+ * Глюкоза, базальный инсулин, болюсный
+ * инсулин и питание находятся внутри него.
+ *
+ * У всех одна ширина и единая ось времени.
+ */
+.graphLayers {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  background: #f7fbfc;
+  border: 1px solid #e2ecef;
+  border-radius: 9px;
+}
+
+.chartPanel,
+.timelineSection {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/*
+ * ОДНА НЕПРЕРЫВНАЯ ЛИНИЯ
+ *
+ * Верхняя граница соответствует выбранной
+ * точке измерения глюкозы.
+ *
+ * Нижняя граница соответствует нижнему краю
+ * полосы питания / ХЕ.
+ *
+ * Линия рисуется поверх всех четырёх полос,
+ * но не перехватывает нажатия.
+ */
+.unifiedCursor {
+  position: absolute;
+  z-index: 8;
+
+  width: 2px;
+
+  background: repeating-linear-gradient(
+                  to bottom,
+                  rgba(42, 106, 219, 0.8) 0 7px,
+                  transparent 7px 13px
+  );
+
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
 .chartPanel {
   position: relative;
-  flex: 0 0 auto;
-  box-sizing: border-box;
-
-  width: 100%;
-  min-width: 0;
-  padding: 0;
-
-  background: linear-gradient(
-                  180deg,
-                  #fbfdfd 0%,
-                  #f6fbfa 100%
-  );
-
-  border: 1px solid #e0ebea;
-  border-radius: 10px;
-  overflow: visible;
+  background: #f7fbfc;
+  border: 0;
+  border-radius: 9px 9px 0 0;
 }
 
 .chartSvg {
-  display: block;
   width: 100%;
+  display: block;
   height: auto;
-  min-width: 0;
 }
 
 /* Цветовые зоны */
 
 .zonePostMeal {
-  fill: rgba(247, 229, 67, 0.26);
+  fill: rgba(255, 232, 83, 0.27);
 }
 
 .zoneTarget {
-  fill: rgba(136, 233, 151, 0.32);
+  fill: rgba(120, 222, 142, 0.32);
 }
 
 .zoneHypo {
-  fill: rgba(244, 132, 132, 0.17);
+  fill: rgba(244, 122, 122, 0.17);
 }
 
-/* Линии сетки */
+/* Сетка */
 
 .gridLine {
-  stroke: #e5edef;
+  stroke: #e1eaee;
   stroke-width: 1;
 }
 
 .gridLineVertical {
-  stroke: #e1edf0;
+  stroke: #d9e8ef;
   stroke-width: 1;
 }
 
-.axisLine {
-  stroke: #a9c2c5;
-  stroke-width: 1.1;
-}
-
 .axisLabel {
-  fill: #557279;
+  fill: #618092;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 550;
 }
 
 .rangeLabel {
-  fill: #708185;
+  fill: #668387;
   font-size: 12px;
   font-weight: 700;
-  text-anchor: end;
 }
 
-/* График глюкозы */
+/* Глюкоза */
 
 .glucosePath {
   fill: none;
   stroke: #2b67d7;
   stroke-width: 2.5;
-  stroke-dasharray: 8 5;
-  stroke-linecap: round;
+  stroke-dasharray: 9 6;
   stroke-linejoin: round;
+  stroke-linecap: round;
 }
 
 .glucosePoint {
-  fill: #fff;
+  fill: white;
   stroke: #2b67d7;
   stroke-width: 2.5;
   cursor: pointer;
 }
 
+.glucosePoint:focus-visible {
+  outline: 2px solid #2b67d7;
+}
+
 .pointValue {
   fill: #2b67d7;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
 }
 
-.cursorLine {
-  stroke: rgba(43, 103, 215, 0.7);
-  stroke-width: 1.5;
-  stroke-dasharray: 6 5;
-}
-
-/* Всплывающая карточка */
+/* Подсказка выбранной глюкозы */
 
 .pointTooltip {
   position: absolute;
-  z-index: 5;
-  box-sizing: border-box;
+  z-index: 12;
+  top: 5px;
+  transform: translateX(-50%);
 
-  min-width: 165px;
-  max-width: 215px;
+  min-width: 195px;
+  max-width: 235px;
+  box-sizing: border-box;
   padding: 9px;
 
-  transform: translate(
-                  -50%,
-                  calc(-100% - 10px)
-  );
-
-  color: #24424a;
-  background: rgba(255, 255, 255, 0.98);
-  border: 1px solid #d9e7f8;
-  border-radius: 10px;
-
-  box-shadow: 0 5px 16px rgba(31, 83, 128, 0.14);
   font-size: 11px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #c6d9f0;
+  border-radius: 10px;
+  box-shadow: 0 5px 18px #2b56812b;
+}
+
+.pointTooltip p {
+  margin: 5px 0;
+}
+
+.pointTooltip small {
+  color: #6c8289;
 }
 
 .tooltipHeader {
   display: flex;
   justify-content: space-between;
-  gap: 7px;
-  margin-bottom: 6px;
-  color: #23406d;
-}
-
-.pointTooltip p {
-  margin: 0 0 6px;
-  font-size: 11px;
-}
-
-.tooltipInsulins {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.tooltipLabel {
-  color: #708083;
-  font-size: 10px;
-  font-weight: 700;
+  gap: 8px;
+  color: #2b67ad;
 }
 
 .tooltipInsulinItem {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  padding: 5px 6px;
-  background: #f7fbff;
+  gap: 3px;
+  margin: 5px 0;
+  padding: 6px;
+  background: #f1f7fc;
   border-radius: 6px;
 }
 
-.tooltipInsulinItem span,
-.tooltipInsulinItem small {
-  color: #536d73;
+.tooltipInsulinItem span {
+  color: #4e6e79;
+}
+
+.closeTooltip {
+  border: 0;
+  padding: 3px 0 0;
+  color: #1d7c81;
+  background: none;
+  font: inherit;
+  cursor: pointer;
 }
 
 /* =========================================
-   Дорожки инсулина и питания
+   ИНСУЛИН И ПИТАНИЕ
    ========================================= */
 
 .timelineSection {
-  flex: 0 0 auto;
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
+  margin-top: 0;
 }
 
 .timelineRow {
-  display: block;
-  min-width: 0;
   margin: 0 0 6px;
 }
 
 .timelineLabel {
-  display: block;
-  margin: 0 0 3px;
-  padding: 0 2px;
-
-  border: 0;
-  background: transparent;
-
-  color: #2d5362;
+  margin-bottom: 3px;
   font-size: 12px;
   font-weight: 700;
-  line-height: 1.3;
+  color: #345869;
 }
 
 /*
- * 4.6% и 4.4% соответствуют
- * отступам оси графика:
+ * Отступы соответствуют координатам
+ * SVG-графика глюкозы:
  *
- * CHART_PADDING_LEFT = 46
- * CHART_PADDING_RIGHT = 44
- * SVG_WIDTH = 1000
- *
- * Поэтому дорожки и график
- * используют одинаковую временную ось.
+ * слева 46 из 1000 = 4.6%
+ * справа 44 из 1000 = 4.4%
  */
-
 .timelineTrack {
   position: relative;
   box-sizing: border-box;
 
-  min-height: 64px;
   margin-left: 4.6%;
   margin-right: 4.4%;
+
+  border: 1px solid #e0ebef;
+  border-radius: 7px;
 
   background:
           repeating-linear-gradient(
                           to right,
                           transparent 0,
                           transparent calc(100% / 12 - 1px),
-                          #e0edf0 calc(100% / 12 - 1px),
-                          #e0edf0 calc(100% / 12)
+                          #e0ebf1 calc(100% / 12 - 1px),
+                          #e0ebf1 calc(100% / 12)
           ),
           linear-gradient(
                           180deg,
-                          #fbfdff 0%,
-                          #f6fbff 100%
+                          #f9fcfd,
+                          #f5f9fb
           );
 
-  border: 1px solid #e0ebef;
-  border-radius: 8px;
   overflow: hidden;
 }
 
-.timelineBlock {
+.emptyTrack {
+  position: absolute;
+  left: 8px;
+  top: 22px;
+  font-size: 11px;
+  color: #8c9d9e;
+}
+
+/* Базальный и болюсный */
+
+.basalRow {
+  --phase-light: #bfdaff;
+  --phase-strong: #4d94f5;
+  --phase-stripe: #5c98e6;
+  --phase-onset: #3880e8;
+}
+
+.bolusRow {
+  --phase-light: #fbd5aa;
+  --phase-strong: #f59a3c;
+  --phase-stripe: #e59343;
+  --phase-onset: #e78b31;
+}
+
+/* Фазы действия инсулина */
+
+.insulinMain,
+.insulinPeak,
+.insulinResidual,
+.insulinOnset {
   position: absolute;
   box-sizing: border-box;
-
-  max-width: none;
-  min-width: 60px;
-  padding: 4px 7px;
-
-  color: #173d4a;
-  border-radius: 9px;
-
-  box-shadow: 0 2px 6px rgba(17, 64, 82, 0.1);
+  pointer-events: auto;
 }
 
-.timelineBlock span,
-.timelineBlock small {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.insulinMain,
+.insulinPeak,
+.insulinResidual {
+  height: 15px;
+  border-radius: 4px;
 }
 
-.timelineBlock span {
+/* Основное действие */
+.insulinMain {
+  background: var(--phase-light);
+}
+
+/* Пик действия */
+.insulinPeak {
+  background: var(--phase-strong);
+  z-index: 2;
+}
+
+/* Остаточное действие */
+.insulinResidual {
+  z-index: 1;
+  background: repeating-linear-gradient(
+                  135deg,
+                  var(--phase-stripe) 0 2px,
+                  #fff9f1 2px 5px
+  );
+}
+
+/* Начало действия */
+.insulinOnset {
+  border-top: 2px dashed var(--phase-onset);
+  height: 0;
+  z-index: 3;
+}
+
+/* Доза */
+
+.doseBadge {
+  position: absolute;
+  z-index: 5;
+
+  padding: 2px 5px;
+  color: #7d491a;
+
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 750;
+  white-space: nowrap;
+
+  transform: translateX(-50%);
+
+  background: #fff7ed;
+  border: 1px solid #efd5bb;
+  border-radius: 5px;
 }
 
-.timelineBlock small {
-  margin-top: 1px;
-  font-size: 10px;
+.basalRow .doseBadge {
+  color: #2367b6;
+  background: #eff6ff;
+  border-color: #c7dbf6;
 }
 
-.basalBlock {
-  background: linear-gradient(
-                  90deg,
-                  #e5f0ff,
-                  #8bb4fa
-  );
+/* Кружок введения инсулина */
+
+.injectionDot {
+  position: absolute;
+  z-index: 6;
+
+  width: 17px;
+  height: 17px;
+  padding: 0;
+
+  transform: translateX(-50%);
+
+  border: 3px solid #fff5e8;
+  border-radius: 50%;
+  background: #f59b43;
+
+  box-shadow: 0 1px 4px #99501c38;
+  cursor: pointer;
 }
 
-.bolusBlock {
-  background: linear-gradient(
-                  90deg,
-                  #fff3df,
-                  #f8ba75
-  );
+.basalRow .injectionDot {
+  background: #3485e9;
+  border-color: #eaf3ff;
+  box-shadow: 0 1px 4px #2460a944;
 }
 
-.carryOverBlock {
-  opacity: 0.78;
+.injectionDotSelected,
+.injectionDot:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.carryOverMarker {
+  position: absolute;
+  z-index: 5;
+  width: 25px;
+  height: 22px;
+  padding: 0;
+
+  border: 1px solid #bad1e5;
+  border-radius: 5px;
+  color: #4276a3;
+  background: #f1f7fc;
+
+  cursor: pointer;
 }
 
 /* Питание */
 
 .mealMarker {
   position: absolute;
-  top: 5px;
+  top: 8px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 0;
+  gap: 1px;
 
   transform: translateX(-50%);
+  color: #8d29c0;
 
-  border: 0;
-  background: transparent;
-  cursor: default;
+  white-space: nowrap;
+  font-size: 11px;
 }
 
 .mealMarkerDot {
   width: 11px;
   height: 11px;
+  margin-bottom: 2px;
 
-  background: #962ddb;
-  border: 2px solid #efd7ff;
   border-radius: 50%;
+  border: 2px solid #eed7fb;
+  background: #9c29da;
 }
 
-.mealMarkerBadge {
-  padding: 3px 6px;
-
-  color: #8435b9;
-  background: #f5eaff;
-  border: 1px solid #ead8fb;
-  border-radius: 7px;
-
-  font-size: 10px;
-  font-weight: 700;
-  white-space: nowrap;
+.mealMarker strong {
+  padding: 2px 5px;
+  border-radius: 5px;
+  background: #f7eaff;
 }
 
 .mealMarker small {
-  color: #795994;
+  color: #8654a1;
   font-size: 10px;
-  white-space: nowrap;
 }
 
-/* =========================================
-   Исправленная шкала времени
-   ========================================= */
+/* Шкала времени */
 
 .timelineAxis {
-  display: block;
-
-  margin-left: 4.6%;
-  margin-right: 4.4%;
-  padding: 3px 0 4px;
-
-  color: #557279;
-  font-size: 11px;
-  font-weight: 650;
-  white-space: nowrap;
-}
-
-.timelineAxis > div:first-child {
-  display: none;
+  margin: 4px 4.4% 0 4.6%;
 }
 
 .timelineAxisLabels {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
 
-  gap: 0;
-  min-width: 0;
   width: 100%;
+  gap: 0;
+
+  color: #57778b;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .timelineAxisLabels span {
   flex: 0 0 auto;
-  min-width: 0;
-  text-align: center;
+  transform: translateX(-50%);
+}
+
+.timelineAxisLabels span:first-child {
+  transform: none;
+}
+
+.timelineAxisLabels span:last-child {
+  transform: translateX(0);
+}
+
+.selectedDoseInfo {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 6px;
+
+  margin: 6px 4.4% 2px 4.6%;
+  padding: 7px;
+
+  border-radius: 6px;
+  background: #f6f9fb;
+
+  color: #45616a;
+  font-size: 11px;
+}
+
+.selectedDoseInfo button {
+  border: 0;
+  background: transparent;
+  color: #6f8791;
+  font-size: 18px;
+  cursor: pointer;
 }
 
 /* =========================================
-   Добавление записей
+   ДОБАВЛЕНИЕ ЗАПИСЕЙ
    ========================================= */
 
 .entriesHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 9px;
 }
 
 .addButton {
-  flex: 0 0 auto;
-
-  width: 34px;
-  height: 34px;
-  padding: 0;
-
-  color: #fff;
-  background: #2471df;
+  width: 35px;
+  height: 35px;
   border: 0;
   border-radius: 50%;
 
-  box-shadow: 0 3px 9px rgba(29, 95, 212, 0.18);
+  color: white;
+  background: #2275e0;
 
+  font-size: 23px;
   cursor: pointer;
-  font-size: 22px;
-  line-height: 1;
 }
 
 .addPanel {
-  margin-bottom: 10px;
   padding: 10px;
+  margin-bottom: 10px;
 
-  background: #f7fbff;
+  background: #f8fbff;
   border: 1px solid #dbe9fb;
   border-radius: 10px;
 }
@@ -608,46 +728,49 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 9px;
 }
 
 .entryTypeSelector {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 10px;
-  padding-top: 18px;
+  align-items: center;
+
+  gap: 8px;
+  padding-top: 20px;
 }
 
 .entryTypeSelector label {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 5px;
 
-  color: #355560;
+  color: #385861;
   font-size: 12px;
-  font-weight: 600;
 }
 
-.addBlocks {
+.addBlocks,
+.entriesLists {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 9px;
 }
 
-.addBlock {
+.addBlock,
+.entriesColumn {
   min-width: 0;
-  padding: 10px;
+  padding: 9px;
 
   background: #fff;
-  border: 1px solid #dce8f7;
-  border-radius: 10px;
+  border: 1px solid #dce9ee;
+  border-radius: 9px;
 }
 
 .addBlock h4,
 .entriesColumn h4 {
-  margin: 0 0 8px;
-  color: #244149;
+  margin: 0 0 7px;
   font-size: 13px;
+  color: #263f4a;
 }
 
 .selectField {
@@ -656,24 +779,21 @@
   gap: 4px;
 
   margin-bottom: 8px;
-
-  color: #567175;
+  color: #526b76;
   font-size: 12px;
-  font-weight: 600;
 }
 
 .selectField select {
   box-sizing: border-box;
-
   width: 100%;
   min-height: 36px;
-  padding: 5px 8px;
+  padding: 4px 8px;
 
-  color: #203235;
-  background: #fff;
+  border: 1px solid #cddfdf;
+  border-radius: 7px;
 
-  border: 1px solid #cfe0df;
-  border-radius: 8px;
+  background: white;
+  color: #233b45;
   font: inherit;
 }
 
@@ -686,72 +806,51 @@
 
 .addPanelActions button {
   min-height: 34px;
-  padding: 6px 10px;
+  padding: 5px 9px;
   font-size: 12px;
 }
 
-/* Список записей */
-
-.entriesLists {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 9px;
-}
-
-.entriesColumn {
-  min-width: 0;
-  padding: 9px;
-
-  background: #fbfdfd;
-  border: 1px solid #e2ebeb;
-  border-radius: 10px;
-}
+/* Сохранённые записи */
 
 .entryCard {
   display: flex;
-  align-items: flex-start;
+  align-items: start;
   justify-content: space-between;
+  gap: 8px;
 
-  gap: 7px;
+  padding: 7px;
   margin-bottom: 6px;
-  padding: 8px;
 
-  background: #fff;
-  border: 1px solid #e0eaea;
-  border-radius: 8px;
+  background: #f9fcfc;
+  border: 1px solid #e2ecec;
+  border-radius: 7px;
+
   font-size: 12px;
 }
 
-.entryCard:last-child {
-  margin-bottom: 0;
-}
-
-.entryCard div {
+.entryCard > div {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
-}
-
-.entryCard strong {
-  color: #1f3947;
+  overflow-wrap: anywhere;
 }
 
 .entryCard span,
 .entryCard small,
 .emptyState {
-  color: #597074;
-  overflow-wrap: anywhere;
+  color: #627981;
 }
 
 .entryCard button {
-  flex: 0 0 auto;
+  align-self: start;
+
+  border: 1px solid #f1d2d2;
+  border-radius: 5px;
   padding: 4px 6px;
 
-  color: #b94752;
-  background: #fff4f5;
-  border: 1px solid #f3d1d4;
-  border-radius: 6px;
+  color: #aa424b;
+  background: #fff5f5;
 
   cursor: pointer;
   font: inherit;
@@ -763,11 +862,9 @@
   font-size: 12px;
 }
 
-/* =========================================
-   Планшеты
-   ========================================= */
+/* Планшеты */
 
-@media (max-width: 1050px) {
+@media (max-width: 1000px) {
   .targetsGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -776,18 +873,10 @@
   .entriesLists {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
-  .graphHeader {
-    flex-wrap: wrap;
-  }
-
-  .legend {
-    justify-content: flex-start;
-  }
 }
 
 /* =========================================
-   Смартфоны
+   МОБИЛЬНАЯ АДАПТАЦИЯ
    ========================================= */
 
 @media (max-width: 700px) {
@@ -800,186 +889,78 @@
   .profileCard,
   .entriesCard {
     padding: 9px;
-    border-radius: 10px;
+    border-radius: 9px;
   }
-
-  /* Даты */
 
   .topToolbar {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 7px;
-  }
-
-  .topToolbar > button {
-    width: 100%;
-    min-height: 33px;
-  }
-
-  .dateNavigator {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
+    align-items: start;
+    flex-wrap: wrap;
     gap: 5px;
   }
 
-  .dateNavigator > button {
-    flex: 0 0 31px;
-
-    min-width: 31px;
-    width: 31px;
-    min-height: 35px;
-    padding: 0;
-
-    font-size: 0;
-  }
-
-  .dateNavigator > button:first-child::before {
-    content: "‹";
-    font-size: 23px;
-  }
-
-  .dateNavigator > button:last-child::after {
-    content: "›";
-    font-size: 23px;
+  .dateNavigator {
+    flex: 1 1 100%;
   }
 
   .currentDateCard {
-    flex: 1 1 0;
-    flex-direction: row;
-    align-items: center;
+    flex: 1 1 auto;
     justify-content: space-between;
-
-    gap: 3px 6px;
-    min-width: 0;
-    padding: 5px 6px;
-  }
-
-  .currentDateLabel {
-    display: none;
   }
 
   .currentDateCard strong {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     font-size: 11px;
   }
 
-  .currentDateCard input {
-    width: 116px;
-    max-width: 100%;
-    min-height: 28px;
-    font-size: 12px;
-  }
-
-  /* Целевые диапазоны */
-
-  .targetsHeader h3,
-  .graphHeader h3,
-  .entriesHeader h3 {
+  .targetsCard h3,
+  .profileCard h3,
+  .entriesCard h3 {
     font-size: 14px;
-  }
-
-  .targetsHeader p,
-  .graphHeader p {
-    display: none;
   }
 
   .targetsGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 7px;
-    margin-top: 7px;
-  }
-
-  .targetsGrid input {
-    min-height: 33px;
-    font-size: 16px;
-  }
-
-  .graphHeader {
-    gap: 5px;
-    margin-bottom: 6px;
   }
 
   .legend {
-    gap: 3px 7px;
-    font-size: 9px;
+    font-size: 10px;
+    gap: 3px 8px;
   }
 
-  /* График с общей горизонтальной прокруткой */
-
-  .chartShell {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-
-    gap: 5px;
-    overflow-x: auto;
-    padding-bottom: 5px;
+  .phasesLegend {
+    font-size: 9.5px;
+    gap: 5px 7px;
   }
 
+  /*
+   * Общая ширина графика на смартфоне.
+   *
+   * Ширина 780px задаётся одному родителю,
+   * а не каждой полосе отдельно.
+   *
+   * Поэтому все полосы прокручиваются вместе.
+   */
+  .graphLayers {
+    width: 780px;
+    min-width: 780px;
+  }
 
   .chartPanel,
   .timelineSection {
-    box-sizing: border-box;
-
-    /* Ширина ленты для горизонтальной прокрутки */
-    width: 760px;
-    min-width: 760px;
-
-    /* Высота определяется содержимым, а не шириной */
-    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
     height: auto;
-  }
-
-  .chartPanel {
-    padding: 0;
-    overflow: visible;
   }
 
   .chartSvg {
-    display: block;
     width: 100%;
-    height: auto;
     min-width: 0;
+    height: auto;
   }
 
-
-  /*
-   * На телефоне показываем время
-   * только под тремя дорожками.
-   */
-  .axisLabel {
-    display: none;
+  .chartShell {
+    padding-bottom: 5px;
   }
-
-  .timelineRow {
-    margin-bottom: 5px;
-  }
-
-  .timelineLabel {
-    font-size: 11px;
-    margin-bottom: 2px;
-  }
-
-  .timelineTrack {
-    min-height: 61px;
-  }
-
-  .timelineAxis {
-    font-size: 10.5px;
-  }
-
-  .pointTooltip {
-    max-width: 185px;
-    min-width: 160px;
-    padding: 7px;
-  }
-
-  /* Добавление и просмотр записей */
 
   .addBlocks,
   .entriesLists {
@@ -987,39 +968,29 @@
     gap: 7px;
   }
 
-  .addPanel,
-  .addBlock {
-    padding: 8px;
-  }
-
   .addPanelTopRow {
     flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
+    gap: 5px;
   }
 
   .entryTypeSelector {
     padding-top: 0;
   }
 
-  .selectField select,
-  .addBlock input,
-  .addBlock textarea {
-    font-size: 16px;
-  }
-
+  .addPanel,
+  .addBlock,
   .entriesColumn {
-    padding: 7px;
+    padding: 8px;
   }
 
-  .entryCard {
-    padding: 7px;
+  .addBlock input,
+  .addBlock textarea,
+  .selectField select {
+    font-size: 16px;
   }
 }
 
-/* Узкие экраны */
-
-@media (max-width: 380px) {
+@media (max-width: 370px) {
   .currentDateCard {
     flex-direction: column;
     align-items: stretch;

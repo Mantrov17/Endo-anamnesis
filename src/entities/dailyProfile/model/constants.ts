@@ -9,11 +9,22 @@ export interface InsulinProfileMeta {
   label: string;
   shortLabel: string;
   category: DailyProfileInsulinCategory;
+
+  /** Начало действия, часы после введения. */
   onsetHoursMin: number;
   onsetHoursMax: number;
+
+  /** Интервал пика, если он определён. */
   peakHoursMin?: number;
   peakHoursMax?: number;
-  durationHoursMin: number;
+
+  /**
+   * Первая граница длительности.
+   * Не указываем, если известно только "до N часов".
+   */
+  durationHoursMin?: number;
+
+  /** Конец диапазона или максимальная длительность. */
   durationHoursMax: number;
 }
 
@@ -35,7 +46,6 @@ export const DAILY_PROFILE_INSULINS: InsulinProfileMeta[] = [
     category: "basal",
     onsetHoursMin: 1,
     onsetHoursMax: 2,
-    durationHoursMin: 24,
     durationHoursMax: 29,
   },
   {
@@ -45,7 +55,6 @@ export const DAILY_PROFILE_INSULINS: InsulinProfileMeta[] = [
     category: "basal",
     onsetHoursMin: 1,
     onsetHoursMax: 2,
-    durationHoursMin: 24,
     durationHoursMax: 36,
   },
   {
@@ -55,7 +64,6 @@ export const DAILY_PROFILE_INSULINS: InsulinProfileMeta[] = [
     category: "basal",
     onsetHoursMin: 1,
     onsetHoursMax: 2,
-    durationHoursMin: 10,
     durationHoursMax: 12,
   },
   {
@@ -157,7 +165,7 @@ export const DAILY_PROFILE_INSULINS: InsulinProfileMeta[] = [
   {
     id: "human_regular",
     label: "Человеческий растворимый генно-инженерный",
-    shortLabel: "Растворимый человеческий",
+    shortLabel: "Человеческий растворимый",
     category: "bolus",
     onsetHoursMin: 20 / 60,
     onsetHoursMax: 30 / 60,
