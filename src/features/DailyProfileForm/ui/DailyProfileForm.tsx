@@ -58,6 +58,83 @@ const initialDraft: AddEntryDraft = {
   mealType: "breakfast",
 };
 
+/*
+ * Исправленный ввод целевых диапазонов.
+ *
+ * Во время редактирования храним строку,
+ * а не число. Поэтому можно:
+ *
+ * - удалить старое значение полностью;
+ * - ввести 5,5 или 5.5;
+ * - временно оставить "5,";
+ * - исправлять любую цифру.
+ *
+ * В данные пациента передаём только
+ * корректное числовое значение.
+ */
+interface TargetRangeInputProps {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+}
+
+const formatTarget = (value: number): string => String(value).replace(".", ",");
+
+const parseTarget = (raw: string): number | null => {
+  const text = raw.trim();
+
+  if (!/^(?:\d+(?:[.,]\d*)?|[.,]\d+)$/.test(text)) {
+    return null;
+  }
+
+  const result = Number(text.replace(",", "."));
+
+  return Number.isFinite(result) && result >= 0 ? result : null;
+};
+
+const TargetRangeInput: React.FC<TargetRangeInputProps> = ({
+  label,
+  value,
+  onChange,
+}) => {
+  const [text, setText] = useState(() => formatTarget(value));
+
+  return (
+    <Input
+      label={label}
+      type="text"
+      inputMode="decimal"
+      autoComplete="off"
+      suffix="ммоль/л"
+      value={text}
+      onChange={(event) => {
+        const nextText = event.target.value;
+
+        setText(nextText);
+
+        const parsed = parseTarget(nextText);
+
+        if (parsed !== null && parsed !== value) {
+          onChange(parsed);
+        }
+      }}
+      onBlur={() => {
+        const parsed = parseTarget(text);
+
+        // Пустой или некорректный ввод
+        // не затирает сохранённое значение.
+        setText(formatTarget(parsed ?? value));
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          event.currentTarget.blur();
+        }
+      }}
+    />
+  );
+};
+
 const INSULINS_BY_ID = new Map(
   DAILY_PROFILE_INSULINS.map((item) => [item.id, item]),
 );
@@ -73,7 +150,6 @@ const PLOT_TOP = 18;
 const PLOT_BOTTOM = 34;
 
 const PLOT_HEIGHT = SVG_HEIGHT - PLOT_TOP - PLOT_BOTTOM;
-
 const PLOT_WIDTH = SVG_WIDTH - PLOT_LEFT - PLOT_RIGHT;
 
 const MAX_GLUCOSE = 20;
@@ -108,9 +184,7 @@ const yAt = (value: number, max: number): number =>
   PLOT_TOP + PLOT_HEIGHT - (clamp(value, 0, max) / max) * PLOT_HEIGHT;
 
 const asNumberOrNull = (raw: string): number | null => {
-  if (!raw.trim()) {
-    return null;
-  }
+  if (!raw.trim()) return null;
 
   const number = Number(raw.replace(",", "."));
 
@@ -149,9 +223,7 @@ const getDoseEvents = (
       (day.insulinEntries ?? []).flatMap((entry) => {
         const meta = getInsulin(entry.insulinName);
 
-        if (meta.category !== category) {
-          return [];
-        }
+        if (meta.category !== category) return [];
 
         const start =
           dateOffsetDays(day.date, targetDate) * MINUTES_PER_DAY +
@@ -185,16 +257,11 @@ const getDoseEvents = (
 
     let lane = laneEnd.findIndex((end) => end + 25 <= visibleStart);
 
-    if (lane < 0) {
-      lane = laneEnd.length;
-    }
+    if (lane < 0) lane = laneEnd.length;
 
     laneEnd[lane] = Math.min(MINUTES_PER_DAY, item.end);
 
-    return {
-      ...item,
-      lane,
-    };
+    return { ...item, lane };
   });
 };
 
@@ -203,17 +270,14 @@ const phasePosition = (
   to: number,
 ): React.CSSProperties | null => {
   const start = clamp(from, 0, MINUTES_PER_DAY);
-
   const end = clamp(to, 0, MINUTES_PER_DAY);
 
-  if (end <= start) {
-    return null;
-  }
-
-  return {
-    left: percentAt(start),
-    width: percentAt(end - start),
-  };
+  return end <= start
+    ? null
+    : {
+        left: percentAt(start),
+        width: percentAt(end - start),
+      };
 };
 
 const insulinDescription = (dose: DoseEvent): string => {
@@ -230,12 +294,14 @@ const insulinDescription = (dose: DoseEvent): string => {
       : `пик ${decimal(meta.peakHoursMin)}–${decimal(meta.peakHoursMax)} ч`;
 
   return (
-    `${meta.label}: ` +
-    `${entry.units ?? "—"} ЕД; ` +
+    `${meta.label}: ${entry.units ?? "—"} ЕД; ` +
     `введён ${dose.date} в ${entry.time}; ` +
     `${peak}; длительность ${duration}`
   );
 };
+
+const entryDose = (units: number | null): string =>
+  units === null ? "— ЕД" : `${decimal(units)} ЕД`;
 
 interface InsulinTimelineProps {
   label: string;
@@ -244,9 +310,6 @@ interface InsulinTimelineProps {
   selectedDoseKey: string | null;
   onSelectDose: (value: string | null) => void;
 }
-
-const entryDose = (units: number | null): string =>
-  units === null ? "— ЕД" : `${decimal(units)} ЕД`;
 
 const InsulinTimeline: React.FC<InsulinTimelineProps> = ({
   label,
@@ -268,12 +331,7 @@ const InsulinTimeline: React.FC<InsulinTimelineProps> = ({
     >
       <div className={styles.timelineLabel}>{label}</div>
 
-      <div
-        className={styles.timelineTrack}
-        style={{
-          height: trackHeight,
-        }}
-      >
+      <div className={styles.timelineTrack} style={{ height: trackHeight }}>
         {doses.map((dose) => {
           const { meta, start, end, lane } = dose;
 
@@ -311,7 +369,6 @@ const InsulinTimeline: React.FC<InsulinTimelineProps> = ({
           const injectionVisible = start >= 0 && start < MINUTES_PER_DAY;
 
           const at = percentAt(start);
-
           const title = insulinDescription(dose);
 
           const active = dose.key === selectedDoseKey;
@@ -429,21 +486,19 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
   const {
     days,
     selectedDay,
+    patientTargets,
     autoSaveStatus,
     updateSelectedDate,
     goToPreviousDate,
     goToNextDate,
     updateTargets,
     addLinkedEntries,
-
-    deleteGlucoseEntry,
-    deleteInsulinEntry,
-    deleteMealEntry,
-
     updateGlucoseEntry,
     updateInsulinEntry,
     updateMealEntry,
-
+    deleteGlucoseEntry,
+    deleteInsulinEntry,
+    deleteMealEntry,
     handleSubmit,
   } = useDailyProfileForm({
     patientId,
@@ -477,7 +532,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
 
     const max = Math.max(
       MAX_GLUCOSE,
-      selectedDay?.targetRanges.postMealMax ?? 10,
+      patientTargets.postMealMax,
       ...entries.map((entry) => entry.value ?? 0),
     );
 
@@ -491,7 +546,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
         y: yAt(entry.value ?? 0, maxY),
       })),
     };
-  }, [selectedDay]);
+  }, [selectedDay, patientTargets.postMealMax]);
 
   const basalDoses = useMemo(
     () => (selectedDay ? getDoseEvents(days, selectedDay.date, "basal") : []),
@@ -532,11 +587,10 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
   }, [selectedPoint, basalDoses, bolusDoses]);
 
   /*
-   * Единый вертикальный курсор
-   * от точки глюкозы до питания.
+   * Общая вертикальная пунктирная линия.
    *
-   * Координаты записываются через ref,
-   * без setState внутри эффекта.
+   * Координаты обновляются через ref,
+   * без setState внутри useLayoutEffect.
    */
   useLayoutEffect(() => {
     if (!selectedPoint) {
@@ -544,11 +598,8 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
     }
 
     const layers = graphLayersRef.current;
-
     const svg = glucoseSvgRef.current;
-
     const meal = mealTrackRef.current;
-
     const cursor = unifiedCursorRef.current;
 
     if (!layers || !svg || !meal || !cursor) {
@@ -575,9 +626,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
       const height = Math.max(0, mealRect.bottom - containerRect.top - top);
 
       cursor.style.left = `${left}px`;
-
       cursor.style.top = `${top}px`;
-
       cursor.style.height = `${height}px`;
     };
 
@@ -611,15 +660,13 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
     return <p>Не удалось открыть суточный профиль.</p>;
   }
 
-  const { targetRanges } = selectedDay;
+  const yHypo = yAt(patientTargets.hypoThreshold, points.maxY);
 
-  const yHypo = yAt(targetRanges.hypoThreshold, points.maxY);
+  const yMin = yAt(patientTargets.fastingMin, points.maxY);
 
-  const yMin = yAt(targetRanges.fastingMin, points.maxY);
+  const yMax = yAt(patientTargets.fastingMax, points.maxY);
 
-  const yMax = yAt(targetRanges.fastingMax, points.maxY);
-
-  const yMeal = yAt(targetRanges.postMealMax, points.maxY);
+  const yMeal = yAt(patientTargets.postMealMax, points.maxY);
 
   const submitDraft = () => {
     if (!draft.addGlucose && !draft.addInsulin && !draft.addMeal) {
@@ -649,16 +696,13 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
 
     addLinkedEntries({
       time: draft.time,
-
       addGlucose: draft.addGlucose,
       glucoseValue,
       glucoseNote: draft.glucoseNote,
-
       addInsulin: draft.addInsulin,
       insulinName: draft.insulinName,
       insulinUnits,
       insulinNote: "",
-
       addMeal: draft.addMeal,
       breadUnits,
       mealType: draft.mealType,
@@ -685,9 +729,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
             aria-label="Предыдущий день"
             onClick={() => {
               goToPreviousDate();
-
               setSelectedGlucoseId(null);
-
               setSelectedDoseKey(null);
             }}
           >
@@ -705,7 +747,6 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                 updateSelectedDate(event.target.value);
 
                 setSelectedGlucoseId(null);
-
                 setSelectedDoseKey(null);
               }}
             />
@@ -717,9 +758,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
             aria-label="Следующий день"
             onClick={() => {
               goToNextDate();
-
               setSelectedGlucoseId(null);
-
               setSelectedDoseKey(null);
             }}
           >
@@ -744,71 +783,87 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
         </span>
       </div>
 
-      {/* Целевые диапазоны */}
+      {/*
+       * Целевые диапазоны пациента.
+       *
+       * Поля используют локальный строковый ввод.
+       * При смене даты значения не сбрасываются.
+       * Ключ patientId обеспечивает отдельное
+       * состояние ввода для каждого пациента.
+       */}
 
-      <section className={styles.targetsCard}>
-        <h3>Целевые диапазоны</h3>
+      <details className={styles.targetsCard}>
+        <summary
+          style={{
+            cursor: "pointer",
+            color: "#243b42",
+            fontSize: 14,
+            fontWeight: 700,
+            lineHeight: 1.5,
+            padding: "2px 0",
+          }}
+        >
+          Целевые диапазоны
+          <span
+            style={{
+              marginLeft: 7,
+              color: "#758b8b",
+              fontSize: 11,
+              fontWeight: 400,
+            }}
+          >
+            для пациента
+          </span>
+        </summary>
 
         <div className={styles.targetsGrid}>
-          <Input
+          <TargetRangeInput
+            key={`${patientId}-hypo`}
             label="Гипогликемия"
-            type="number"
-            inputMode="decimal"
-            step="0.1"
-            suffix="ммоль/л"
-            value={targetRanges.hypoThreshold}
-            onChange={(event) =>
+            value={patientTargets.hypoThreshold}
+            onChange={(value) =>
               updateTargets({
-                hypoThreshold: Number(event.target.value) || 0,
+                hypoThreshold: value,
               })
             }
           />
 
-          <Input
+          <TargetRangeInput
+            key={`${patientId}-min`}
             label="Нижняя цель"
-            type="number"
-            inputMode="decimal"
-            step="0.1"
-            suffix="ммоль/л"
-            value={targetRanges.fastingMin}
-            onChange={(event) =>
+            value={patientTargets.fastingMin}
+            onChange={(value) =>
               updateTargets({
-                fastingMin: Number(event.target.value) || 0,
+                fastingMin: value,
               })
             }
           />
 
-          <Input
+          <TargetRangeInput
+            key={`${patientId}-max`}
             label="Верхняя цель"
-            type="number"
-            inputMode="decimal"
-            step="0.1"
-            suffix="ммоль/л"
-            value={targetRanges.fastingMax}
-            onChange={(event) =>
+            value={patientTargets.fastingMax}
+            onChange={(value) =>
               updateTargets({
-                fastingMax: Number(event.target.value) || 0,
+                fastingMax: value,
               })
             }
           />
 
-          <Input
+          <TargetRangeInput
+            key={`${patientId}-meal`}
             label="После еды — верхний предел"
-            type="number"
-            inputMode="decimal"
-            step="0.1"
-            suffix="ммоль/л"
-            value={targetRanges.postMealMax}
-            onChange={(event) =>
+            value={patientTargets.postMealMax}
+            onChange={(value) =>
               updateTargets({
-                postMealMax: Number(event.target.value) || 0,
+                postMealMax: value,
               })
             }
           />
         </div>
-      </section>
+      </details>
 
-      {/* График */}
+      {/* Единый суточный график */}
 
       <section className={styles.profileCard}>
         <h3>Суточный профиль: глюкоза, инсулин и питание</h3>
@@ -855,8 +910,6 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
 
         <div className={styles.chartShell}>
           <div className={styles.graphLayers} ref={graphLayersRef}>
-            {/* График глюкозы */}
-
             <div className={styles.chartPanel}>
               <svg
                 ref={glucoseSvgRef}
@@ -864,6 +917,8 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                 className={styles.chartSvg}
                 aria-label="График глюкозы по времени суток"
               >
+                {/* Цветовые зоны */}
+
                 <rect
                   x={PLOT_LEFT}
                   y={yMeal}
@@ -888,13 +943,11 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                   className={styles.zoneHypo}
                 />
 
-                {/* Сетка по глюкозе */}
+                {/* Горизонтальная сетка */}
 
                 {Array.from(
-                  {
-                    length: 6,
-                  },
-                  (_, i) => (i * points.maxY) / 5,
+                  { length: 6 },
+                  (_, index) => (index * points.maxY) / 5,
                 ).map((value) => (
                   <g key={value}>
                     <line
@@ -916,7 +969,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                   </g>
                 ))}
 
-                {/* Сетка по времени */}
+                {/* Вертикальная сетка времени */}
 
                 {DAILY_PROFILE_HOURS.map((hour) => (
                   <line
@@ -929,13 +982,13 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                   />
                 ))}
 
-                {/* Границы целевых значений */}
+                {/* Значения целевых диапазонов */}
 
                 {[
-                  targetRanges.postMealMax,
-                  targetRanges.fastingMax,
-                  targetRanges.fastingMin,
-                  targetRanges.hypoThreshold,
+                  patientTargets.postMealMax,
+                  patientTargets.fastingMax,
+                  patientTargets.fastingMin,
+                  patientTargets.hypoThreshold,
                 ].map((value, index) => (
                   <text
                     key={index}
@@ -962,7 +1015,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                   />
                 )}
 
-                {/* Измерения глюкозы */}
+                {/* Точки глюкозы */}
 
                 {points.data.map((point) => (
                   <g key={point.entry.id}>
@@ -973,9 +1026,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                       className={styles.glucosePoint}
                       tabIndex={0}
                       role="button"
-                      aria-label={`${point.entry.time}: ${
-                        point.entry.value
-                      } ммоль/л`}
+                      aria-label={`${point.entry.time}: ${point.entry.value} ммоль/л`}
                       onClick={() =>
                         setSelectedGlucoseId((current) =>
                           current === point.entry.id ? null : point.entry.id,
@@ -1048,9 +1099,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                 <div
                   ref={mealTrackRef}
                   className={styles.timelineTrack}
-                  style={{
-                    height: 59,
-                  }}
+                  style={{ height: 59 }}
                 >
                   {selectedDay.mealEntries.map((meal) => (
                     <div
@@ -1089,6 +1138,8 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                 </div>
               </div>
 
+              {/* Выбранное введение */}
+
               {selectedDose && (
                 <div className={styles.selectedDoseInfo} role="status">
                   <span>{insulinDescription(selectedDose)}</span>
@@ -1104,7 +1155,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
               )}
             </div>
 
-            {/* Единый курсор до полосы питания */}
+            {/* Единая пунктирная линия */}
 
             {selectedPoint && (
               <div
@@ -1117,7 +1168,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
         </div>
       </section>
 
-      {/* Записи и добавление */}
+      {/* Добавление и журнал записей */}
 
       <section className={styles.entriesCard}>
         <div className={styles.entriesHeader}>
@@ -1175,7 +1226,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
             </div>
 
             <div className={styles.addBlocks}>
-              {/* Новая глюкоза */}
+              {/* Глюкоза */}
 
               {draft.addGlucose && (
                 <div className={styles.addBlock}>
@@ -1212,7 +1263,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                 </div>
               )}
 
-              {/* Новый инсулин */}
+              {/* Инсулин */}
 
               {draft.addInsulin && (
                 <div className={styles.addBlock}>
@@ -1271,7 +1322,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
                 </div>
               )}
 
-              {/* Новое питание */}
+              {/* Питание */}
 
               {draft.addMeal && (
                 <div className={styles.addBlock}>
@@ -1334,15 +1385,7 @@ export const DailyProfileForm: React.FC<DailyProfileFormProps> = ({
           </div>
         )}
 
-        {/*
-          Новый компактный журнал.
-
-          Вместо трёх отдельных списков
-          все данные объединены по времени.
-
-          Ключ выбранного дня сбрасывает
-          состояние редактора при смене даты.
-        */}
+        {/* Компактный журнал с редактированием */}
 
         <DailyProfileEntries
           key={selectedDay.id}

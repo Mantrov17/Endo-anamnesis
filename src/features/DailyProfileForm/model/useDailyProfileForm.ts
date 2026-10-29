@@ -45,6 +45,8 @@ interface AddEntriesPayload {
 
 export type DailyProfileAutoSaveStatus = "idle" | "saving" | "saved" | "error";
 
+type TargetRanges = DailyProfileDay["targetRanges"];
+
 const AUTO_SAVE_DELAY_MS = 650;
 
 const normalizeDays = (days: DailyProfileDay[]): DailyProfileDay[] =>
@@ -52,10 +54,65 @@ const normalizeDays = (days: DailyProfileDay[]): DailyProfileDay[] =>
     .map((day) => normalizeDailyProfileDay(structuredClone(day)))
     .sort((a, b) => a.date.localeCompare(b.date));
 
-const shiftDate = (date: string, days: number): string => {
+/*
+ * Получаем исходные значения из модели,
+ * чтобы не дублировать константы приложения.
+ */
+const getDefaultTargets = (): TargetRanges => ({
+  ...createDailyProfileDay().targetRanges,
+});
+
+/*
+ * Определяем, отличается ли диапазон
+ * от стандартных значений.
+ */
+const isCustomTargets = (
+  targets: TargetRanges,
+  defaults: TargetRanges,
+): boolean =>
+  (Object.keys(defaults) as Array<keyof TargetRanges>).some(
+    (key) => targets[key] !== defaults[key],
+  );
+
+/*
+ * Одна настройка на все дни пациента.
+ *
+ * Совместимость со старыми данными:
+ * если раньше разные дни содержали разные
+ * значения, используем последние
+ * нестандартные значения по дате.
+ *
+ * Данные измерений и инсулина не изменяем.
+ */
+const unifyPatientTargets = (days: DailyProfileDay[]): DailyProfileDay[] => {
+  const normalized = normalizeDays(days);
+
+  if (!normalized.length) {
+    return normalized;
+  }
+
+  const defaults = getDefaultTargets();
+
+  const latestCustomDay = [...normalized]
+    .reverse()
+    .find((day) => isCustomTargets(day.targetRanges, defaults));
+
+  const commonTargets: TargetRanges = {
+    ...defaults,
+    ...(latestCustomDay?.targetRanges ??
+      normalized[normalized.length - 1].targetRanges),
+  };
+
+  return normalized.map((day) => ({
+    ...day,
+    targetRanges: { ...commonTargets },
+  }));
+};
+
+const shiftDate = (date: string, amount: number): string => {
   const value = new Date(`${date}T12:00:00`);
 
-  value.setDate(value.getDate() + days);
+  value.setDate(value.getDate() + amount);
 
   return [
     value.getFullYear(),
@@ -69,22 +126,39 @@ export const useDailyProfileForm = ({
   initialDays,
   onSuccess,
 }: UseDailyProfileFormProps) => {
+  /*
+   * При первой загрузке синхронизируем
+   * целевые диапазоны всех дней пациента.
+   */
   const [days, setDays] = useState<DailyProfileDay[]>(() =>
-    initialDays?.length
-      ? normalizeDays(initialDays)
-      : [createDailyProfileDay()],
+    unifyPatientTargets(
+      initialDays?.length ? initialDays : [createDailyProfileDay()],
+    ),
   );
 
-  const [selectedDayId, setSelectedDayId] = useState<string>(() =>
-    initialDays?.length ? (normalizeDays(initialDays).at(-1)?.id ?? "") : "",
-  );
+  const [selectedDayId, setSelectedDayId] = useState<string>(() => {
+    if (!initialDays?.length) {
+      return "";
+    }
+
+    const sorted = normalizeDays(initialDays);
+
+    return sorted[sorted.length - 1]?.id ?? "";
+  });
 
   const [autoSaveStatus, setAutoSaveStatus] =
     useState<DailyProfileAutoSaveStatus>("idle");
 
+  /*
+   * Последняя версия данных хранится в ref.
+   * Это важно при быстром переключении
+   * страницы и автосохранении.
+   */
   const latestDaysRef = useRef(days);
   const pendingRef = useRef(false);
+
   const onSuccessRef = useRef(onSuccess);
+
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -94,6 +168,16 @@ export const useDailyProfileForm = ({
   const selectedDay = useMemo(
     () => days.find((day) => day.id === selectedDayId) ?? days[0] ?? null,
     [days, selectedDayId],
+  );
+
+  /*
+   * Значения диапазонов берём из общей
+   * настройки, которая одинакова
+   * для всех дней пациента.
+   */
+  const patientTargets = useMemo<TargetRanges>(
+    () => days[0]?.targetRanges ?? getDefaultTargets(),
+    [days],
   );
 
   const saveNow = useCallback(
@@ -137,14 +221,32 @@ export const useDailyProfileForm = ({
   );
 
   /*
-   * Автосохранение после изменения данных.
+   * Все изменения проходят через commitDays.
    *
-   * Синхронных вызовов setState внутри
-   * эффекта нет.
+   * Обновляем ref сразу, а не только после
+   * очередного рендера. Так последние
+   * изменения не теряются при уходе
+   * со страницы.
+   */
+  const commitDays = (
+    updater: (previous: DailyProfileDay[]) => DailyProfileDay[],
+  ) => {
+    const next = normalizeDays(updater(latestDaysRef.current));
+
+    latestDaysRef.current = next;
+    pendingRef.current = true;
+
+    setDays(next);
+    setAutoSaveStatus("saving");
+  };
+
+  /*
+   * Автосохранение через 650 мс.
+   *
+   * Здесь нет синхронного setState
+   * внутри тела эффекта.
    */
   useEffect(() => {
-    latestDaysRef.current = days;
-
     if (!pendingRef.current) {
       return;
     }
@@ -167,9 +269,8 @@ export const useDailyProfileForm = ({
   }, [days, saveNow]);
 
   /*
-   * Дополнительная попытка сохранения
-   * при закрытии страницы или уходе
-   * на другую страницу приложения.
+   * Последняя попытка сохранения
+   * при закрытии вкладки или переходе.
    */
   useEffect(() => {
     const flush = () => {
@@ -202,18 +303,8 @@ export const useDailyProfileForm = ({
     };
   }, [saveNow]);
 
-  const markDirty = () => {
-    pendingRef.current = true;
-    setAutoSaveStatus("saving");
-  };
-
   /*
-   * Все действия с данными проходят
-   * через updateSelectedDay.
-   *
-   * Благодаря этому добавление,
-   * редактирование и удаление вызывают
-   * одно и то же автосохранение.
+   * Изменение данных выбранного дня.
    */
   const updateSelectedDay = (
     updater: (day: DailyProfileDay) => DailyProfileDay,
@@ -222,25 +313,32 @@ export const useDailyProfileForm = ({
       return;
     }
 
-    const id = selectedDay.id;
+    const currentId = selectedDay.id;
 
-    markDirty();
-
-    setDays((previous) =>
-      normalizeDays(
-        previous.map((day) =>
-          day.id === id ? updater(structuredClone(day)) : day,
-        ),
+    commitDays((previous) =>
+      previous.map((day) =>
+        day.id === currentId ? updater(structuredClone(day)) : day,
       ),
     );
   };
 
+  /*
+   * Переключение даты.
+   *
+   * Если день уже существует, открываем его.
+   * Если нет — создаём новый.
+   *
+   * Главное: новый день получает общие
+   * целевые диапазоны этого пациента.
+   */
   const updateSelectedDate = (date: string) => {
-    if (!date || !selectedDay) {
+    if (!date) {
       return;
     }
 
-    const existing = days.find((day) => day.date === date);
+    const currentDays = latestDaysRef.current;
+
+    const existing = currentDays.find((day) => day.date === date);
 
     if (existing) {
       setSelectedDayId(existing.id);
@@ -249,32 +347,61 @@ export const useDailyProfileForm = ({
 
     const newDay = createDailyProfileDay(date);
 
-    markDirty();
+    const currentTargets = currentDays[0]?.targetRanges ?? getDefaultTargets();
 
-    setDays((previous) => normalizeDays([...previous, newDay]));
+    const dayWithTargets: DailyProfileDay = {
+      ...newDay,
+      targetRanges: {
+        ...currentTargets,
+      },
+    };
 
-    setSelectedDayId(newDay.id);
+    commitDays((previous) => [...previous, dayWithTargets]);
+
+    setSelectedDayId(dayWithTargets.id);
   };
 
   const goToAdjacentDate = (amount: number) => {
-    if (selectedDay) {
-      updateSelectedDate(shiftDate(selectedDay.date, amount));
+    if (!selectedDay) {
+      return;
     }
-  };
 
-  const updateTargets = (patch: Partial<DailyProfileDay["targetRanges"]>) => {
-    updateSelectedDay((day) => ({
-      ...day,
-      targetRanges: {
-        ...day.targetRanges,
-        ...patch,
-      },
-    }));
+    updateSelectedDate(shiftDate(selectedDay.date, amount));
   };
 
   /*
-   * Добавление глюкозы, инсулина
-   * и питания.
+   * КЛЮЧЕВОЕ ИЗМЕНЕНИЕ.
+   *
+   * Целевые диапазоны обновляются
+   * ОДНОВРЕМЕННО у всех дней пациента.
+   *
+   * Поэтому после изменения одного поля:
+   * - текущий день обновляется;
+   * - предыдущие дни обновляются;
+   * - последующие дни обновляются;
+   * - новые дни наследуют те же значения.
+   */
+  const updateTargets = (patch: Partial<TargetRanges>) => {
+    commitDays((previous) => {
+      const current = previous[0]?.targetRanges ?? getDefaultTargets();
+
+      const nextTargets: TargetRanges = {
+        ...current,
+        ...patch,
+      };
+
+      return previous.map((day) => ({
+        ...day,
+        targetRanges: {
+          ...nextTargets,
+        },
+      }));
+    });
+  };
+
+  /*
+   * Добавление измерений,
+   * введений инсулина и питания.
    */
   const addLinkedEntries = (payload: AddEntriesPayload) => {
     updateSelectedDay((day) => {
@@ -309,10 +436,9 @@ export const useDailyProfileForm = ({
   };
 
   /*
-   * Редактирование существующих записей.
+   * Редактирование записей.
    *
-   * ID сохраняется, поэтому запись
-   * не нужно удалять и создавать заново.
+   * Сохраняем существующие ID.
    */
   const updateGlucoseEntry = (
     id: string,
@@ -355,7 +481,7 @@ export const useDailyProfileForm = ({
   };
 
   /*
-   * Удаление записей.
+   * Удаление ошибочных записей.
    */
   const deleteGlucoseEntry = (id: string) => {
     updateSelectedDay((day) => ({
@@ -392,6 +518,12 @@ export const useDailyProfileForm = ({
     days,
     selectedDay,
     selectedDayId,
+
+    /*
+     * Единые настройки пациента.
+     */
+    patientTargets,
+
     autoSaveStatus,
 
     updateSelectedDate,

@@ -20,6 +20,8 @@ export interface InsulinProfileMeta {
 
   /**
    * Первая граница длительности.
+   * Для гларгинов — окончание основного действия.
+   * После неё начинается остаточное действие.
    * Не указываем, если известно только "до N часов".
    */
   durationHoursMin?: number;
@@ -46,6 +48,7 @@ export const DAILY_PROFILE_INSULINS: InsulinProfileMeta[] = [
     category: "basal",
     onsetHoursMin: 1,
     onsetHoursMax: 2,
+    durationHoursMin: 24,
     durationHoursMax: 29,
   },
   {
@@ -55,6 +58,7 @@ export const DAILY_PROFILE_INSULINS: InsulinProfileMeta[] = [
     category: "basal",
     onsetHoursMin: 1,
     onsetHoursMax: 2,
+    durationHoursMin: 24,
     durationHoursMax: 36,
   },
   {
